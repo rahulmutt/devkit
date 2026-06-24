@@ -148,8 +148,10 @@ Indicative (not exhaustive) recommendations:
   (unit/integration); proptest/quickcheck (property); cargo-fuzz (fuzz);
   cargo-mutants (mutation); kani noted under formal methods.
 - **Go:** vet + gofmt + staticcheck (static); built-in `testing`
-  (unit/integration); gopter (property); built-in fuzzing (fuzz); go-mutesting
-  (mutation).
+  (unit/integration); rapid (property — default: native `go test` integration,
+  automatic shrinking, minimal boilerplate), with gopter as the alternative when
+  its richer generator/command combinators or explicit state-machine API are
+  needed; built-in fuzzing (fuzz); go-mutesting (mutation).
 - **Haskell:** compiler + hlint + ormolu/fourmolu (static); hspec/tasty
   (unit/integration); QuickCheck/hedgehog (property + state machine/model-based).
 

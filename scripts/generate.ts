@@ -7,7 +7,7 @@ const ROOT = new URL("../", import.meta.url).pathname;
 async function main() {
   const check = Deno.args.includes("--check");
   const config = loadConfig();
-  const files = renderAll(config);
+  const files = await renderAll(config);
 
   if (check) {
     const results = await checkFiles(files, ROOT);

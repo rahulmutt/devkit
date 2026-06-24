@@ -1,9 +1,12 @@
 import type { GeneratedFile, MarketplaceConfig } from "./types.ts";
 import { renderJson } from "./render-json.ts";
+import { renderTemplated } from "./render-templated.ts";
 
-export function renderAll(config: MarketplaceConfig): GeneratedFile[] {
+const TEMPLATES_DIR = new URL("../templates", import.meta.url).pathname;
+
+export async function renderAll(config: MarketplaceConfig): Promise<GeneratedFile[]> {
   return [
     ...renderJson(config),
-    // templated bootstraps added in Tasks 5-6
+    ...(await renderTemplated(config, TEMPLATES_DIR)),
   ];
 }

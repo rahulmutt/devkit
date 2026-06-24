@@ -1,5 +1,5 @@
 {
-  "name": "skills",
+  "name": "devkit",
   "image": "ghcr.io/rahulmutt/dev:sha-42641e0",
   "workspaceFolder": "/workspace",
   "remoteUser": "dev",

@@ -1,11 +1,10 @@
 # Skill Linter — Design
 
-**Date:** 2026-06-24
-**Status:** Approved (pending implementation plan)
+**Date:** 2026-06-24 **Status:** Approved (pending implementation plan)
 
 ## Problem
 
-Devkit's generator proves that per-harness *manifests* stay in sync with
+Devkit's generator proves that per-harness _manifests_ stay in sync with
 `marketplace.config.ts` (the `deno task check` drift guard). Nothing validates
 the **skills themselves**. A skill can ship with malformed frontmatter, a
 description long enough to be truncated, a broken `references/` link, or be
@@ -21,24 +20,26 @@ commit and in CI.
 
 - Catch malformed skill frontmatter before release.
 - Keep skill descriptions within harness limits, and nudge toward punchy ones.
-- Guarantee every `references/*.md` link resolves and every reference file is wired in.
+- Guarantee every `references/*.md` link resolves and every reference file is
+  wired in.
 - Keep the `using-devkit` registry in sync with the skills on disk and the
   harnesses declared in `marketplace.config.ts`.
 - Add no new runtime dependencies; match the existing generator architecture.
 
 ## Non-goals
 
-- Validating reference-document *content* (prose quality, accuracy).
-- Measuring whether skills actually *trigger* (that's a separate evals project).
-- Replacing or merging with the generator drift check — these are distinct concerns.
+- Validating reference-document _content_ (prose quality, accuracy).
+- Measuring whether skills actually _trigger_ (that's a separate evals project).
+- Replacing or merging with the generator drift check — these are distinct
+  concerns.
 
 ## Architecture
 
 A standalone linter mirroring the generator's shape (thin entrypoint + small
 `lib/` modules, each independently testable). Chosen over folding checks into
-`generate.ts --check` (which would conflate "manifests in sync with config"
-with "hand-written content well-formed") and over off-the-shelf tooling (more
-deps, and weak on the bespoke cross-file registry checks).
+`generate.ts --check` (which would conflate "manifests in sync with config" with
+"hand-written content well-formed") and over off-the-shelf tooling (more deps,
+and weak on the bespoke cross-file registry checks).
 
 ```
 scripts/
@@ -64,11 +65,11 @@ scripts/
 
 ```ts
 interface SkillRecord {
-  name: string;           // declared frontmatter name
-  dir: string;            // directory basename
-  description: string;    // declared frontmatter description ("" if absent)
+  name: string; // declared frontmatter name
+  dir: string; // directory basename
+  description: string; // declared frontmatter description ("" if absent)
   hasFrontmatter: boolean;
-  body: string;           // SKILL.md content below the frontmatter
+  body: string; // SKILL.md content below the frontmatter
   referenceFiles: string[]; // basenames present in references/
 }
 ```
@@ -78,7 +79,7 @@ Each check module is a pure function `(records, context) => Finding[]` where:
 ```ts
 interface Finding {
   level: "error" | "warn";
-  skill: string;          // skill name, or "<registry>" for cross-cutting checks
+  skill: string; // skill name, or "<registry>" for cross-cutting checks
   message: string;
 }
 ```
@@ -90,7 +91,8 @@ filesystem.
 
 ### Wiring
 
-- New `deno.json` task: `"lint-skills": "deno run --allow-read=. scripts/lint-skills.ts"`.
+- New `deno.json` task:
+  `"lint-skills": "deno run --allow-read=. scripts/lint-skills.ts"`.
 - Append to the `ci` task chain:
   `"ci": "... && deno task lint-skills && deno task test"`.
 - `ci` already flows into `mise run release` → pre-commit hook and the GitHub
@@ -128,14 +130,14 @@ Current longest description is 386 chars, so all skills pass clean today.
 
 ### links.ts
 
-Reference integrity, handling **both** link styles seen in the skills:
-markdown links `](references/NAME.md)` and bare prose mentions matching
+Reference integrity, handling **both** link styles seen in the skills: markdown
+links `](references/NAME.md)` and bare prose mentions matching
 `references/NAME.md`.
 
 - `error` — a referenced `references/NAME.md` does not exist on disk.
-- `warn` — a file in `references/` never mentioned by its SKILL.md (orphan;
-  warn rather than error, since a reference may be loaded on demand without a
-  prose mention).
+- `warn` — a file in `references/` never mentioned by its SKILL.md (orphan; warn
+  rather than error, since a reference may be loaded on demand without a prose
+  mention).
 
 ### registry.ts
 
@@ -145,8 +147,8 @@ The cross-file drift catches — currently invisible:
   "Available skills" section (parsed via the `**skill-name**` bold markers).
 - `error` — a harness in `marketplace.config.ts` `harnesses[]` with no
   `skills/using-devkit/references/<stem>-tools.md` file.
-- `error` — a harness in `harnesses[]` missing its row in the using-devkit
-  "How to invoke" mapping list.
+- `error` — a harness in `harnesses[]` missing its row in the using-devkit "How
+  to invoke" mapping list.
 - `warn` — a `*-tools.md` reference file or mapping row for a harness not in
   `harnesses[]` (stale leftover).
 
@@ -196,9 +198,9 @@ Mirrors the generator's `*_test.ts` convention (`deno test`):
   error).
 - **`discover_test.ts`** (the only filesystem-touching module) runs against a
   temp fixture directory, matching `files_test.ts`.
-- **One integration smoke test** runs the full linter against the real
-  `skills/` tree and asserts zero errors — proving the repo is green today and
-  turning the lint into a live regression guard.
+- **One integration smoke test** runs the full linter against the real `skills/`
+  tree and asserts zero errors — proving the repo is green today and turning the
+  lint into a live regression guard.
 
 ## Rollout
 

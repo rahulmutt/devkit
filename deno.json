@@ -28,7 +28,6 @@
     "exclude": [
       "assets",
       ".impeccable",
-      "docs",
       "skills/developer-environment/references",
       "skills/testing-practices/references",
       "skills/writing-clean-code/references"

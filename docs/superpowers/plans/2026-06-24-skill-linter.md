@@ -1,40 +1,61 @@
 # Skill Linter Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use
+> superpowers:subagent-driven-development (recommended) or
+> superpowers:executing-plans to implement this plan task-by-task. Steps use
+> checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add a Deno skill linter that enforces skill-content invariants (frontmatter, description budget, reference-link integrity, using-devkit registry sync) and wire it into the existing release gate.
+**Goal:** Add a Deno skill linter that enforces skill-content invariants
+(frontmatter, description budget, reference-link integrity, using-devkit
+registry sync) and wire it into the existing release gate.
 
-**Architecture:** A standalone entrypoint `scripts/lint-skills.ts` plus small pure check modules under `scripts/lib/lint/`, mirroring the generator's shape (thin entrypoint + `lib/` modules, each with a `_test.ts`). A `discover` module does the only filesystem reads and produces in-memory `SkillRecord`s; every check is a pure function `(records, …) => Finding[]` so it tests against synthetic fixtures. Errors fail the release gate; warnings print but pass.
+**Architecture:** A standalone entrypoint `scripts/lint-skills.ts` plus small
+pure check modules under `scripts/lib/lint/`, mirroring the generator's shape
+(thin entrypoint + `lib/` modules, each with a `_test.ts`). A `discover` module
+does the only filesystem reads and produces in-memory `SkillRecord`s; every
+check is a pure function `(records, …) => Finding[]` so it tests against
+synthetic fixtures. Errors fail the release gate; warnings print but pass.
 
-**Tech Stack:** Deno 2.1.4, TypeScript, `@std/assert`, `@std/path` (both already in `deno.json` imports). No new dependencies.
+**Tech Stack:** Deno 2.1.4, TypeScript, `@std/assert`, `@std/path` (both already
+in `deno.json` imports). No new dependencies.
 
 ## Global Constraints
 
-- Runtime is **Deno**; no Node-only APIs. Use `Deno.readDir`, `Deno.readTextFile`, `Deno.makeTempDir`.
-- **No new dependencies.** Only `@std/assert` (mapped) and `jsr:@std/path@^1.0.0` (as used in `scripts/lib/files.ts`).
+- Runtime is **Deno**; no Node-only APIs. Use `Deno.readDir`,
+  `Deno.readTextFile`, `Deno.makeTempDir`.
+- **No new dependencies.** Only `@std/assert` (mapped) and
+  `jsr:@std/path@^1.0.0` (as used in `scripts/lib/files.ts`).
 - Tests use `Deno.test` + `@std/assert`, matching `scripts/lib/*_test.ts`.
-- Finding levels: `error` fails the release gate (exit 1); `warn` prints only (exit 0).
+- Finding levels: `error` fails the release gate (exit 1); `warn` prints only
+  (exit 0).
 - Description budget: **warn > 500 chars**, **error > 1024 chars**.
-- Reference link extraction must handle **both** styles in the skills: markdown links `](references/NAME.EXT)` and bare prose mentions `references/NAME.EXT`, for **any** extension (`.md`, `.toml`, `.nix`).
-- Harness→reference-stem map encodes the known mismatch: `claude → claude-code-tools`; every other harness → `<harness>-tools`.
-- Run `deno fmt` before committing each task so generated/source formatting stays clean.
+- Reference link extraction must handle **both** styles in the skills: markdown
+  links `](references/NAME.EXT)` and bare prose mentions `references/NAME.EXT`,
+  for **any** extension (`.md`, `.toml`, `.nix`).
+- Harness→reference-stem map encodes the known mismatch:
+  `claude → claude-code-tools`; every other harness → `<harness>-tools`.
+- Run `deno fmt` before committing each task so generated/source formatting
+  stays clean.
 
 ---
 
 ### Task 1: Types and skill discovery
 
 **Files:**
+
 - Create: `scripts/lib/lint/types.ts`
 - Create: `scripts/lib/lint/discover.ts`
 - Test: `scripts/lib/lint/discover_test.ts`
 
 **Interfaces:**
+
 - Consumes: nothing (first task).
 - Produces:
   - `interface SkillRecord { name: string; dir: string; description: string; hasFrontmatter: boolean; body: string; referenceFiles: string[] }`
   - `interface Finding { level: "error" | "warn"; skill: string; message: string }`
   - `function parseFrontmatter(src: string): { hasFrontmatter: boolean; name: string; description: string; body: string }`
-  - `function discoverSkills(skillsDir: string): Promise<SkillRecord[]>` — sorted by `dir`, skips dirs without `SKILL.md`.
+  - `function discoverSkills(skillsDir: string): Promise<SkillRecord[]>` —
+    sorted by `dir`, skips dirs without `SKILL.md`.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -44,7 +65,8 @@ import { assertEquals } from "@std/assert";
 import { discoverSkills, parseFrontmatter } from "./discover.ts";
 
 Deno.test("parseFrontmatter reads name, description, and body", () => {
-  const src = "---\nname: foo\ndescription: Use when testing.\n---\n# Body\ntext\n";
+  const src =
+    "---\nname: foo\ndescription: Use when testing.\n---\n# Body\ntext\n";
   const fm = parseFrontmatter(src);
   assertEquals(fm.hasFrontmatter, true);
   assertEquals(fm.name, "foo");
@@ -136,7 +158,9 @@ function fieldValue(fm: string, key: string): string {
   return line ? line.slice(key.length + 1).trim() : "";
 }
 
-export async function discoverSkills(skillsDir: string): Promise<SkillRecord[]> {
+export async function discoverSkills(
+  skillsDir: string,
+): Promise<SkillRecord[]> {
   const records: SkillRecord[] = [];
   for await (const entry of Deno.readDir(skillsDir)) {
     if (!entry.isDirectory) continue;
@@ -154,7 +178,9 @@ export async function discoverSkills(skillsDir: string): Promise<SkillRecord[]> 
       description: fm.description,
       hasFrontmatter: fm.hasFrontmatter,
       body: fm.body,
-      referenceFiles: await listReferenceFiles(join(skillsDir, dir, "references")),
+      referenceFiles: await listReferenceFiles(
+        join(skillsDir, dir, "references"),
+      ),
     });
   }
   records.sort((a, b) => a.dir.localeCompare(b.dir));
@@ -192,10 +218,12 @@ git commit -m "feat: skill linter discovery + types"
 ### Task 2: Frontmatter check
 
 **Files:**
+
 - Create: `scripts/lib/lint/frontmatter.ts`
 - Test: `scripts/lib/lint/frontmatter_test.ts`
 
 **Interfaces:**
+
 - Consumes: `SkillRecord`, `Finding` from `./types.ts`.
 - Produces: `function checkFrontmatter(records: SkillRecord[]): Finding[]`.
 
@@ -224,7 +252,9 @@ Deno.test("clean record yields no findings", () => {
 });
 
 Deno.test("missing frontmatter is one error", () => {
-  const f = checkFrontmatter([rec({ hasFrontmatter: false, name: "", description: "" })]);
+  const f = checkFrontmatter([
+    rec({ hasFrontmatter: false, name: "", description: "" }),
+  ]);
   assertEquals(f.length, 1);
   assertEquals(f[0].level, "error");
 });
@@ -249,8 +279,8 @@ Deno.test("description not starting with 'Use when' is a warn", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `deno test scripts/lib/lint/frontmatter_test.ts --allow-read`
-Expected: FAIL — `Module not found "frontmatter.ts"`.
+Run: `deno test scripts/lib/lint/frontmatter_test.ts --allow-read` Expected:
+FAIL — `Module not found "frontmatter.ts"`.
 
 - [ ] **Step 3: Write the implementation**
 
@@ -263,22 +293,39 @@ export function checkFrontmatter(records: SkillRecord[]): Finding[] {
   for (const r of records) {
     const id = r.name || r.dir;
     if (!r.hasFrontmatter) {
-      findings.push({ level: "error", skill: id, message: "no YAML frontmatter block" });
+      findings.push({
+        level: "error",
+        skill: id,
+        message: "no YAML frontmatter block",
+      });
       continue;
     }
     if (!r.name) {
-      findings.push({ level: "error", skill: r.dir, message: "frontmatter name is missing or empty" });
+      findings.push({
+        level: "error",
+        skill: r.dir,
+        message: "frontmatter name is missing or empty",
+      });
     } else if (r.name !== r.dir) {
       findings.push({
         level: "error",
         skill: r.dir,
-        message: `frontmatter name "${r.name}" does not match directory "${r.dir}"`,
+        message:
+          `frontmatter name "${r.name}" does not match directory "${r.dir}"`,
       });
     }
     if (!r.description) {
-      findings.push({ level: "error", skill: id, message: "frontmatter description is missing or empty" });
+      findings.push({
+        level: "error",
+        skill: id,
+        message: "frontmatter description is missing or empty",
+      });
     } else if (!r.description.startsWith("Use when")) {
-      findings.push({ level: "warn", skill: id, message: 'description does not start with "Use when"' });
+      findings.push({
+        level: "warn",
+        skill: id,
+        message: 'description does not start with "Use when"',
+      });
     }
   }
   return findings;
@@ -287,8 +334,8 @@ export function checkFrontmatter(records: SkillRecord[]): Finding[] {
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `deno test scripts/lib/lint/frontmatter_test.ts --allow-read`
-Expected: PASS (5 tests).
+Run: `deno test scripts/lib/lint/frontmatter_test.ts --allow-read` Expected:
+PASS (5 tests).
 
 - [ ] **Step 5: Commit**
 
@@ -303,12 +350,15 @@ git commit -m "feat: skill linter frontmatter check"
 ### Task 3: Description budget check
 
 **Files:**
+
 - Create: `scripts/lib/lint/budget.ts`
 - Test: `scripts/lib/lint/budget_test.ts`
 
 **Interfaces:**
+
 - Consumes: `SkillRecord`, `Finding` from `./types.ts`.
-- Produces: `function checkBudget(records: SkillRecord[]): Finding[]`, plus exported consts `WARN_OVER = 500`, `ERROR_OVER = 1024`.
+- Produces: `function checkBudget(records: SkillRecord[]): Finding[]`, plus
+  exported consts `WARN_OVER = 500`, `ERROR_OVER = 1024`.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -319,7 +369,14 @@ import { checkBudget } from "./budget.ts";
 import type { SkillRecord } from "./types.ts";
 
 function withDesc(description: string): SkillRecord {
-  return { name: "a", dir: "a", description, hasFrontmatter: true, body: "", referenceFiles: [] };
+  return {
+    name: "a",
+    dir: "a",
+    description,
+    hasFrontmatter: true,
+    body: "",
+    referenceFiles: [],
+  };
 }
 
 Deno.test("short description is clean", () => {
@@ -341,8 +398,8 @@ Deno.test("over 1024 is an error", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `deno test scripts/lib/lint/budget_test.ts --allow-read`
-Expected: FAIL — `Module not found "budget.ts"`.
+Run: `deno test scripts/lib/lint/budget_test.ts --allow-read` Expected: FAIL —
+`Module not found "budget.ts"`.
 
 - [ ] **Step 3: Write the implementation**
 
@@ -359,9 +416,17 @@ export function checkBudget(records: SkillRecord[]): Finding[] {
     const len = r.description.length;
     const id = r.name || r.dir;
     if (len > ERROR_OVER) {
-      findings.push({ level: "error", skill: id, message: `description is ${len} chars (max ${ERROR_OVER})` });
+      findings.push({
+        level: "error",
+        skill: id,
+        message: `description is ${len} chars (max ${ERROR_OVER})`,
+      });
     } else if (len > WARN_OVER) {
-      findings.push({ level: "warn", skill: id, message: `description is ${len} chars (target <=${WARN_OVER})` });
+      findings.push({
+        level: "warn",
+        skill: id,
+        message: `description is ${len} chars (target <=${WARN_OVER})`,
+      });
     }
   }
   return findings;
@@ -370,8 +435,8 @@ export function checkBudget(records: SkillRecord[]): Finding[] {
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `deno test scripts/lib/lint/budget_test.ts --allow-read`
-Expected: PASS (3 tests).
+Run: `deno test scripts/lib/lint/budget_test.ts --allow-read` Expected: PASS (3
+tests).
 
 - [ ] **Step 5: Commit**
 
@@ -386,16 +451,21 @@ git commit -m "feat: skill linter description budget check"
 ### Task 4: Reference-link integrity check
 
 **Files:**
+
 - Create: `scripts/lib/lint/links.ts`
 - Test: `scripts/lib/lint/links_test.ts`
 
 **Interfaces:**
+
 - Consumes: `SkillRecord`, `Finding` from `./types.ts`.
 - Produces:
-  - `function referencedFiles(body: string): string[]` — extracts mentioned reference filenames (any extension), de-duplicated and sorted.
+  - `function referencedFiles(body: string): string[]` — extracts mentioned
+    reference filenames (any extension), de-duplicated and sorted.
   - `function checkLinks(records: SkillRecord[]): Finding[]`.
 
-**Note:** The regex `/references\/([\w-]+(?:\.[\w-]+)+)/g` requires an extension, so it matches `decision-tree.md`, `mise.toml`, and `devenv.nix`, ignores a bare `references/`, and stops before a trailing sentence period.
+**Note:** The regex `/references\/([\w-]+(?:\.[\w-]+)+)/g` requires an
+extension, so it matches `decision-tree.md`, `mise.toml`, and `devenv.nix`,
+ignores a bare `references/`, and stops before a trailing sentence period.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -406,36 +476,51 @@ import { checkLinks, referencedFiles } from "./links.ts";
 import type { SkillRecord } from "./types.ts";
 
 function rec(over: Partial<SkillRecord>): SkillRecord {
-  return { name: "a", dir: "a", description: "Use when a.", hasFrontmatter: true, body: "", referenceFiles: [], ...over };
+  return {
+    name: "a",
+    dir: "a",
+    description: "Use when a.",
+    hasFrontmatter: true,
+    body: "",
+    referenceFiles: [],
+    ...over,
+  };
 }
 
 Deno.test("referencedFiles captures markdown links, prose, and non-md extensions", () => {
-  const body = "See [`references/x.md`](references/x.md) and `references/mise.toml` and references/devenv.nix.";
+  const body =
+    "See [`references/x.md`](references/x.md) and `references/mise.toml` and references/devenv.nix.";
   assertEquals(referencedFiles(body), ["devenv.nix", "mise.toml", "x.md"]);
 });
 
 Deno.test("a mentioned-but-missing reference is an error", () => {
-  const f = checkLinks([rec({ body: "see references/gone.md", referenceFiles: [] })]);
+  const f = checkLinks([
+    rec({ body: "see references/gone.md", referenceFiles: [] }),
+  ]);
   assertEquals(f.length, 1);
   assertEquals(f[0].level, "error");
 });
 
 Deno.test("an unmentioned reference file is a warn (orphan)", () => {
-  const f = checkLinks([rec({ body: "no links here", referenceFiles: ["orphan.md"] })]);
+  const f = checkLinks([
+    rec({ body: "no links here", referenceFiles: ["orphan.md"] }),
+  ]);
   assertEquals(f.length, 1);
   assertEquals(f[0].level, "warn");
 });
 
 Deno.test("all references mentioned and present is clean", () => {
-  const f = checkLinks([rec({ body: "see references/x.md", referenceFiles: ["x.md"] })]);
+  const f = checkLinks([
+    rec({ body: "see references/x.md", referenceFiles: ["x.md"] }),
+  ]);
   assertEquals(f, []);
 });
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `deno test scripts/lib/lint/links_test.ts --allow-read`
-Expected: FAIL — `Module not found "links.ts"`.
+Run: `deno test scripts/lib/lint/links_test.ts --allow-read` Expected: FAIL —
+`Module not found "links.ts"`.
 
 - [ ] **Step 3: Write the implementation**
 
@@ -459,13 +544,21 @@ export function checkLinks(records: SkillRecord[]): Finding[] {
     const present = new Set(r.referenceFiles);
     for (const ref of mentioned) {
       if (!present.has(ref)) {
-        findings.push({ level: "error", skill: id, message: `references/${ref} linked but not found` });
+        findings.push({
+          level: "error",
+          skill: id,
+          message: `references/${ref} linked but not found`,
+        });
       }
     }
     const mentionedSet = new Set(mentioned);
     for (const file of r.referenceFiles) {
       if (!mentionedSet.has(file)) {
-        findings.push({ level: "warn", skill: id, message: `references/${file} exists but is never mentioned` });
+        findings.push({
+          level: "warn",
+          skill: id,
+          message: `references/${file} exists but is never mentioned`,
+        });
       }
     }
   }
@@ -475,8 +568,8 @@ export function checkLinks(records: SkillRecord[]): Finding[] {
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `deno test scripts/lib/lint/links_test.ts --allow-read`
-Expected: PASS (4 tests).
+Run: `deno test scripts/lib/lint/links_test.ts --allow-read` Expected: PASS (4
+tests).
 
 - [ ] **Step 5: Commit**
 
@@ -491,14 +584,19 @@ git commit -m "feat: skill linter reference-link check"
 ### Task 5: using-devkit registry check
 
 **Files:**
+
 - Create: `scripts/lib/lint/registry.ts`
 - Test: `scripts/lib/lint/registry_test.ts`
 
 **Interfaces:**
-- Consumes: `SkillRecord`, `Finding` from `./types.ts`; `Harness` from `../types.ts`.
+
+- Consumes: `SkillRecord`, `Finding` from `./types.ts`; `Harness` from
+  `../types.ts`.
 - Produces:
-  - `function stemFor(harness: string): string` — `claude → "claude-code-tools"`, else `"<harness>-tools"`.
-  - `function checkRegistry(records: SkillRecord[], usingDevkit: SkillRecord, harnesses: Harness[], bootstrapSkill: string): Finding[]` — findings use skill id `"<registry>"`.
+  - `function stemFor(harness: string): string` —
+    `claude → "claude-code-tools"`, else `"<harness>-tools"`.
+  - `function checkRegistry(records: SkillRecord[], usingDevkit: SkillRecord, harnesses: Harness[], bootstrapSkill: string): Finding[]`
+    — findings use skill id `"<registry>"`.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -509,7 +607,14 @@ import { checkRegistry, stemFor } from "./registry.ts";
 import type { SkillRecord } from "./types.ts";
 
 function skill(dir: string): SkillRecord {
-  return { name: dir, dir, description: "Use when " + dir, hasFrontmatter: true, body: "", referenceFiles: [] };
+  return {
+    name: dir,
+    dir,
+    description: "Use when " + dir,
+    hasFrontmatter: true,
+    body: "",
+    referenceFiles: [],
+  };
 }
 
 const PRIMER = (body: string, refs: string[]): SkillRecord => ({
@@ -528,7 +633,8 @@ Deno.test("stemFor maps claude specially", () => {
 
 Deno.test("fully wired registry is clean", () => {
   const records = [skill("using-devkit"), skill("alpha")];
-  const body = "**alpha** does things. references/claude-code-tools.md references/codex-tools.md";
+  const body =
+    "**alpha** does things. references/claude-code-tools.md references/codex-tools.md";
   const primer = PRIMER(body, ["claude-code-tools.md", "codex-tools.md"]);
   const f = checkRegistry(records, primer, ["claude", "codex"], "using-devkit");
   assertEquals(f, []);
@@ -536,16 +642,24 @@ Deno.test("fully wired registry is clean", () => {
 
 Deno.test("skill absent from primer is an error", () => {
   const records = [skill("using-devkit"), skill("alpha")];
-  const primer = PRIMER("references/claude-code-tools.md", ["claude-code-tools.md"]);
+  const primer = PRIMER("references/claude-code-tools.md", [
+    "claude-code-tools.md",
+  ]);
   const f = checkRegistry(records, primer, ["claude"], "using-devkit");
-  assertEquals(f.some((x) => x.level === "error" && x.message.includes("alpha")), true);
+  assertEquals(
+    f.some((x) => x.level === "error" && x.message.includes("alpha")),
+    true,
+  );
 });
 
 Deno.test("harness missing its tool-ref file is an error", () => {
   const records = [skill("using-devkit")];
   const primer = PRIMER("references/codex-tools.md", []);
   const f = checkRegistry(records, primer, ["codex"], "using-devkit");
-  assertEquals(f.some((x) => x.level === "error" && x.message.includes("codex-tools.md")), true);
+  assertEquals(
+    f.some((x) => x.level === "error" && x.message.includes("codex-tools.md")),
+    true,
+  );
 });
 
 Deno.test("stale tool-ref for an unconfigured harness is a warn", () => {
@@ -553,14 +667,17 @@ Deno.test("stale tool-ref for an unconfigured harness is a warn", () => {
   const body = "references/claude-code-tools.md references/codex-tools.md";
   const primer = PRIMER(body, ["claude-code-tools.md", "codex-tools.md"]);
   const f = checkRegistry(records, primer, ["claude"], "using-devkit");
-  assertEquals(f.some((x) => x.level === "warn" && x.message.includes("codex-tools.md")), true);
+  assertEquals(
+    f.some((x) => x.level === "warn" && x.message.includes("codex-tools.md")),
+    true,
+  );
 });
 ```
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `deno test scripts/lib/lint/registry_test.ts --allow-read`
-Expected: FAIL — `Module not found "registry.ts"`.
+Run: `deno test scripts/lib/lint/registry_test.ts --allow-read` Expected: FAIL —
+`Module not found "registry.ts"`.
 
 - [ ] **Step 3: Write the implementation**
 
@@ -591,7 +708,8 @@ export function checkRegistry(
       findings.push({
         level: "error",
         skill: REGISTRY,
-        message: `skill "${r.dir}" not listed in ${bootstrapSkill} (expected **${r.dir}**)`,
+        message:
+          `skill "${r.dir}" not listed in ${bootstrapSkill} (expected **${r.dir}**)`,
       });
     }
   }
@@ -600,13 +718,18 @@ export function checkRegistry(
   for (const h of harnesses) {
     const file = `${stemFor(h)}.md`;
     if (!refFiles.has(file)) {
-      findings.push({ level: "error", skill: REGISTRY, message: `harness "${h}" has no references/${file}` });
+      findings.push({
+        level: "error",
+        skill: REGISTRY,
+        message: `harness "${h}" has no references/${file}`,
+      });
     }
     if (!body.includes(`references/${file}`)) {
       findings.push({
         level: "error",
         skill: REGISTRY,
-        message: `harness "${h}" missing its invoke-mapping row (references/${file})`,
+        message:
+          `harness "${h}" missing its invoke-mapping row (references/${file})`,
       });
     }
   }
@@ -628,8 +751,8 @@ export function checkRegistry(
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `deno test scripts/lib/lint/registry_test.ts --allow-read`
-Expected: PASS (5 tests).
+Run: `deno test scripts/lib/lint/registry_test.ts --allow-read` Expected: PASS
+(5 tests).
 
 - [ ] **Step 5: Commit**
 
@@ -644,14 +767,18 @@ git commit -m "feat: skill linter using-devkit registry check"
 ### Task 6: Report builder
 
 **Files:**
+
 - Create: `scripts/lib/lint/report.ts`
 - Test: `scripts/lib/lint/report_test.ts`
 
 **Interfaces:**
+
 - Consumes: `Finding` from `./types.ts`.
 - Produces:
   - `interface Report { header: string; lines: string[]; summary: string; exitCode: number }`
-  - `function buildReport(findings: Finding[], skillCount: number): Report` — `lines` sorted by skill then errors-before-warns; `exitCode` 1 iff any error.
+  - `function buildReport(findings: Finding[], skillCount: number): Report` —
+    `lines` sorted by skill then errors-before-warns; `exitCode` 1 iff any
+    error.
 
 - [ ] **Step 1: Write the failing test**
 
@@ -690,8 +817,8 @@ Deno.test("only warnings keep exit 0", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `deno test scripts/lib/lint/report_test.ts --allow-read`
-Expected: FAIL — `Module not found "report.ts"`.
+Run: `deno test scripts/lib/lint/report_test.ts --allow-read` Expected: FAIL —
+`Module not found "report.ts"`.
 
 - [ ] **Step 3: Write the implementation**
 
@@ -710,7 +837,9 @@ export function buildReport(findings: Finding[], skillCount: number): Report {
   const sorted = [...findings].sort((a, b) =>
     a.skill.localeCompare(b.skill) || rank(a.level) - rank(b.level)
   );
-  const lines = sorted.map((f) => `  ${f.level.padEnd(5)}  ${f.skill.padEnd(20)} ${f.message}`);
+  const lines = sorted.map((f) =>
+    `  ${f.level.padEnd(5)}  ${f.skill.padEnd(20)} ${f.message}`
+  );
 
   const errors = findings.filter((f) => f.level === "error").length;
   const warns = findings.filter((f) => f.level === "warn").length;
@@ -733,8 +862,8 @@ function plural(n: number, word: string): string {
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `deno test scripts/lib/lint/report_test.ts --allow-read`
-Expected: PASS (3 tests).
+Run: `deno test scripts/lib/lint/report_test.ts --allow-read` Expected: PASS (3
+tests).
 
 - [ ] **Step 5: Commit**
 
@@ -749,13 +878,18 @@ git commit -m "feat: skill linter report builder"
 ### Task 7: Entrypoint, wiring, and integration smoke test
 
 **Files:**
+
 - Create: `scripts/lint-skills.ts`
 - Create: `scripts/lint-skills_test.ts`
 - Modify: `deno.json` (add `lint-skills` task, extend `typecheck` and `ci`)
 
 **Interfaces:**
-- Consumes: `discoverSkills` (Task 1), `checkFrontmatter` (Task 2), `checkBudget` (Task 3), `checkLinks` (Task 4), `checkRegistry` (Task 5), `buildReport` (Task 6), and `config` from `../marketplace.config.ts`.
-- Produces: the `lint-skills` CLI and the `deno task lint-skills` task in the release-gate chain.
+
+- Consumes: `discoverSkills` (Task 1), `checkFrontmatter` (Task 2),
+  `checkBudget` (Task 3), `checkLinks` (Task 4), `checkRegistry` (Task 5),
+  `buildReport` (Task 6), and `config` from `../marketplace.config.ts`.
+- Produces: the `lint-skills` CLI and the `deno task lint-skills` task in the
+  release-gate chain.
 
 - [ ] **Step 1: Write the failing integration test**
 
@@ -786,8 +920,11 @@ Deno.test("the real skills tree has zero lint errors", async () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `deno test scripts/lint-skills_test.ts --allow-read`
-Expected: FAIL — the modules resolve, but this fails only if the real tree has errors; if it already passes, proceed (the entrypoint is still missing for the next steps). To force the red state first, confirm the entrypoint does not yet exist: `test ! -f scripts/lint-skills.ts && echo MISSING`.
+Run: `deno test scripts/lint-skills_test.ts --allow-read` Expected: FAIL — the
+modules resolve, but this fails only if the real tree has errors; if it already
+passes, proceed (the entrypoint is still missing for the next steps). To force
+the red state first, confirm the entrypoint does not yet exist:
+`test ! -f scripts/lint-skills.ts && echo MISSING`.
 
 - [ ] **Step 3: Write the entrypoint**
 
@@ -807,7 +944,9 @@ async function main() {
   const records = await discoverSkills(`${ROOT}skills`);
   const primer = records.find((r) => r.dir === config.bootstrapSkill);
   if (!primer) {
-    console.error(`skill-lint: bootstrap skill "${config.bootstrapSkill}" not found`);
+    console.error(
+      `skill-lint: bootstrap skill "${config.bootstrapSkill}" not found`,
+    );
     Deno.exit(1);
   }
 
@@ -834,28 +973,30 @@ await main();
 
 - [ ] **Step 4: Run the entrypoint and the test**
 
-Run: `deno run --allow-read=. scripts/lint-skills.ts`
-Expected: prints `skill-lint: 4 skills checked` then `✓ all checks passed`, exit 0.
+Run: `deno run --allow-read=. scripts/lint-skills.ts` Expected: prints
+`skill-lint: 4 skills checked` then `✓ all checks passed`, exit 0.
 
-Run: `deno test scripts/lint-skills_test.ts --allow-read`
-Expected: PASS (1 test).
+Run: `deno test scripts/lint-skills_test.ts --allow-read` Expected: PASS (1
+test).
 
 - [ ] **Step 5: Wire into `deno.json`**
 
-In `scripts/lint-skills` add the task and extend `typecheck` and `ci`. The tasks block becomes:
+In `scripts/lint-skills` add the task and extend `typecheck` and `ci`. The tasks
+block becomes:
 
 ```json
-    "lint-skills": "deno run --allow-read=. scripts/lint-skills.ts",
-    "typecheck": "deno check scripts/generate.ts scripts/rasterize.ts scripts/lint-skills.ts marketplace.config.ts",
-    "ci": "deno task fmt-check && deno task lint && deno task typecheck && deno task check && deno task lint-skills && deno task test"
+"lint-skills": "deno run --allow-read=. scripts/lint-skills.ts",
+"typecheck": "deno check scripts/generate.ts scripts/rasterize.ts scripts/lint-skills.ts marketplace.config.ts",
+"ci": "deno task fmt-check && deno task lint && deno task typecheck && deno task check && deno task lint-skills && deno task test"
 ```
 
-(Add the `lint-skills` line alongside the other tasks; replace the existing `typecheck` and `ci` lines with the versions above.)
+(Add the `lint-skills` line alongside the other tasks; replace the existing
+`typecheck` and `ci` lines with the versions above.)
 
 - [ ] **Step 6: Run the full release gate**
 
-Run: `deno task ci`
-Expected: all stages pass, ending with the test summary — `lint-skills` prints `✓ all checks passed` in the chain.
+Run: `deno task ci` Expected: all stages pass, ending with the test summary —
+`lint-skills` prints `✓ all checks passed` in the chain.
 
 - [ ] **Step 7: Commit**
 
@@ -870,17 +1011,29 @@ git commit -m "feat: wire skill linter into the release gate"
 ## Self-Review
 
 **Spec coverage:**
-- Architecture (standalone entrypoint + `lib/lint/` modules, `SkillRecord`/`Finding` shapes, exit semantics) → Tasks 1–7.
+
+- Architecture (standalone entrypoint + `lib/lint/` modules,
+  `SkillRecord`/`Finding` shapes, exit semantics) → Tasks 1–7.
 - frontmatter.ts rules → Task 2.
 - budget.ts (warn 500 / error 1024) → Task 3.
-- links.ts (both link styles, any extension, missing=error, orphan=warn) → Task 4.
-- registry.ts (skill listed, harness tool-ref + mapping row, stale=warn, `claude` stem map) → Task 5.
+- links.ts (both link styles, any extension, missing=error, orphan=warn) →
+  Task 4.
+- registry.ts (skill listed, harness tool-ref + mapping row, stale=warn,
+  `claude` stem map) → Task 5.
 - Report format + exit semantics → Task 6, entrypoint in Task 7.
-- Testing (per-check unit fixtures, discover temp-dir test, integration smoke test) → Tasks 1–7.
-- Wiring (`lint-skills` task, into `ci` → `mise run release` → pre-commit + Actions) → Task 7.
+- Testing (per-check unit fixtures, discover temp-dir test, integration smoke
+  test) → Tasks 1–7.
+- Wiring (`lint-skills` task, into `ci` → `mise run release` → pre-commit +
+  Actions) → Task 7.
 
 All spec sections map to a task. No gaps.
 
-**Placeholder scan:** No TBD/TODO; every code step shows full code; commands have expected output. Clean.
+**Placeholder scan:** No TBD/TODO; every code step shows full code; commands
+have expected output. Clean.
 
-**Type consistency:** `SkillRecord` and `Finding` are defined once (Task 1) and consumed unchanged everywhere. Function names (`discoverSkills`, `checkFrontmatter`, `checkBudget`, `referencedFiles`/`checkLinks`, `stemFor`/`checkRegistry`, `buildReport`) are used identically in their tests and in the Task 7 entrypoint. `stemFor`'s `claude → claude-code-tools` map matches the spec.
+**Type consistency:** `SkillRecord` and `Finding` are defined once (Task 1) and
+consumed unchanged everywhere. Function names (`discoverSkills`,
+`checkFrontmatter`, `checkBudget`, `referencedFiles`/`checkLinks`,
+`stemFor`/`checkRegistry`, `buildReport`) are used identically in their tests
+and in the Task 7 entrypoint. `stemFor`'s `claude → claude-code-tools` map
+matches the spec.

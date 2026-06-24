@@ -37,8 +37,9 @@ export async function discoverSkills(
     let src: string;
     try {
       src = await Deno.readTextFile(join(skillsDir, dir, "SKILL.md"));
-    } catch {
-      continue;
+    } catch (e) {
+      if (e instanceof Deno.errors.NotFound) continue;
+      throw e;
     }
     const fm = parseFrontmatter(src);
     records.push({
@@ -62,7 +63,8 @@ async function listReferenceFiles(refsDir: string): Promise<string[]> {
     for await (const entry of Deno.readDir(refsDir)) {
       if (entry.isFile) files.push(entry.name);
     }
-  } catch {
+  } catch (e) {
+    if (!(e instanceof Deno.errors.NotFound)) throw e;
     // no references directory — fine
   }
   return files.sort();

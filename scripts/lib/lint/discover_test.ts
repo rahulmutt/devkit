@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { assertEquals, assertRejects } from "@std/assert";
 import { discoverSkills, parseFrontmatter } from "./discover.ts";
 
 Deno.test("parseFrontmatter reads name, description, and body", () => {
@@ -34,4 +34,25 @@ Deno.test("discoverSkills finds skills, parses them, lists reference files", asy
   assertEquals(records[0].dir, "alpha");
   assertEquals(records[0].description, "Use when alpha.");
   assertEquals(records[0].referenceFiles, ["x.md"]);
+});
+
+Deno.test("discoverSkills rethrows a non-NotFound error reading SKILL.md", async () => {
+  const dir = await Deno.makeTempDir();
+  // SKILL.md present but a directory — readTextFile fails with a non-NotFound
+  // error, which must propagate rather than silently drop the skill.
+  await Deno.mkdir(`${dir}/alpha/SKILL.md`, { recursive: true });
+  await assertRejects(() => discoverSkills(dir));
+});
+
+Deno.test("discoverSkills rethrows a non-NotFound error listing references", async () => {
+  const dir = await Deno.makeTempDir();
+  await Deno.mkdir(`${dir}/alpha`, { recursive: true });
+  await Deno.writeTextFile(
+    `${dir}/alpha/SKILL.md`,
+    "---\nname: alpha\ndescription: Use when alpha.\n---\nbody\n",
+  );
+  // references present but a file, not a directory — readDir fails with a
+  // non-NotFound error, which must propagate rather than be swallowed.
+  await Deno.writeTextFile(`${dir}/alpha/references`, "not a dir\n");
+  await assertRejects(() => discoverSkills(dir));
 });

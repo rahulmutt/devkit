@@ -25,6 +25,12 @@ check.
   mutation, UI, or formal methods), deciding when to reach for each, and
   aligning it with the implementation. Tool installation delegates to
   developer-environment.
+- **writing-clean-code** — how to author and structure code so humans and coding
+  agents can both maintain it long-term. Use when designing abstractions,
+  deciding what to inline vs. extract, drawing module boundaries, applying DDD
+  or hexagonal architecture, or following a language's canonical style. The
+  authoring counterpart to **testing-practices**; tool installation delegates to
+  developer-environment.
 
 ## How to invoke a skill
 

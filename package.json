@@ -1,0 +1,9 @@
+{
+  "name": "devkit",
+  "version": "0.1.0",
+  "description": "Multi-harness AI-agent skills marketplace: developer-environment and more",
+  "license": "MIT",
+  "author": "Rahul Muttineni <rahulmutt@gmail.com>",
+  "homepage": "https://github.com/rahulmutt/devkit",
+  "repository": "https://github.com/rahulmutt/devkit"
+}

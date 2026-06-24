@@ -1,0 +1,12 @@
+# Starter mise.toml — pin every tool with `mise use --pin <tool>@<version>`.
+[tools]
+node = "22.11.0"   # exact pinned version (not "22")
+deno = "2.1.4"
+
+[env]
+# Project environment variables (loaded when you enter the directory)
+NODE_ENV = "development"
+
+[tasks.test]
+description = "Run the test suite"
+run = "npm test"

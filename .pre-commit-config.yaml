@@ -1,0 +1,13 @@
+repos:
+  - repo: local
+    hooks:
+      - id: devkit-generate-check
+        name: devkit generated files in sync
+        entry: deno run --allow-read=. scripts/generate.ts --check
+        language: system
+        pass_filenames: false
+      - id: devkit-tests
+        name: devkit generator tests
+        entry: deno test --allow-read=.
+        language: system
+        pass_filenames: false

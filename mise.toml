@@ -21,3 +21,25 @@ run = "deno task test"
 [tasks.rasterize]
 description = "Rasterize assets/devkit.svg -> assets/app-icon.png (run when the SVG changes)"
 run = "deno task rasterize"
+
+[tasks.fmt]
+description = "Format the tree and regenerate outputs so generated files stay in sync"
+run = "deno task fmt"
+
+[tasks.fmt-check]
+description = "Check formatting without writing any files"
+run = "deno task fmt-check"
+
+[tasks.lint]
+description = "Lint the Deno tooling code (foreign-runtime extension code excluded)"
+run = "deno task lint"
+
+[tasks.typecheck]
+description = "Type-check the generator entry points and marketplace.config.ts"
+run = "deno task typecheck"
+
+# Release gate: every check must pass before publishing. Includes the
+# generated-files drift check so a release can't ship stale manifests.
+[tasks.release]
+description = "Release gate: fmt-check, lint, typecheck, generated-file drift, and tests"
+run = "deno task ci"

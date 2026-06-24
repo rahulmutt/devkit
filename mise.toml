@@ -14,3 +14,7 @@ run = "deno run --allow-read=. scripts/generate.ts --check"
 [tasks.test]
 description = "Run the generator test suite"
 run = "deno test --allow-read --allow-write"
+
+[tasks.rasterize]
+description = "Rasterize assets/devkit.svg -> assets/app-icon.png (run when the SVG changes)"
+run = "deno run --allow-read --allow-write=assets --allow-env --allow-ffi --allow-sys scripts/rasterize.ts"

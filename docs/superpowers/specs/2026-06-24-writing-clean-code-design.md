@@ -1,20 +1,20 @@
 # writing-clean-code skill — design
 
-**Date:** 2026-06-24
-**Status:** Approved (brainstorming)
-**Marketplace:** devkit
+**Date:** 2026-06-24 **Status:** Approved (brainstorming) **Marketplace:**
+devkit
 
 ## Purpose
 
 Add a `writing-clean-code` skill to the devkit marketplace. Where
-`testing-practices` decides *how to validate* code, this skill guides how to
-*craft* it — abstractions, modularity, boundaries, domain modeling, and
+`testing-practices` decides _how to validate_ code, this skill guides how to
+_craft_ it — abstractions, modularity, boundaries, domain modeling, and
 language-specific style — so the result is **easy for both humans and coding
 agents to maintain and evolve over the long term**.
 
 That dual audience is the skill's distinctive thread: code with good locality,
-explicit boundaries, and small focused units is exactly what a coding agent edits
-reliably, not just what a human reads easily. The two goals reinforce each other.
+explicit boundaries, and small focused units is exactly what a coding agent
+edits reliably, not just what a human reads easily. The two goals reinforce each
+other.
 
 It mirrors the sibling skill's shape: a thin, language-agnostic principles core
 (`SKILL.md`) plus per-language depth in `references/`. Tooling installation is
@@ -23,14 +23,14 @@ never install commands.
 
 ## Non-goals (YAGNI)
 
-- Code review / bug-finding — that is a separate concern (see existing review and
-  simplify skills); this skill is about authoring, not auditing.
+- Code review / bug-finding — that is a separate concern (see existing review
+  and simplify skills); this skill is about authoring, not auditing.
 - Test selection — delegated to `testing-practices`.
 - Exhaustive style-guide reproduction — point to the canonical guide; do not
   restate what a formatter already enforces.
 - Installation commands — always delegate to `developer-environment`.
-- Languages beyond the five below (mirrors `testing-practices`; others can follow
-  the same template later).
+- Languages beyond the five below (mirrors `testing-practices`; others can
+  follow the same template later).
 - A rigid, mechanically-applied rule list — the framing deliberately resists
   over-application (see "Core framing").
 
@@ -56,30 +56,30 @@ command"), never harness-specific tool names — matching `developer-environment
 
 ### 1. North star (stance)
 
-Code should be easy for both humans and coding agents to maintain and evolve over
-the long term. Optimize every authoring decision for the next reader — and the
-next reader is often an agent with a bounded context window.
+Code should be easy for both humans and coding agents to maintain and evolve
+over the long term. Optimize every authoring decision for the next reader — and
+the next reader is often an agent with a bounded context window.
 
 ### 2. Core framing: principle + tension
 
-Each principle is stated as a **pull and its counter-pull**, so neither humans nor
-agents mechanically over-apply it. This is the deliberate analogue of
+Each principle is stated as a **pull and its counter-pull**, so neither humans
+nor agents mechanically over-apply it. This is the deliberate analogue of
 `testing-practices`'s "cheapest layer that works" judgment stance — it teaches
-when *not* to apply a principle, not just when to.
+when _not_ to apply a principle, not just when to.
 
 Principles:
 
 1. **Abstract real duplication, not speculative duplication.** DRY when the same
-   *decision* repeats; tolerate incidental similarity. Rule of three over
+   _decision_ repeats; tolerate incidental similarity. Rule of three over
    premature generalization. Counter-pull: a wrong abstraction is more expensive
    than duplication.
 2. **Inline the single-use and simple; name the reused or complex.** Collapse a
    variable/helper used once that adds no clarifying value; extract when it is
-   reused or when the name documents intent. The test is *does the name earn its
-   keep*, not line count.
-3. **One purpose per unit.** A module/function/file should have a single reason to
-   change. Growing size is the smell that surfaces a violation, not the violation
-   itself.
+   reused or when the name documents intent. The test is _does the name earn its
+   keep_, not line count.
+3. **One purpose per unit.** A module/function/file should have a single reason
+   to change. Growing size is the smell that surfaces a violation, not the
+   violation itself.
 4. **Domain-driven design.** Name things in the domain's language; let module
    boundaries follow domain boundaries (bounded contexts), not technical layers
    alone. Counter-pull: don't impose heavy DDD tactical patterns on a thin/CRUD
@@ -109,12 +109,12 @@ the concrete style guide + idioms of a language, read
 
 - **The pattern:** domain core; ports (interfaces the core owns); adapters
   (driving/inbound and driven/outbound). A small concrete example.
-- **The dependency rule:** adapters depend on the core; the core never depends on
-  adapters. Dependencies point inward.
+- **The dependency rule:** adapters depend on the core; the core never depends
+  on adapters. Dependencies point inward.
 - **When it earns its cost:** rich domains, churning external dependencies,
   multiple delivery mechanisms, or a need to test the core in isolation.
-- **When it is over-engineering:** thin/CRUD domains, scripts, prototypes — say so
-  explicitly, mirroring the "cheapest that works" stance.
+- **When it is over-engineering:** thin/CRUD domains, scripts, prototypes — say
+  so explicitly, mirroring the "cheapest that works" stance.
 - Pointer(s) to learn more; tooling install → `developer-environment`.
 
 ## Per-language reference docs (×5)
@@ -130,10 +130,11 @@ Each of `typescript.md`, `python.md`, `rust.md`, `go.md`, `haskell.md` contains:
 
 Indicative (not exhaustive) recommendations:
 
-- **TypeScript/JS:** Prettier (format) + ESLint (lint) + `tsc --strict`; no single
-  dominant style guide — lean on the formatter/linter config as the style source
-  of truth. Idioms: prefer `type`/narrow unions, discriminated unions over flags,
-  no `any`, explicit module boundaries via index barrels used sparingly.
+- **TypeScript/JS:** Prettier (format) + ESLint (lint) + `tsc --strict`; no
+  single dominant style guide — lean on the formatter/linter config as the style
+  source of truth. Idioms: prefer `type`/narrow unions, discriminated unions
+  over flags, no `any`, explicit module boundaries via index barrels used
+  sparingly.
 - **Python:** PEP 8 as the canonical guide; ruff (format + lint). Idioms: snake
   naming, dataclasses/`@dataclass` for value objects, explicit exceptions over
   sentinel returns, `__all__`/module layout for boundaries.
@@ -144,8 +145,8 @@ Indicative (not exhaustive) recommendations:
   accept interfaces / return structs, errors-as-values with wrapping, small
   interfaces defined at the consumer, package-per-responsibility.
 - **Haskell:** ormolu/fourmolu (format) + hlint; community style. Idioms: types
-  first / make illegal states unrepresentable, newtypes for domain values,
-  smart constructors, module export lists as boundaries.
+  first / make illegal states unrepresentable, newtypes for domain values, smart
+  constructors, module export lists as boundaries.
 
 ## Integration with the marketplace
 
@@ -154,14 +155,14 @@ Indicative (not exhaustive) recommendations:
   counterpart to `testing-practices`.
 - Verify the marketplace drift/consistency guards (pre-commit) pick up the new
   skill cleanly; regenerate any per-harness artifacts if generation requires it.
-- Skills are discovered from `skills/`; confirm no explicit registration is needed
-  in `marketplace.config.ts` beyond the `using-devkit` listing.
+- Skills are discovered from `skills/`; confirm no explicit registration is
+  needed in `marketplace.config.ts` beyond the `using-devkit` listing.
 
 ## Success criteria
 
 - An agent invoking `writing-clean-code` can decide how to structure code for a
   given task — when to abstract, inline, split, or apply hexagonal boundaries —
-  without leaving SKILL.md, and understands when *not* to apply each principle.
+  without leaving SKILL.md, and understands when _not_ to apply each principle.
 - For any of the five languages, the agent can find the canonical style guide,
   the enforcing formatter/linter, and a few non-obvious idioms in one reference
   doc.

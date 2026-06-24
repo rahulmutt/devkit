@@ -23,18 +23,17 @@ The default command is:
 mise use --pin <tool>@<version>
 ```
 
-`--pin` writes the fully-resolved exact version into `mise.toml`
-(e.g. `node = "22.11.0"`, not a fuzzy `node = "22"`), so checkouts are
-deterministic across machines and CI. **Never use bare `mise use`** — an
-unpinned entry is a reproducibility bug.
+`--pin` writes the fully-resolved exact version into `mise.toml` (e.g.
+`node = "22.11.0"`, not a fuzzy `node = "22"`), so checkouts are deterministic
+across machines and CI. **Never use bare `mise use`** — an unpinned entry is a
+reproducibility bug.
 
 ## Decision flow
 
-1. **Is the tool in the mise registry?** (`mise registry | grep <tool>`)
-   → `mise use --pin <tool>@<version>`, commit `mise.toml`.
+1. **Is the tool in the mise registry?** (`mise registry | grep <tool>`) →
+   `mise use --pin <tool>@<version>`, commit `mise.toml`.
 2. **Not in the registry, but available on a mise backend** (asdf, aqua, ubi,
-   cargo, npm, pipx, go)?
-   → install via that backend, still pinned, e.g.
+   cargo, npm, pipx, go)? → install via that backend, still pinned, e.g.
    `mise use --pin "cargo:ripgrep@14.1.1"`.
 3. **Genuinely unavailable through mise** (system lib, complex Nix derivation)?
    → add it to `devenv.nix` (see `references/devenv.nix`).
@@ -61,5 +60,6 @@ tool in both.
 ## Templates
 
 Copy and adapt:
+
 - `references/mise.toml` — pinned `[tools]`, `[env]`, `[tasks]`.
 - `references/devenv.nix` — minimal fallback shell.

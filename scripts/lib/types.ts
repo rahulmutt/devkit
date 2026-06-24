@@ -1,5 +1,11 @@
 export type Harness =
-  | "claude" | "codex" | "cursor" | "gemini" | "kimi" | "pi" | "opencode";
+  | "claude"
+  | "codex"
+  | "cursor"
+  | "gemini"
+  | "kimi"
+  | "pi"
+  | "opencode";
 
 export interface MarketplaceConfig {
   marketplace: { name: string; description: string };

@@ -1,7 +1,6 @@
 # Devkit Marketplace & developer-environment Skill — Design
 
-**Date:** 2026-06-24
-**Owner:** Rahul Muttineni <rahulmutt@gmail.com>
+**Date:** 2026-06-24 **Owner:** Rahul Muttineni <rahulmutt@gmail.com>
 **Status:** Approved design, ready for implementation planning
 
 ## Summary
@@ -39,19 +38,19 @@ mise cannot provide the tool.**
 
 ## Decisions (from brainstorming)
 
-| Decision | Choice |
-|---|---|
-| Harnesses | All 7: claude, codex, cursor, gemini, kimi, pi, opencode |
-| Config sync model | Generate all manifests from one source of truth |
-| `developer-environment` skill scope | Guidance + reference templates |
-| Bootstrap | Full superpowers-style session-start injection, per harness |
-| Marketplace / plugin names | `devkit-marketplace` / `devkit` |
-| Owner | Rahul Muttineni <rahulmutt@gmail.com> |
-| Generator runtime | Deno (sandboxed: `--allow-read=. --allow-write=.`) |
-| mise default command | `mise use --pin` (exact pinned versions) |
-| GitHub repo | `rahulmutt/devkit` |
-| Icon | Hand-authored original SVG (`assets/devkit.svg`) + rasterized `app-icon.png`; no image model used |
-| `mise.toml` template | The repo's own toolchain (deno + node); doubles as the repo's real root `mise.toml` |
+| Decision                            | Choice                                                                                            |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------- |
+| Harnesses                           | All 7: claude, codex, cursor, gemini, kimi, pi, opencode                                          |
+| Config sync model                   | Generate all manifests from one source of truth                                                   |
+| `developer-environment` skill scope | Guidance + reference templates                                                                    |
+| Bootstrap                           | Full superpowers-style session-start injection, per harness                                       |
+| Marketplace / plugin names          | `devkit-marketplace` / `devkit`                                                                   |
+| Owner                               | Rahul Muttineni <rahulmutt@gmail.com>                                                             |
+| Generator runtime                   | Deno (sandboxed: `--allow-read=. --allow-write=.`)                                                |
+| mise default command                | `mise use --pin` (exact pinned versions)                                                          |
+| GitHub repo                         | `rahulmutt/devkit`                                                                                |
+| Icon                                | Hand-authored original SVG (`assets/devkit.svg`) + rasterized `app-icon.png`; no image model used |
+| `mise.toml` template                | The repo's own toolchain (deno + node); doubles as the repo's real root `mise.toml`               |
 
 ## Architecture
 
@@ -102,9 +101,9 @@ drift-checked.
     └── GEMINI.md
 ```
 
-**Core invariant (from superpowers' porting doc):** skill bodies name *actions*
-("install a tool", "read a file", "run a shell command"), never
-harness-specific tool names. Per-harness tool mappings live in
+**Core invariant (from superpowers' porting doc):** skill bodies name _actions_
+("install a tool", "read a file", "run a shell command"), never harness-specific
+tool names. Per-harness tool mappings live in
 `using-devkit/references/<harness>-tools.md` and are injected by the bootstrap.
 This is what lets one `skills/` directory serve all 7 harnesses unedited.
 
@@ -119,20 +118,20 @@ export const config: MarketplaceConfig = {
   marketplace: { name: "devkit-marketplace", description: "..." },
   plugin: {
     name: "devkit",
-    version: "0.1.0",                 // the ONE place version lives
+    version: "0.1.0", // the ONE place version lives
     description: "...",
     homepage: "https://github.com/rahulmutt/devkit",
     repository: "https://github.com/rahulmutt/devkit",
     license: "MIT",
     keywords: ["mise", "devenv", "developer-environment", "skills"],
   },
-  owner:  { name: "Rahul Muttineni", email: "rahulmutt@gmail.com" },
-  bootstrapSkill: "using-devkit",     // skill injected at session start
-  harnesses: ["claude","codex","cursor","gemini","kimi","pi","opencode"],
+  owner: { name: "Rahul Muttineni", email: "rahulmutt@gmail.com" },
+  bootstrapSkill: "using-devkit", // skill injected at session start
+  harnesses: ["claude", "codex", "cursor", "gemini", "kimi", "pi", "opencode"],
   interface: {
     displayName: "Devkit",
     category: "Coding",
-    brandColor: "#...",            // set alongside the icon
+    brandColor: "#...", // set alongside the icon
     logo: "./assets/app-icon.png",
     composerIcon: "./assets/devkit.svg",
   },
@@ -147,8 +146,10 @@ deno run --allow-read=.                 scripts/generate.ts --check  # drift che
 ```
 
 - **Default mode:** load config, render every manifest + bootstrap file from
-  `scripts/templates/`, write them with a `GENERATED by scripts/generate.ts —
-  edit marketplace.config.ts instead` header comment.
+  `scripts/templates/`, write them with a
+  `GENERATED by scripts/generate.ts —
+  edit marketplace.config.ts instead`
+  header comment.
 - **`--check` mode:** render into memory, diff against committed files, print
   drift, exit non-zero. Needs no write permission, so CI runs it read-only.
 
@@ -159,8 +160,8 @@ place and flows outward. Bumping a version = edit one field, run the generator.
 **Why Deno:** least-privilege sandbox (read config/templates, write outputs — no
 net/env/arbitrary FS); runs typed TypeScript with no build step; and `deno` is
 in the mise registry, so the generator's own runtime is provisioned by the very
-skill the repo ships (`mise use --pin deno`). Deno is a dev-time dependency
-only — never needed to *use* the marketplace.
+skill the repo ships (`mise use --pin deno`). Deno is a dev-time dependency only
+— never needed to _use_ the marketplace.
 
 ### Templates
 
@@ -175,23 +176,23 @@ The bootstrap is the entire integration: at session start, the full
 `using-devkit/SKILL.md` (which teaches "skills exist; check before acting") plus
 that harness's tool mapping is injected into the model's context.
 
-| Harness | Generated artifacts | Injection mechanism |
-|---|---|---|
-| Claude Code | `.claude-plugin/{marketplace,plugin}.json`, `hooks/hooks.json`, `hooks/session-start` | SessionStart hook → `hookSpecificOutput.additionalContext` |
-| Cursor | `.cursor-plugin/plugin.json`, `hooks/hooks-cursor.json` | Same bash script → `additional_context` (detected via `CURSOR_PLUGIN_ROOT`) |
-| Codex | `.codex-plugin/plugin.json`, `hooks/hooks-codex.json`, `hooks/session-start-codex` | SessionStart hook (matcher `startup\|resume\|clear`) |
-| Gemini | `gemini-extension.json`, `GEMINI.md` | `GEMINI.md` `@`-imports `using-devkit/SKILL.md` + `gemini-tools.md` |
-| Kimi | `.kimi-plugin/plugin.json` | `sessionStart.skill: "using-devkit"` + inline `skillInstructions` |
-| pi | `.pi/extensions/devkit.ts` | TS extension injects bootstrap on `session_start`/`session_compact` |
-| opencode | `.opencode/plugins/devkit.js`, `.opencode/INSTALL.md` | JS plugin registers skills path + injects bootstrap into first user message |
+| Harness     | Generated artifacts                                                                   | Injection mechanism                                                         |
+| ----------- | ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| Claude Code | `.claude-plugin/{marketplace,plugin}.json`, `hooks/hooks.json`, `hooks/session-start` | SessionStart hook → `hookSpecificOutput.additionalContext`                  |
+| Cursor      | `.cursor-plugin/plugin.json`, `hooks/hooks-cursor.json`                               | Same bash script → `additional_context` (detected via `CURSOR_PLUGIN_ROOT`) |
+| Codex       | `.codex-plugin/plugin.json`, `hooks/hooks-codex.json`, `hooks/session-start-codex`    | SessionStart hook (matcher `startup\|resume\|clear`)                        |
+| Gemini      | `gemini-extension.json`, `GEMINI.md`                                                  | `GEMINI.md` `@`-imports `using-devkit/SKILL.md` + `gemini-tools.md`         |
+| Kimi        | `.kimi-plugin/plugin.json`                                                            | `sessionStart.skill: "using-devkit"` + inline `skillInstructions`           |
+| pi          | `.pi/extensions/devkit.ts`                                                            | TS extension injects bootstrap on `session_start`/`session_compact`         |
+| opencode    | `.opencode/plugins/devkit.js`, `.opencode/INSTALL.md`                                 | JS plugin registers skills path + injects bootstrap into first user message |
 
-- **Shared bash `hooks/session-start`** (Claude/Cursor/Codex/Copilot) auto-detects
-  the platform via env vars (`CLAUDE_PLUGIN_ROOT`, `CURSOR_PLUGIN_ROOT`,
-  `COPILOT_CLI`) and emits the JSON shape that platform expects. Lifted from the
-  proven superpowers script (including the bash-5.3 `printf`-not-heredoc
-  workaround).
-- **`hooks/run-hook.cmd`** is the cross-platform polyglot wrapper: finds Git-Bash
-  on Windows, is a no-op shim on Unix.
+- **Shared bash `hooks/session-start`** (Claude/Cursor/Codex/Copilot)
+  auto-detects the platform via env vars (`CLAUDE_PLUGIN_ROOT`,
+  `CURSOR_PLUGIN_ROOT`, `COPILOT_CLI`) and emits the JSON shape that platform
+  expects. Lifted from the proven superpowers script (including the bash-5.3
+  `printf`-not-heredoc workaround).
+- **`hooks/run-hook.cmd`** is the cross-platform polyglot wrapper: finds
+  Git-Bash on Windows, is a no-op shim on Unix.
 - **`using-devkit/SKILL.md`** is a short entry skill scoped to devkit: "this
   marketplace provides skills; before acting, check whether one applies; here is
   how to invoke them on your harness," pointing at the tool-mapping references.
@@ -216,9 +217,11 @@ add a dependency / pin a language version." Body covers:
    fuzzy `node = "22"`) so checkouts are deterministic across machines and CI.
    The skill explicitly warns against bare `mise use` — always `--pin`.
 3. **Decision flow** (mirrors `decision-tree.md`):
-   - Tool in the mise registry? → `mise use --pin <tool>@<version>`, commit `mise.toml`.
-   - Not in the registry but on a mise backend (asdf/aqua/ubi/cargo/npm/pipx/go)?
-     → use that backend via mise (still pinned).
+   - Tool in the mise registry? → `mise use --pin <tool>@<version>`, commit
+     `mise.toml`.
+   - Not in the registry but on a mise backend
+     (asdf/aqua/ubi/cargo/npm/pipx/go)? → use that backend via mise (still
+     pinned).
    - Genuinely unavailable through mise (system lib, complex Nix derivation)? →
      add it to `devenv.nix`.
 4. **Verify after install** (the step agents skip): run the tool's `--version`
@@ -245,7 +248,7 @@ add a dependency / pin a language version." Body covers:
   run = "deno run --allow-read=. scripts/generate.ts --check"
   ```
 - **`devenv.nix`** — minimal annotated starter (`packages`, `languages`,
-  `enterShell`) with a comment marking it as the *fallback* path.
+  `enterShell`) with a comment marking it as the _fallback_ path.
 - **`decision-tree.md`** — the "is it in mise?" → action flowchart, the exact
   check commands (`mise registry`, `mise use --pin`, ...), and worked examples:
   a language via mise, a CLI via a mise backend, a system lib via devenv.nix.
@@ -264,18 +267,18 @@ add a dependency / pin a language version." Body covers:
 
 ## README
 
-Covers: what devkit is; per-harness install instructions (lifted from the
-proven superpowers phrasings); how to add a skill; and the rule "never
-hand-edit generated files — edit `marketplace.config.ts` and run the generator."
+Covers: what devkit is; per-harness install instructions (lifted from the proven
+superpowers phrasings); how to add a skill; and the rule "never hand-edit
+generated files — edit `marketplace.config.ts` and run the generator."
 
 ## Icon
 
-A **hand-authored, original SVG** (`assets/devkit.svg`) — no image model is used.
-A clean vector mark (e.g. a stylized toolbox / wrench-and-cube in the brand
-color) that is crisp at any size and version-controllable. `assets/app-icon.png`
-is rasterized from the SVG (documented build step). The codex/kimi `interface`
-blocks reference both. The `brandColor` hex is finalized alongside the icon
-during implementation.
+A **hand-authored, original SVG** (`assets/devkit.svg`) — no image model is
+used. A clean vector mark (e.g. a stylized toolbox / wrench-and-cube in the
+brand color) that is crisp at any size and version-controllable.
+`assets/app-icon.png` is rasterized from the SVG (documented build step). The
+codex/kimi `interface` blocks reference both. The `brandColor` hex is finalized
+alongside the icon during implementation.
 
 ## Resolved during brainstorming
 

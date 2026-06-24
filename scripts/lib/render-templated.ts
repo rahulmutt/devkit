@@ -31,7 +31,10 @@ export async function renderTemplated(
   }
   for (const [src, destFn] of STATIC_FILES) {
     const text = await Deno.readTextFile(join(templatesDir, src));
-    out.push({ path: destFn(config.plugin.name), content: renderTemplate(text, vars) });
+    out.push({
+      path: destFn(config.plugin.name),
+      content: renderTemplate(text, vars),
+    });
   }
   return out;
 }

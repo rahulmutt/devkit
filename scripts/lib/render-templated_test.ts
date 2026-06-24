@@ -7,7 +7,14 @@ const TEMPLATES = new URL("../templates", import.meta.url).pathname;
 Deno.test("emits gemini, pi, opencode bootstraps", async () => {
   const files = await renderTemplated(config, TEMPLATES);
   const paths = files.map((f) => f.path);
-  for (const p of ["GEMINI.md", ".pi/extensions/devkit.ts", ".opencode/plugins/devkit.js", ".opencode/INSTALL.md"]) {
+  for (
+    const p of [
+      "GEMINI.md",
+      ".pi/extensions/devkit.ts",
+      ".opencode/plugins/devkit.js",
+      ".opencode/INSTALL.md",
+    ]
+  ) {
     assertEquals(paths.includes(p), true, `missing ${p}`);
   }
 });

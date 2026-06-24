@@ -1,8 +1,13 @@
 import type { MarketplaceConfig } from "./types.ts";
 
-export function renderTemplate(text: string, vars: Record<string, string>): string {
+export function renderTemplate(
+  text: string,
+  vars: Record<string, string>,
+): string {
   const out = text.replace(/\{\{(\w+)\}\}/g, (_m, key) => {
-    if (!(key in vars)) throw new Error(`unresolved template token: {{${key}}}`);
+    if (!(key in vars)) {
+      throw new Error(`unresolved template token: {{${key}}}`);
+    }
     return vars[key];
   });
   const leftover = out.match(/\{\{(\w+)\}\}/);

@@ -14,14 +14,16 @@ Deno.test("all JSON manifests agree on version and plugin name", () => {
   assertEquals(claudeMkt.plugins[0].version, "0.1.0");
   assertEquals(claudeMkt.plugins[0].name, "devkit");
 
-  for (const p of [
-    ".claude-plugin/plugin.json",
-    ".codex-plugin/plugin.json",
-    ".cursor-plugin/plugin.json",
-    ".kimi-plugin/plugin.json",
-    "gemini-extension.json",
-    "package.json",
-  ]) {
+  for (
+    const p of [
+      ".claude-plugin/plugin.json",
+      ".codex-plugin/plugin.json",
+      ".cursor-plugin/plugin.json",
+      ".kimi-plugin/plugin.json",
+      "gemini-extension.json",
+      "package.json",
+    ]
+  ) {
     assertEquals(find(files, p).version, "0.1.0", `${p} version`);
   }
 });

@@ -8,6 +8,6 @@ repos:
         pass_filenames: false
       - id: devkit-tests
         name: devkit generator tests
-        entry: deno test --allow-read=.
+        entry: deno test --allow-read --allow-write
         language: system
         pass_filenames: false

@@ -13,4 +13,4 @@ run = "deno run --allow-read=. scripts/generate.ts --check"
 
 [tasks.test]
 description = "Run the generator test suite"
-run = "deno test --allow-read=."
+run = "deno test --allow-read --allow-write"

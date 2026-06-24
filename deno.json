@@ -2,7 +2,7 @@
   "tasks": {
     "generate": "deno run --allow-read=. --allow-write=. scripts/generate.ts",
     "check": "deno run --allow-read=. scripts/generate.ts --check",
-    "test": "deno test --allow-read=."
+    "test": "deno test --allow-read --allow-write"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.0",

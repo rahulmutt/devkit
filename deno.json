@@ -3,13 +3,26 @@
     "generate": "deno run --allow-read=. --allow-write=. scripts/generate.ts",
     "check": "deno run --allow-read=. scripts/generate.ts --check",
     "test": "deno test --allow-read --allow-write",
-    "rasterize": "deno run --allow-read --allow-write=assets --allow-env --allow-ffi --allow-sys scripts/rasterize.ts"
+    "rasterize": "deno run --allow-read --allow-write=assets --allow-env --allow-ffi --allow-sys scripts/rasterize.ts",
+    "fmt": "deno fmt && deno task generate",
+    "fmt-check": "deno fmt --check",
+    "lint": "deno lint",
+    "typecheck": "deno check scripts/generate.ts scripts/rasterize.ts marketplace.config.ts",
+    "ci": "deno task fmt-check && deno task lint && deno task typecheck && deno task check && deno task test"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.0",
     "@std/path": "jsr:@std/path@^1.0.0"
   },
   "nodeModulesDir": "auto",
+  "lint": {
+    "exclude": [
+      "scripts/templates/pi",
+      "scripts/templates/opencode",
+      ".pi/extensions",
+      ".opencode/plugins"
+    ]
+  },
   "fmt": {
     "exclude": [
       "assets",

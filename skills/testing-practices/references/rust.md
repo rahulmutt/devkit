@@ -10,7 +10,7 @@
 | Model-based | proptest-state-machine | reference-model state machine |
 | Fuzz | cargo-fuzz | libFuzzer target with `arbitrary` inputs |
 | Mutation | cargo-mutants | `cargo mutants` to audit assertion strength |
-| Code-level formal | kani | see references/formal-methods.md |
+| Code-level formal | kani | see formal-methods.md |
 
 **Emphasis:** the compiler and clippy catch most defect classes statically — invest test budget in property and fuzz tests where the type system can't reach (invariants, untrusted input).
 

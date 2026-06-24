@@ -3,18 +3,21 @@
 deno = "2.1.4"     # pinned via `mise use --pin deno`
 node = "22.11.0"   # pinned via `mise use --pin node@22`
 
+# Tasks delegate to `deno task <name>` so the actual commands live in EXACTLY
+# one place (deno.json). Don't inline the deno commands here — that would
+# re-introduce hand-maintained duplication outside the drift guard.
 [tasks.generate]
 description = "Render all per-harness manifests from marketplace.config.ts"
-run = "deno run --allow-read=. --allow-write=. scripts/generate.ts"
+run = "deno task generate"
 
 [tasks.check]
 description = "Verify generated files are in sync (no writes)"
-run = "deno run --allow-read=. scripts/generate.ts --check"
+run = "deno task check"
 
 [tasks.test]
 description = "Run the generator test suite"
-run = "deno test --allow-read --allow-write"
+run = "deno task test"
 
 [tasks.rasterize]
 description = "Rasterize assets/devkit.svg -> assets/app-icon.png (run when the SVG changes)"
-run = "deno run --allow-read --allow-write=assets --allow-env --allow-ffi --allow-sys scripts/rasterize.ts"
+run = "deno task rasterize"

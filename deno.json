@@ -10,5 +10,12 @@
     "@std/path": "jsr:@std/path@^1.0.0"
   },
   "nodeModulesDir": "auto",
-  "fmt": { "exclude": ["assets", "skills/developer-environment/references", "skills/testing-practices/references"] }
+  "fmt": {
+    "exclude": [
+      "assets",
+      "skills/developer-environment/references",
+      "skills/testing-practices/references",
+      "skills/writing-clean-code/references"
+    ]
+  }
 }

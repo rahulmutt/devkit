@@ -1,0 +1,16 @@
+# Root toolchain for devkit. Pin exact versions with `mise use --pin`.
+[tools]
+deno = "2.1.4"     # pinned via `mise use --pin deno`
+node = "22.11.0"   # pinned via `mise use --pin node@22`
+
+[tasks.generate]
+description = "Render all per-harness manifests from marketplace.config.ts"
+run = "deno run --allow-read=. --allow-write=. scripts/generate.ts"
+
+[tasks.check]
+description = "Verify generated files are in sync (no writes)"
+run = "deno run --allow-read=. scripts/generate.ts --check"
+
+[tasks.test]
+description = "Run the generator test suite"
+run = "deno test --allow-read --allow-write"

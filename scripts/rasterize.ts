@@ -15,4 +15,6 @@ const resvg = new Resvg(svg, { fitTo: { mode: "width", value: SIZE } });
 const png = resvg.render().asPng();
 await Deno.writeFile(PNG, png);
 
-console.log(`✓ wrote assets/app-icon.png (${SIZE}x${SIZE}, ${png.length} bytes)`);
+console.log(
+  `✓ wrote assets/app-icon.png (${SIZE}x${SIZE}, ${png.length} bytes)`,
+);

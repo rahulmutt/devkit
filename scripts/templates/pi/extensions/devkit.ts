@@ -17,17 +17,33 @@ let cachedBootstrap: string | null | undefined;
 export default function devkitPiExtension(pi: ExtensionAPI) {
   let injectBootstrap = true;
   pi.on("resources_discover", async () => ({ skillPaths: [skillsDir] }));
-  pi.on("session_start", async () => { injectBootstrap = true; });
-  pi.on("session_compact", async () => { injectBootstrap = true; });
-  pi.on("agent_end", async () => { injectBootstrap = false; });
+  pi.on("session_start", async () => {
+    injectBootstrap = true;
+  });
+  pi.on("session_compact", async () => {
+    injectBootstrap = true;
+  });
+  pi.on("agent_end", async () => {
+    injectBootstrap = false;
+  });
   pi.on("context", async (event) => {
     if (!injectBootstrap) return;
     if (event.messages.some(messageContainsBootstrap)) return;
     const bootstrap = getBootstrapContent();
     if (!bootstrap) return;
-    const msg = { role: "user" as const, content: [{ type: "text" as const, text: bootstrap }], timestamp: Date.now() };
+    const msg = {
+      role: "user" as const,
+      content: [{ type: "text" as const, text: bootstrap }],
+      timestamp: Date.now(),
+    };
     const at = firstNonCompactionSummaryIndex(event.messages);
-    return { messages: [...event.messages.slice(0, at), msg, ...event.messages.slice(at)] };
+    return {
+      messages: [
+        ...event.messages.slice(0, at),
+        msg,
+        ...event.messages.slice(at),
+      ],
+    };
   });
 }
 
@@ -76,6 +92,9 @@ function messageContainsBootstrap(message: unknown): boolean {
 
 function firstNonCompactionSummaryIndex(messages: unknown[]): number {
   let i = 0;
-  while ((messages[i] as { role?: unknown } | undefined)?.role === "compactionSummary") i += 1;
+  while (
+    (messages[i] as { role?: unknown } | undefined)?.role ===
+      "compactionSummary"
+  ) i += 1;
   return i;
 }

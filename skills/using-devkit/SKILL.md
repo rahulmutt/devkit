@@ -20,10 +20,15 @@ check.
   Use whenever you install a tool, pin a language version, add a dependency, or
   set up a project's environment. The rule it enforces: install with **mise**
   (pinned), fall back to **devenv.nix** only when mise can't provide the tool.
+- **testing-practices** — how to decide what to test and how. Use when choosing
+  a form of validation (static checks, unit, integration, property/model/fuzz/
+  mutation, UI, or formal methods), deciding when to reach for each, and
+  aligning it with the implementation. Tool installation delegates to
+  developer-environment.
 
 ## How to invoke a skill
 
-Skills speak in *actions* ("read a file", "run a shell command"), not in any one
+Skills speak in _actions_ ("read a file", "run a shell command"), not in any one
 harness's tool names. Use your harness's native skill mechanism to load a skill,
 and translate actions to your harness's tools using the matching reference in
 `references/`:

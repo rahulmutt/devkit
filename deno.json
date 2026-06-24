@@ -7,8 +7,9 @@
     "fmt": "deno fmt && deno task generate",
     "fmt-check": "deno fmt --check",
     "lint": "deno lint",
-    "typecheck": "deno check scripts/generate.ts scripts/rasterize.ts marketplace.config.ts",
-    "ci": "deno task fmt-check && deno task lint && deno task typecheck && deno task check && deno task test"
+    "lint-skills": "deno run --allow-read=. scripts/lint-skills.ts",
+    "typecheck": "deno check scripts/generate.ts scripts/rasterize.ts scripts/lint-skills.ts marketplace.config.ts",
+    "ci": "deno task fmt-check && deno task lint && deno task typecheck && deno task check && deno task lint-skills && deno task test"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.0",
@@ -26,6 +27,7 @@
   "fmt": {
     "exclude": [
       "assets",
+      ".impeccable",
       "skills/developer-environment/references",
       "skills/testing-practices/references",
       "skills/writing-clean-code/references"

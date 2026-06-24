@@ -49,6 +49,9 @@ mise cannot provide the tool.**
 | Owner | Rahul Muttineni <rahulmutt@gmail.com> |
 | Generator runtime | Deno (sandboxed: `--allow-read=. --allow-write=.`) |
 | mise default command | `mise use --pin` (exact pinned versions) |
+| GitHub repo | `rahulmutt/devkit` |
+| Icon | Hand-authored original SVG (`assets/devkit.svg`) + rasterized `app-icon.png`; no image model used |
+| `mise.toml` template | The repo's own toolchain (deno + node); doubles as the repo's real root `mise.toml` |
 
 ## Architecture
 
@@ -81,7 +84,7 @@ drift-checked.
 │   ├── templates/                # per-harness output templates
 │   └── lib/                      # config loader, renderers, drift-check
 ├── hooks/                        # GENERATED bash session-start variants + run-hook.cmd
-├── assets/                       # icons (optional, for codex/kimi interface blocks)
+├── assets/                       # devkit.svg (hand-authored) + app-icon.png (rasterized)
 ├── docs/superpowers/specs/       # this spec
 ├── package.json                  # metadata + version (generated/synced)
 ├── README.md
@@ -118,15 +121,21 @@ export const config: MarketplaceConfig = {
     name: "devkit",
     version: "0.1.0",                 // the ONE place version lives
     description: "...",
-    homepage: "https://github.com/<owner>/devkit",
-    repository: "https://github.com/<owner>/devkit",
+    homepage: "https://github.com/rahulmutt/devkit",
+    repository: "https://github.com/rahulmutt/devkit",
     license: "MIT",
     keywords: ["mise", "devenv", "developer-environment", "skills"],
   },
   owner:  { name: "Rahul Muttineni", email: "rahulmutt@gmail.com" },
   bootstrapSkill: "using-devkit",     // skill injected at session start
   harnesses: ["claude","codex","cursor","gemini","kimi","pi","opencode"],
-  interface: { displayName: "Devkit", category: "Coding", brandColor: "#..." },
+  interface: {
+    displayName: "Devkit",
+    category: "Coding",
+    brandColor: "#...",            // set alongside the icon
+    logo: "./assets/app-icon.png",
+    composerIcon: "./assets/devkit.svg",
+  },
 };
 ```
 
@@ -221,7 +230,20 @@ add a dependency / pin a language version." Body covers:
 ### `references/` templates (copied and adapted by the agent)
 
 - **`mise.toml`** — annotated starter: `[tools]` with **pinned exact versions**,
-  `[env]`, a couple of `[tasks]`.
+  `[env]`, a couple of `[tasks]`. Mirrors the repo's own root `mise.toml`
+  (deno + node), so the teaching template and the repo's real config stay in
+  step:
+
+  ```toml
+  [tools]
+  deno = "2.1.4"     # pinned via `mise use --pin deno`
+  node = "22.11.0"   # pinned via `mise use --pin node@22`
+
+  [tasks.generate]
+  run = "deno run --allow-read=. --allow-write=. scripts/generate.ts"
+  [tasks.check]
+  run = "deno run --allow-read=. scripts/generate.ts --check"
+  ```
 - **`devenv.nix`** — minimal annotated starter (`packages`, `languages`,
   `enterShell`) with a comment marking it as the *fallback* path.
 - **`decision-tree.md`** — the "is it in mise?" → action flowchart, the exact
@@ -246,9 +268,19 @@ Covers: what devkit is; per-harness install instructions (lifted from the
 proven superpowers phrasings); how to add a skill; and the rule "never
 hand-edit generated files — edit `marketplace.config.ts` and run the generator."
 
-## Open items for implementation planning
+## Icon
 
-- Final GitHub repo slug (homepage/repository URLs in the config).
-- Whether to ship `assets/` icons now or defer (codex/kimi `interface` blocks
-  reference a logo/composer icon).
-- Exact starter tool set in the `mise.toml` template (illustrative only).
+A **hand-authored, original SVG** (`assets/devkit.svg`) — no image model is used.
+A clean vector mark (e.g. a stylized toolbox / wrench-and-cube in the brand
+color) that is crisp at any size and version-controllable. `assets/app-icon.png`
+is rasterized from the SVG (documented build step). The codex/kimi `interface`
+blocks reference both. The `brandColor` hex is finalized alongside the icon
+during implementation.
+
+## Resolved during brainstorming
+
+- **GitHub repo:** `rahulmutt/devkit` (homepage + repository URLs).
+- **Icon:** hand-authored SVG + rasterized PNG (above); no image model available
+  in-session, so this is the chosen, achievable path.
+- **`mise.toml` template:** the repo's own toolchain (deno + node), doubling as
+  the repo's real root `mise.toml`.

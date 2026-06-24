@@ -1,6 +1,9 @@
 import type { GeneratedFile, MarketplaceConfig } from "./types.ts";
+import { renderJson } from "./render-json.ts";
 
-export function renderAll(_config: MarketplaceConfig): GeneratedFile[] {
-  // Renderers are appended in Tasks 4-6.
-  return [];
+export function renderAll(config: MarketplaceConfig): GeneratedFile[] {
+  return [
+    ...renderJson(config),
+    // templated bootstraps added in Tasks 5-6
+  ];
 }

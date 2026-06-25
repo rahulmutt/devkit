@@ -22,7 +22,8 @@ against our own prior output).
 
 ## Scope
 
-In scope — the 7 JSON manifests produced by `render-json.ts`:
+In scope — the 10 JSON manifests emitted by `renderAll()` (the 7 from
+`render-json.ts` plus the 3 templated hooks manifests):
 
 - `.claude-plugin/marketplace.json`
 - `.claude-plugin/plugin.json`
@@ -31,6 +32,9 @@ In scope — the 7 JSON manifests produced by `render-json.ts`:
 - `.kimi-plugin/plugin.json`
 - `gemini-extension.json`
 - `package.json`
+- `hooks/hooks.json`
+- `hooks/hooks-codex.json`
+- `hooks/hooks-cursor.json`
 
 Explicitly **out of scope:** the `pi` (`.pi/extensions/devkit.ts`) and
 `opencode` (`.opencode/plugins/devkit.js`) outputs are generated _code_, not
@@ -99,8 +103,9 @@ field before it ships.
 Each schema asserts:
 
 - `type: object`, `additionalProperties: false`, an explicit `required` list.
-- The injected `_generated` string field is permitted in every schema (it is
-  prepended to all JSON outputs by `render-json.ts`).
+- The injected `_generated` string field is required by every `render-json.ts`
+  manifest schema. The 3 templated `hooks/*.json` have no `_generated` field, so
+  the shared hooks schema neither requires nor permits it.
 - Field-level constraints encoding the real contract:
   - `version` → semver `pattern`
   - `author.email` / owner email → `format: email`
@@ -156,7 +161,7 @@ automatically into pre-commit **and** GitHub Actions with no workflow edit.
 - List each violation as `instancePath — message` (e.g.
   `/version — must match semver pattern`).
 - Non-zero exit on any violation.
-- A clean run prints `✓ all 7 manifests conform`.
+- A clean run prints `✓ all 10 manifests conform`.
 
 ## Testing
 

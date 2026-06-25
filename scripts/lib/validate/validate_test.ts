@@ -1,16 +1,17 @@
 import { assertEquals } from "@std/assert";
 import {
   checkCoverage,
+  jsonManifests,
   MANIFEST_SCHEMAS,
   validateAll,
   validateManifest,
 } from "./validate.ts";
-import { renderJson } from "../render-json.ts";
+import { renderAll } from "../render.ts";
 import { config } from "../../../marketplace.config.ts";
 import type { GeneratedFile } from "../types.ts";
 
 Deno.test("validateAll: the real config's manifests all conform", async () => {
-  const violations = await validateAll(renderJson(config));
+  const violations = await validateAll(jsonManifests(await renderAll(config)));
   assertEquals(violations, []);
 });
 
@@ -82,14 +83,25 @@ Deno.test("checkCoverage: missing schema file is a violation", () => {
   assertEquals(v.some((x) => x.message.includes("codex-plugin.json")), true);
 });
 
-Deno.test("checkCoverage: orphan schema is a violation", () => {
+Deno.test("checkCoverage: orphan schema is a violation", async () => {
   const schemas = new Map<string, unknown>();
   for (const stem of Object.values(MANIFEST_SCHEMAS)) schemas.set(stem, {});
   schemas.set("ghost", {}); // not referenced by any manifest
-  const v = checkCoverage(renderJsonPaths(), schemas);
+  const v = checkCoverage(await allJsonManifests(), schemas);
   assertEquals(v.some((x) => x.message.includes("orphan")), true);
 });
 
-function renderJsonPaths(): GeneratedFile[] {
-  return renderJson(config);
+Deno.test("checkCoverage: a mapped manifest no longer emitted is a violation", () => {
+  const schemas = new Map<string, unknown>();
+  for (const stem of Object.values(MANIFEST_SCHEMAS)) schemas.set(stem, {});
+  // Only one of the mapped manifests is actually emitted.
+  const v = checkCoverage([{ path: "package.json", content: "{}" }], schemas);
+  assertEquals(
+    v.some((x) => x.message.includes("no longer emitted")),
+    true,
+  );
+});
+
+async function allJsonManifests(): Promise<GeneratedFile[]> {
+  return jsonManifests(await renderAll(config));
 }

@@ -31,6 +31,12 @@ check.
   or hexagonal architecture, or following a language's canonical style. The
   authoring counterpart to **testing-practices**; tool installation delegates to
   developer-environment.
+- **security-practices** — how to think about security and which free OSS
+  scanners to use. Use when designing, changing, or reviewing a distributed
+  component, handling untrusted input or secrets, or choosing security tooling.
+  Applies a trust-boundary threat lens and selects scanners (secret, dependency/
+  SCA, SAST, container/IaC) for the repo's stack; tool installation delegates to
+  developer-environment.
 
 ## How to invoke a skill
 

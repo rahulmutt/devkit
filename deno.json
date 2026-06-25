@@ -32,7 +32,8 @@
       ".impeccable",
       "skills/developer-environment/references",
       "skills/testing-practices/references",
-      "skills/writing-clean-code/references"
+      "skills/writing-clean-code/references",
+      "skills/security-practices/references"
     ]
   }
 }

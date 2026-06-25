@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "devkit/claude-plugin",
+  "x-provenance": "best-effort",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "_generated",
+    "name",
+    "version",
+    "description",
+    "author",
+    "homepage",
+    "repository",
+    "license",
+    "keywords"
+  ],
+  "$defs": {
+    "author": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "email"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "email": { "type": "string", "format": "email" }
+      }
+    }
+  },
+  "properties": {
+    "_generated": { "type": "string" },
+    "name": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+([-+].+)?$" },
+    "description": { "type": "string", "minLength": 1 },
+    "author": { "$ref": "#/$defs/author" },
+    "homepage": { "type": "string", "format": "uri" },
+    "repository": { "type": "string", "format": "uri" },
+    "license": { "type": "string", "minLength": 1 },
+    "keywords": { "type": "array", "items": { "type": "string" } }
+  }
+}

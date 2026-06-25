@@ -83,7 +83,7 @@ mise run release    # full gate: fmt-check, lint, typecheck, generated-files in 
 `mise run release` is the release gate — it also runs in **pre-commit** and in
 **GitHub Actions CI**, so a change can't merge with stale generated files or a
 failing check. Individual steps are also available: `mise run fmt`, `fmt-check`,
-`lint`, `typecheck`, `check`, `test`.
+`lint`, `typecheck`, `check`, `validate-manifests`, `lint-skills`, `test`.
 
 **Change metadata** (name, version, description): edit `marketplace.config.ts`,
 then `mise run generate`.

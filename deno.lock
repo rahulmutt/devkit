@@ -5,6 +5,7 @@
     "jsr:@std/internal@^1.0.12": "1.0.14",
     "jsr:@std/internal@^1.0.14": "1.0.14",
     "jsr:@std/path@1": "1.1.5",
+    "npm:@cfworker/json-schema@4": "4.1.1",
     "npm:@resvg/resvg-js@2.6.2": "2.6.2"
   },
   "jsr": {
@@ -25,6 +26,9 @@
     }
   },
   "npm": {
+    "@cfworker/json-schema@4.1.1": {
+      "integrity": "sha512-gAmrUZSGtKc3AiBL71iNWxDsyUC5uMaKKGdvzYsBoTW/xi42JQHl7eKV2OYzCUqvc+D2RCcf7EXY2iCyFIk6og=="
+    },
     "@resvg/resvg-js-android-arm-eabi@2.6.2": {
       "integrity": "sha512-FrJibrAk6v29eabIPgcTUMPXiEz8ssrAk7TXxsiZzww9UTQ1Z5KAbFJs+Z0Ez+VZTYgnE5IQJqBcoSiMebtPHA=="
     },
@@ -82,7 +86,8 @@
   "workspace": {
     "dependencies": [
       "jsr:@std/assert@1",
-      "jsr:@std/path@1"
+      "jsr:@std/path@1",
+      "npm:@cfworker/json-schema@4"
     ]
   }
 }

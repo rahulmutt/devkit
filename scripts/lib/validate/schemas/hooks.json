@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "devkit/hooks",
+  "x-provenance": "best-effort",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["hooks"],
+  "$defs": {
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "command", "async"],
+      "properties": {
+        "type": { "const": "command" },
+        "command": { "type": "string", "minLength": 1 },
+        "async": { "type": "boolean" }
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["matcher", "hooks"],
+      "properties": {
+        "matcher": { "type": "string", "minLength": 1 },
+        "hooks": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/command" }
+        }
+      }
+    }
+  },
+  "properties": {
+    "hooks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["SessionStart"],
+      "properties": {
+        "SessionStart": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/event" }
+        }
+      }
+    }
+  }
+}

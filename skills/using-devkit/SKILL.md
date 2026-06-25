@@ -37,6 +37,12 @@ check.
   Applies a trust-boundary threat lens and selects scanners (secret, dependency/
   SCA, SAST, container/IaC) for the repo's stack; tool installation delegates to
   developer-environment.
+- **navigable-codebases** — how to leave a repo navigable for the next
+  contributor (human or agent). Use when shaping a repo's discoverability
+  surface: a README + agent-instruction front door, common workflows exposed as
+  named tasks, a codebase map of the boundaries, and onboarding you verify by
+  running. Keeps the surface single-sourced so it can't drift; delegates runner
+  install to developer-environment and code structure to writing-clean-code.
 
 ## How to invoke a skill
 

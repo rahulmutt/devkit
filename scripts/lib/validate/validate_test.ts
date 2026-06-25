@@ -26,7 +26,7 @@ Deno.test("validateManifest: missing required field is a violation", () => {
   assertEquals(v.length >= 1, true);
   assertEquals(v[0].path, "x.json");
   // Fails for the right reason: the missing property is flagged at the root.
-  assertEquals(v.some((x) => x.instancePath === "#"), true);
+  assertEquals(v.some((x) => x.instancePath === ""), true);
 });
 
 Deno.test("validateManifest: wrong type is a violation", () => {
@@ -36,7 +36,7 @@ Deno.test("validateManifest: wrong type is a violation", () => {
   };
   const m: GeneratedFile = { path: "x.json", content: '{"name":123}' };
   assertEquals(
-    validateManifest(m, schema).some((x) => x.instancePath === "#/name"),
+    validateManifest(m, schema).some((x) => x.instancePath === "/name"),
     true,
   );
 });
@@ -48,7 +48,7 @@ Deno.test("validateManifest: bad enum is a violation", () => {
   };
   const m: GeneratedFile = { path: "x.json", content: '{"cap":"Delete"}' };
   assertEquals(
-    validateManifest(m, schema).some((x) => x.instancePath === "#/cap"),
+    validateManifest(m, schema).some((x) => x.instancePath === "/cap"),
     true,
   );
 });
@@ -60,7 +60,7 @@ Deno.test("validateManifest: bad semver pattern is a violation", () => {
   };
   const m: GeneratedFile = { path: "x.json", content: '{"version":"1.0"}' };
   assertEquals(
-    validateManifest(m, schema).some((x) => x.instancePath === "#/version"),
+    validateManifest(m, schema).some((x) => x.instancePath === "/version"),
     true,
   );
 });
@@ -76,7 +76,7 @@ Deno.test("validateManifest: stray field fails additionalProperties", () => {
     content: '{"name":"a","extra":1}',
   };
   assertEquals(
-    validateManifest(m, schema).some((x) => x.instancePath === "#/extra"),
+    validateManifest(m, schema).some((x) => x.instancePath === "/extra"),
     true,
   );
 });

@@ -100,7 +100,9 @@ export function validateManifest(
   if (result.valid) return [];
   return [...result.errors].map((e) => ({
     path: manifest.path,
-    instancePath: e.instanceLocation,
+    // @cfworker reports a URI-fragment location ("#", "#/version"); strip the
+    // leading "#" to a plain RFC 6901 JSON Pointer ("" for root, "/version").
+    instancePath: e.instanceLocation.replace(/^#/, ""),
     message: e.error,
   }));
 }

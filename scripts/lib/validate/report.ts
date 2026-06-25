@@ -11,8 +11,10 @@ export function buildReport(
   violations: ManifestViolation[],
   manifestCount: number,
 ): Report {
+  // Deterministic, locale-independent ordering (paths are machine identifiers).
+  const cmp = (x: string, y: string) => (x < y ? -1 : x > y ? 1 : 0);
   const sorted = [...violations].sort((a, b) =>
-    a.path.localeCompare(b.path) || a.instancePath.localeCompare(b.instancePath)
+    cmp(a.path, b.path) || cmp(a.instancePath, b.instancePath)
   );
   const lines = sorted.map((v) =>
     `  ${v.path}${v.instancePath ? ` ${v.instancePath}` : ""} — ${v.message}`

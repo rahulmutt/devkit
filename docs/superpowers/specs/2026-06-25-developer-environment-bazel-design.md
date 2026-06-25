@@ -5,20 +5,21 @@ devkit
 
 ## Purpose
 
-Broaden the `developer-environment` skill from *"install & pin tools"* to *"set
-up a project's developer environment,"* of which **build-system choice** is now
+Broaden the `developer-environment` skill from _"install & pin tools"_ to _"set
+up a project's developer environment,"_ of which **build-system choice** is now
 a part. Add focused guidance on **when Bazel is warranted** plus a **curated
 migration pointer doc**.
 
 The mise-first / devenv.nix-fallback tool-install content is the unchanged
-**core** of the skill. Bazel is a build/test *orchestration* system — a
+**core** of the skill. Bazel is a build/test _orchestration_ system — a
 different category from a tool/version manager — so it is added as a distinct
 concern, not folded into the install decision tree.
 
 ## Design decisions (from brainstorming)
 
 1. **Framing:** a new "build orchestration" section in `SKILL.md`. The skill
-   stays one coherent developer-environment story; tool-install remains the core.
+   stays one coherent developer-environment story; tool-install remains the
+   core.
 2. **Posture:** native per-language build tooling is the default. Bazel is a
    deliberate, high-cost choice, adopted **only on triggers**.
 3. **Triggers (all four):** polyglot monorepo; build scale / incrementality;
@@ -30,9 +31,8 @@ concern, not folded into the install decision tree.
 
 ## Non-goals (YAGNI)
 
-- A full self-contained Bazel migration tutorial. The doc points to upstream;
-  it does not reproduce commands/`BUILD`-file examples that rot against
-  upstream.
+- A full self-contained Bazel migration tutorial. The doc points to upstream; it
+  does not reproduce commands/`BUILD`-file examples that rot against upstream.
 - Bazel vs Buck/Pants/Gradle comparison. The triggers decide native-vs-Bazel;
   picking among meta-build systems is out of scope.
 - Overloading `references/decision-tree.md` (tool installation) with
@@ -56,7 +56,7 @@ skills/developer-environment/
 ### Frontmatter `description`
 
 Expand so the skill also triggers on build-system decisions, e.g. add a clause:
-*"...or deciding whether to adopt a build system (Bazel)."* Must still lead with
+_"...or deciding whether to adopt a build system (Bazel)."_ Must still lead with
 the tool-install triggers so existing activation is preserved.
 
 ### New "Build orchestration" section
@@ -100,16 +100,18 @@ Phases:
 5. **Cut over CI incrementally** — keep native builds running in parallel until
    parity, then switch.
 
-Plus a short **"verify it works"** note (`bazel build //...`, `bazel test
-//...`), mirroring the skill's existing "verify after installing" discipline.
+Plus a short **"verify it works"** note (`bazel build //...`,
+`bazel test
+//...`), mirroring the skill's existing "verify after installing"
+discipline.
 
 ## Integration / housekeeping
 
 - Update the `developer-environment` row in `README.md` to mention
   build-orchestration / Bazel in one phrase.
 - Run the repo's standard flow afterward: `deno fmt` → regenerate harness
-  outputs → verify CI, since the frontmatter `description` change may be embedded
-  in generated harness outputs.
+  outputs → verify CI, since the frontmatter `description` change may be
+  embedded in generated harness outputs.
 
 ## Success criteria
 

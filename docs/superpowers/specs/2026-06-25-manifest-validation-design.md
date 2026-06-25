@@ -1,23 +1,21 @@
 # Manifest Validation — Design Spec
 
-**Date:** 2026-06-25
-**Status:** Approved, ready for implementation planning
+**Date:** 2026-06-25 **Status:** Approved, ready for implementation planning
 
 ## Problem
 
 Devkit generates per-harness plugin manifests from a single typed source of
 truth (`marketplace.config.ts` → `scripts/lib/render-json.ts`). TypeScript
-guarantees the *config* is well-shaped, and `deno task check` guarantees the
-files on disk match what the generator renders. Neither guarantees that the
-JSON we emit **conforms to what the target harness actually expects** — a
-renamed field, wrong type, bad enum value, or malformed version string would
-ship undetected.
+guarantees the _config_ is well-shaped, and `deno task check` guarantees the
+files on disk match what the generator renders. Neither guarantees that the JSON
+we emit **conforms to what the target harness actually expects** — a renamed
+field, wrong type, bad enum value, or malformed version string would ship
+undetected.
 
 ## Goal
 
 Validate each generated JSON manifest against a schema that codifies its
-harness's contract, so a malformed plugin manifest cannot pass the release
-gate.
+harness's contract, so a malformed plugin manifest cannot pass the release gate.
 
 **Goal type:** conformance to the harness contract (not merely regression
 against our own prior output).
@@ -35,25 +33,25 @@ In scope — the 7 JSON manifests produced by `render-json.ts`:
 - `package.json`
 
 Explicitly **out of scope:** the `pi` (`.pi/extensions/devkit.ts`) and
-`opencode` (`.opencode/plugins/devkit.js`) outputs are generated *code*, not
+`opencode` (`.opencode/plugins/devkit.js`) outputs are generated _code_, not
 JSON, so JSON Schema does not apply. They remain covered by `typecheck` and
-generation sync-check. This coverage boundary is intentional and stated so it
-is honest rather than silent.
+generation sync-check. This coverage boundary is intentional and stated so it is
+honest rather than silent.
 
 ## Decisions
 
-| Decision        | Choice                                                                                 |
-| --------------- | -------------------------------------------------------------------------------------- |
-| Failure caught  | Conformance to each harness's contract                                                 |
-| Schema coverage | Best-effort schema **we author and own** for every in-scope JSON manifest              |
-| Engine          | Standard JSON Schema (draft 2020-12) files validated with `@cfworker/json-schema`      |
-| Library rationale | JSR-native, draft 2020-12, no `eval`/codegen — runs cleanly under Deno permissions   |
-| What is validated | The **in-memory rendered output** from `renderAll()`, not files on disk             |
+| Decision          | Choice                                                                             |
+| ----------------- | ---------------------------------------------------------------------------------- |
+| Failure caught    | Conformance to each harness's contract                                             |
+| Schema coverage   | Best-effort schema **we author and own** for every in-scope JSON manifest          |
+| Engine            | Standard JSON Schema (draft 2020-12) files validated with `@cfworker/json-schema`  |
+| Library rationale | JSR-native, draft 2020-12, no `eval`/codegen — runs cleanly under Deno permissions |
+| What is validated | The **in-memory rendered output** from `renderAll()`, not files on disk            |
 
 `@cfworker/json-schema` was chosen over `ajv` (heavier, runtime codegen friction
 under Deno) and `hyperjump/json-schema` (broader async surface than needed). It
-is the lightest option that fully does the job and matches the repo's
-minimal, Deno-first dependency posture.
+is the lightest option that fully does the job and matches the repo's minimal,
+Deno-first dependency posture.
 
 Validating the in-memory rendered output (rather than re-reading disk) is
 equivalent — `deno task check` already guarantees disk equals rendered output —
@@ -110,9 +108,10 @@ Each schema asserts:
   - `category`, `capabilities` → `enum`
   - `logo` / `composerIcon` → relative-path `pattern`
   - fixed values where applicable (e.g. `source: "./"`)
-- Each schema file carries `$schema`, `$id`, and an `"x-provenance":
-  "best-effort"` annotation so it is honest about being our codification of the
-  contract, not an upstream document.
+- Each schema file carries `$schema`, `$id`, and an
+  `"x-provenance":
+  "best-effort"` annotation so it is honest about being our
+  codification of the contract, not an upstream document.
 
 ### Strictness trade-off (accepted)
 
@@ -154,8 +153,8 @@ automatically into pre-commit **and** GitHub Actions with no workflow edit.
 `report.ts` mirrors the sync-check / skill-linter output style:
 
 - Group violations by manifest path.
-- List each violation as `instancePath — message`
-  (e.g. `/version — must match semver pattern`).
+- List each violation as `instancePath — message` (e.g.
+  `/version — must match semver pattern`).
 - Non-zero exit on any violation.
 - A clean run prints `✓ all 7 manifests conform`.
 

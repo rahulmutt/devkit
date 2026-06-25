@@ -91,6 +91,10 @@ export function validateManifest(
   manifest: GeneratedFile,
   schema: unknown,
 ): ManifestViolation[] {
+  // Precondition: manifest.content is valid JSON. Every caller feeds
+  // renderJson/renderAll output, which is produced by JSON.stringify, so this
+  // holds for the gate. A non-JSON content would throw here rather than report
+  // a violation — acceptable given the closed, generator-controlled input set.
   const validator = new Validator(schema as object, "2020-12", false);
   const result = validator.validate(JSON.parse(manifest.content));
   if (result.valid) return [];

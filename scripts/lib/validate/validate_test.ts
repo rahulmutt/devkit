@@ -25,6 +25,8 @@ Deno.test("validateManifest: missing required field is a violation", () => {
   const v = validateManifest(m, schema);
   assertEquals(v.length >= 1, true);
   assertEquals(v[0].path, "x.json");
+  // Fails for the right reason: the missing property is flagged at the root.
+  assertEquals(v.some((x) => x.instancePath === "#"), true);
 });
 
 Deno.test("validateManifest: wrong type is a violation", () => {
@@ -33,7 +35,10 @@ Deno.test("validateManifest: wrong type is a violation", () => {
     properties: { name: { type: "string" } },
   };
   const m: GeneratedFile = { path: "x.json", content: '{"name":123}' };
-  assertEquals(validateManifest(m, schema).length >= 1, true);
+  assertEquals(
+    validateManifest(m, schema).some((x) => x.instancePath === "#/name"),
+    true,
+  );
 });
 
 Deno.test("validateManifest: bad enum is a violation", () => {
@@ -42,7 +47,10 @@ Deno.test("validateManifest: bad enum is a violation", () => {
     properties: { cap: { enum: ["Read", "Write"] } },
   };
   const m: GeneratedFile = { path: "x.json", content: '{"cap":"Delete"}' };
-  assertEquals(validateManifest(m, schema).length >= 1, true);
+  assertEquals(
+    validateManifest(m, schema).some((x) => x.instancePath === "#/cap"),
+    true,
+  );
 });
 
 Deno.test("validateManifest: bad semver pattern is a violation", () => {
@@ -51,7 +59,10 @@ Deno.test("validateManifest: bad semver pattern is a violation", () => {
     properties: { version: { type: "string", pattern: "^\\d+\\.\\d+\\.\\d+" } },
   };
   const m: GeneratedFile = { path: "x.json", content: '{"version":"1.0"}' };
-  assertEquals(validateManifest(m, schema).length >= 1, true);
+  assertEquals(
+    validateManifest(m, schema).some((x) => x.instancePath === "#/version"),
+    true,
+  );
 });
 
 Deno.test("validateManifest: stray field fails additionalProperties", () => {
@@ -64,7 +75,10 @@ Deno.test("validateManifest: stray field fails additionalProperties", () => {
     path: "x.json",
     content: '{"name":"a","extra":1}',
   };
-  assertEquals(validateManifest(m, schema).length >= 1, true);
+  assertEquals(
+    validateManifest(m, schema).some((x) => x.instancePath === "#/extra"),
+    true,
+  );
 });
 
 Deno.test("checkCoverage: unmapped manifest is a violation", () => {

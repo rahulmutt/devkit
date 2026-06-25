@@ -1011,6 +1011,3 @@ git commit -m "feat: wire manifest validation into the release gate"
 - **pi/opencode are intentionally not covered** by JSON-Schema validation; they
   are generated code, covered by `typecheck`/generation. This boundary is
   stated, not silent.
-
-```
-```

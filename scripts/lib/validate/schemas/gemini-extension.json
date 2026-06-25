@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "devkit/gemini-extension",
+  "x-provenance": "best-effort",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "_generated",
+    "name",
+    "description",
+    "version",
+    "contextFileName"
+  ],
+  "properties": {
+    "_generated": { "type": "string" },
+    "name": { "type": "string", "minLength": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+([-+].+)?$" },
+    "contextFileName": { "const": "GEMINI.md" }
+  }
+}

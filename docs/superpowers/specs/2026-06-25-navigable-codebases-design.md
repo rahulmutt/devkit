@@ -153,11 +153,11 @@ What an architecture / repo-map should and shouldn't contain:
 ## Integration with the marketplace
 
 - **Register** in `skills/using-devkit/SKILL.md` "Available skills" with a
-  one-line description (the `registry` linter greps for `**navigable-codebases**`
-  and fails the build otherwise).
-- **`fmt` exclude:** add `skills/navigable-codebases/references` to `deno.json`'s
-  `fmt.exclude` only if a reference doc is hand-formatted (e.g. an aligned
-  table); otherwise let `deno fmt` own it. Decide per file during
+  one-line description (the `registry` linter greps for
+  `**navigable-codebases**` and fails the build otherwise).
+- **`fmt` exclude:** add `skills/navigable-codebases/references` to
+  `deno.json`'s `fmt.exclude` only if a reference doc is hand-formatted (e.g. an
+  aligned table); otherwise let `deno fmt` own it. Decide per file during
   implementation.
 - **Regenerate:** `deno task fmt` (fmt → generate) propagates the skill into all
   harness outputs (`.opencode`, `.pi`, hooks, plugin manifests). Harness

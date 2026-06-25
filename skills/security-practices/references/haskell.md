@@ -2,7 +2,7 @@
 
 | Role             | Tool                                 | Idiom                                                    |
 | ---------------- | ------------------------------------ | -------------------------------------------------------- |
-| Dependency / SCA | cabal-audit (or OSV via osv-scanner) | audit `cabal.project.freeze` against advisory DBs        |
+| Dependency / SCA | osv-scanner (or cabal-audit)         | scan `cabal.project.freeze` against the OSV advisory DB  |
 | SAST             | hlint + the type system              | `hlint` for hygiene; the type system carries most safety |
 
 **Emphasis:** mature OSS SAST for Haskell is thin — be honest about that rather

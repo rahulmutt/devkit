@@ -13,6 +13,21 @@ apply the control it demands. **Defense in depth** and **least privilege** are
 the two governing defaults: no single control is load-bearing, and every
 identity gets the narrowest access that still works.
 
+## Commit a threat model
+
+The boundary lens above is reasoning you do in the moment; a **threat model** is
+that reasoning written down and committed to the repo. Without it, every agent
+and contributor re-derives what you are defending and against whom — usually
+incompletely. Commit the artifact so the assumptions are durable and
+discoverable: the assets you protect, the adversaries you assume, the boundaries
+that matter, and what is explicitly out of scope.
+
+Write one when a component handles untrusted input, secrets, or
+cross-trust-boundary traffic, and revisit it when those boundaries change. Keep
+it in the repo (location is yours) and point to it from `CLAUDE.md` /
+`AGENTS.md` so agents load it before touching security-sensitive code. Full
+method and template → [`references/threat-model.md`](references/threat-model.md).
+
 ## Controls — match the boundary to its control
 
 | Boundary / risk           | Control                                   | Reach for it when                                        |
@@ -65,6 +80,8 @@ fallback).
 
 - [`references/distributed-systems.md`](references/distributed-systems.md) — the
   full trust-boundary design lens.
+- [`references/threat-model.md`](references/threat-model.md) — how to write and
+  commit a threat model (lightweight method + STRIDE deepening).
 - Per-language SCA + SAST tools:
   [`references/typescript.md`](references/typescript.md),
   [`references/python.md`](references/python.md),

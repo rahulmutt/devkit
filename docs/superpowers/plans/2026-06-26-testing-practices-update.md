@@ -1,21 +1,45 @@
 # testing-practices Skill Update Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use
+> superpowers:subagent-driven-development (recommended) or
+> superpowers:executing-plans to implement this plan task-by-task. Steps use
+> checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Extend the existing `testing-practices` skill with golden/oracle testing, the fault-injection spectrum (DST / Jepsen / chaos, incl. Antithesis & Bombadil), a minimal-test ("Goldilocks") principle, e2e discipline, and a test-suite-maintenance/velocity section.
+**Goal:** Extend the existing `testing-practices` skill with golden/oracle
+testing, the fault-injection spectrum (DST / Jepsen / chaos, incl. Antithesis &
+Bombadil), a minimal-test ("Goldilocks") principle, e2e discipline, and a
+test-suite-maintenance/velocity section.
 
-**Architecture:** Pure Markdown edits to one skill. `SKILL.md` gains 3 matrix rows + 3 new prose sections + 2 in-section paragraphs; `references/formal-methods.md` broadens to cover simulation/fault-injection; the 5 per-language reference docs each gain golden-test and (where applicable) DST/Antithesis rows. No code, no new files, no frontmatter changes.
+**Architecture:** Pure Markdown edits to one skill. `SKILL.md` gains 3 matrix
+rows + 3 new prose sections + 2 in-section paragraphs;
+`references/formal-methods.md` broadens to cover simulation/fault-injection; the
+5 per-language reference docs each gain golden-test and (where applicable)
+DST/Antithesis rows. No code, no new files, no frontmatter changes.
 
-**Tech Stack:** Markdown; Deno tasks for verification (`deno fmt`, `deno task ci`).
+**Tech Stack:** Markdown; Deno tasks for verification (`deno fmt`,
+`deno task ci`).
 
 ## Global Constraints
 
-- **No install commands** anywhere — this skill names libraries/idioms and routes all installation to the `developer-environment` skill. Keep the existing "To install … → developer-environment" lines intact.
-- **Harness-agnostic prose** — actions ("run a shell command"), never harness-specific tool names.
-- **Do not touch frontmatter** — `name: testing-practices` and the `description:` (must keep its `Use when …` prefix) stay exactly as-is. The skill linter requires `name` == directory and a `Use when`-prefixed description.
-- **`SKILL.md` is formatted by `deno fmt`; `references/` is excluded.** After any `SKILL.md` edit, run `deno fmt` on it so column alignment / spacing matches, then `deno task fmt-check` must pass. Reference docs are fmt-excluded — do not hand-fight their alignment, but keep tables valid.
-- **Never blind-accept generated output.** If `deno task check` (drift) ever flags regeneration, run `deno task generate` and commit the result; do not hand-edit generated harness outputs.
-- Pinned toolchain: deno 2.1.4, node 22.11.0 (`mise.toml`). Run all `deno task …` from the repo root `/workspace`, not from a worktree (a worktree under `.claude/worktrees/` causes false `fmt-check` failures from main).
+- **No install commands** anywhere — this skill names libraries/idioms and
+  routes all installation to the `developer-environment` skill. Keep the
+  existing "To install … → developer-environment" lines intact.
+- **Harness-agnostic prose** — actions ("run a shell command"), never
+  harness-specific tool names.
+- **Do not touch frontmatter** — `name: testing-practices` and the
+  `description:` (must keep its `Use when …` prefix) stay exactly as-is. The
+  skill linter requires `name` == directory and a `Use when`-prefixed
+  description.
+- **`SKILL.md` is formatted by `deno fmt`; `references/` is excluded.** After
+  any `SKILL.md` edit, run `deno fmt` on it so column alignment / spacing
+  matches, then `deno task fmt-check` must pass. Reference docs are fmt-excluded
+  — do not hand-fight their alignment, but keep tables valid.
+- **Never blind-accept generated output.** If `deno task check` (drift) ever
+  flags regeneration, run `deno task generate` and commit the result; do not
+  hand-edit generated harness outputs.
+- Pinned toolchain: deno 2.1.4, node 22.11.0 (`mise.toml`). Run all
+  `deno task …` from the repo root `/workspace`, not from a worktree (a worktree
+  under `.claude/worktrees/` causes false `fmt-check` failures from main).
 - Spec: `docs/superpowers/specs/2026-06-26-testing-practices-update-design.md`.
 
 ---
@@ -23,11 +47,16 @@
 ### Task 1: SKILL.md — ladder line + three decision-matrix rows
 
 **Files:**
-- Modify: `skills/testing-practices/SKILL.md` (ladder line ~12; matrix rows ~33 and ~39)
+
+- Modify: `skills/testing-practices/SKILL.md` (ladder line ~12; matrix rows ~33
+  and ~39)
 
 **Interfaces:**
+
 - Consumes: nothing.
-- Produces: matrix row labels `Golden / snapshot`, `Simulation / DST`, `Chaos / resilience` and the ladder token `simulation (DST)`, referenced by later tasks and reference docs.
+- Produces: matrix row labels `Golden / snapshot`, `Simulation / DST`,
+  `Chaos / resilience` and the ladder token `simulation (DST)`, referenced by
+  later tasks and reference docs.
 
 - [ ] **Step 1: Add `simulation (DST)` to the ladder line**
 
@@ -74,13 +103,13 @@ add:
 
 - [ ] **Step 4: Normalize formatting**
 
-Run: `deno fmt skills/testing-practices/SKILL.md`
-(This realigns the matrix columns automatically — do not hand-align.)
+Run: `deno fmt skills/testing-practices/SKILL.md` (This realigns the matrix
+columns automatically — do not hand-align.)
 
 - [ ] **Step 5: Verify formatting and skill lint pass**
 
-Run: `deno task fmt-check && deno task lint-skills`
-Expected: both PASS, no output errors.
+Run: `deno task fmt-check && deno task lint-skills` Expected: both PASS, no
+output errors.
 
 - [ ] **Step 6: Commit**
 
@@ -94,11 +123,16 @@ git commit -m "feat(testing-practices): add golden/DST/chaos matrix rows + simul
 ### Task 2: SKILL.md — "Choosing a test oracle" + "Golden / snapshot tests" sections
 
 **Files:**
-- Modify: `skills/testing-practices/SKILL.md` (insert two `##` sections immediately before `## Aligning tests with the implementation`)
+
+- Modify: `skills/testing-practices/SKILL.md` (insert two `##` sections
+  immediately before `## Aligning tests with the implementation`)
 
 **Interfaces:**
+
 - Consumes: the `Golden / snapshot` matrix row label from Task 1.
-- Produces: the oracle vocabulary (specified / recorded / derived / invariant) and the golden-test guidance referenced by Task 3's "Goldilocks" paragraph and by the per-language reference docs.
+- Produces: the oracle vocabulary (specified / recorded / derived / invariant)
+  and the golden-test guidance referenced by Task 3's "Goldilocks" paragraph and
+  by the per-language reference docs.
 
 - [ ] **Step 1: Insert both sections before the Aligning-tests heading**
 
@@ -108,9 +142,10 @@ Find this existing heading line:
 ## Aligning tests with the implementation
 ```
 
-Insert the following two sections immediately **before** it (leave one blank line between the inserted block and the heading):
+Insert the following two sections immediately **before** it (leave one blank
+line between the inserted block and the heading):
 
-````
+```
 ## Choosing a test oracle
 
 The **oracle** is how a test decides pass/fail. Pick it by what you can know
@@ -154,8 +189,7 @@ Golden/snapshot is the more-automated member of the **approval-testing** family:
 the same compare-against-a-committed-reference mechanism, differing mainly in how
 explicit the human approval step is. See `references/<language>.md` for the
 library per language.
-
-````
+```
 
 - [ ] **Step 2: Normalize formatting**
 
@@ -163,8 +197,7 @@ Run: `deno fmt skills/testing-practices/SKILL.md`
 
 - [ ] **Step 3: Verify**
 
-Run: `deno task fmt-check && deno task lint-skills`
-Expected: both PASS.
+Run: `deno task fmt-check && deno task lint-skills` Expected: both PASS.
 
 - [ ] **Step 4: Commit**
 
@@ -178,15 +211,21 @@ git commit -m "feat(testing-practices): add test-oracle and golden/snapshot sect
 ### Task 3: SKILL.md — Goldilocks + e2e paragraphs in "Aligning tests"
 
 **Files:**
-- Modify: `skills/testing-practices/SKILL.md` (append two paragraphs to the end of the `## Aligning tests with the implementation` section)
+
+- Modify: `skills/testing-practices/SKILL.md` (append two paragraphs to the end
+  of the `## Aligning tests with the implementation` section)
 
 **Interfaces:**
-- Consumes: "Right altitude" bullet (existing) and golden-test guidance from Task 2.
-- Produces: the e2e discipline and minimal-test principle referenced by Task 4's maintenance section ("right altitude" / flakiness cross-links).
+
+- Consumes: "Right altitude" bullet (existing) and golden-test guidance from
+  Task 2.
+- Produces: the e2e discipline and minimal-test principle referenced by Task 4's
+  maintenance section ("right altitude" / flakiness cross-links).
 
 - [ ] **Step 1: Append the two paragraphs after the last bullet of the section**
 
-Find this existing paragraph (the last content in the section, before `## Integration tests: provision dependencies via devenv.nix`):
+Find this existing paragraph (the last content in the section, before
+`## Integration tests: provision dependencies via devenv.nix`):
 
 ```
 Test-first is **one valid workflow** — use it when it helps; this skill does not
@@ -222,8 +261,7 @@ Run: `deno fmt skills/testing-practices/SKILL.md`
 
 - [ ] **Step 3: Verify**
 
-Run: `deno task fmt-check && deno task lint-skills`
-Expected: both PASS.
+Run: `deno task fmt-check && deno task lint-skills` Expected: both PASS.
 
 - [ ] **Step 4: Commit**
 
@@ -237,13 +275,19 @@ git commit -m "feat(testing-practices): add minimal-test (Goldilocks) and e2e-di
 ### Task 4: SKILL.md — "Test suite maintenance & developer velocity" section + references pointer
 
 **Files:**
-- Modify: `skills/testing-practices/SKILL.md` (insert one `##` section before `## Integration tests: provision dependencies via devenv.nix`; update the `formal-methods.md` reference bullet)
+
+- Modify: `skills/testing-practices/SKILL.md` (insert one `##` section before
+  `## Integration tests: provision dependencies via devenv.nix`; update the
+  `formal-methods.md` reference bullet)
 
 **Interfaces:**
-- Consumes: tiering vocabulary (pre-commit / PR-CI / nightly), the flakiness and right-altitude ideas from Task 3.
+
+- Consumes: tiering vocabulary (pre-commit / PR-CI / nightly), the flakiness and
+  right-altitude ideas from Task 3.
 - Produces: nothing downstream.
 
-- [ ] **Step 1: Insert the maintenance section before the Integration-tests heading**
+- [ ] **Step 1: Insert the maintenance section before the Integration-tests
+      heading**
 
 Find this existing heading line:
 
@@ -251,9 +295,10 @@ Find this existing heading line:
 ## Integration tests: provision dependencies via devenv.nix
 ```
 
-Insert the following section immediately **before** it (one blank line separating them):
+Insert the following section immediately **before** it (one blank line
+separating them):
 
-````
+```
 ## Test suite maintenance & developer velocity
 
 A test suite is a standing liability as well as an asset: it costs wall-clock on
@@ -295,8 +340,7 @@ windows.
 
 This is where the "right altitude" pyramid pays off: a top-heavy suite blows the
 blocking-tier budget first.
-
-````
+```
 
 - [ ] **Step 2: Update the formal-methods.md reference bullet**
 
@@ -321,8 +365,7 @@ Run: `deno fmt skills/testing-practices/SKILL.md`
 
 - [ ] **Step 4: Verify**
 
-Run: `deno task fmt-check && deno task lint-skills`
-Expected: both PASS.
+Run: `deno task fmt-check && deno task lint-skills` Expected: both PASS.
 
 - [ ] **Step 5: Commit**
 
@@ -336,11 +379,16 @@ git commit -m "feat(testing-practices): add suite-maintenance/velocity section +
 ### Task 5: references/formal-methods.md — broaden to simulation & fault injection
 
 **Files:**
-- Modify: `skills/testing-practices/references/formal-methods.md` (H1 + insert a section before `## Aligning a spec with the implementation`)
+
+- Modify: `skills/testing-practices/references/formal-methods.md` (H1 + insert a
+  section before `## Aligning a spec with the implementation`)
 
 **Interfaces:**
-- Consumes: the `Simulation / DST` and `Chaos / resilience` matrix-row labels (Task 1) and the references pointer text (Task 4).
-- Produces: tool names (madsim, turmoil, `testing/synctest`, Antithesis, Jepsen, Bombadil, Chaos Mesh, …) referenced by the per-language docs in Task 6.
+
+- Consumes: the `Simulation / DST` and `Chaos / resilience` matrix-row labels
+  (Task 1) and the references pointer text (Task 4).
+- Produces: tool names (madsim, turmoil, `testing/synctest`, Antithesis, Jepsen,
+  Bombadil, Chaos Mesh, …) referenced by the per-language docs in Task 6.
 
 - [ ] **Step 1: Broaden the H1**
 
@@ -356,7 +404,8 @@ with:
 # Formal methods, specifications & simulation
 ```
 
-- [ ] **Step 2: Insert the fault-injection section before the "Aligning a spec" heading**
+- [ ] **Step 2: Insert the fault-injection section before the "Aligning a spec"
+      heading**
 
 Find this existing heading:
 
@@ -366,7 +415,7 @@ Find this existing heading:
 
 Insert the following immediately **before** it (one blank line separating them):
 
-````
+```
 ## Fault injection: simulation, real clusters, and chaos
 
 Many of the hardest bugs only surface under faults — partitions, crashes,
@@ -423,13 +472,12 @@ perfect seed-based replay only inside the Antithesis platform.
 DST is the **runnable bridge** between property/model testing and full formal
 verification: property-based testing is the gateway to thinking in invariants,
 and DST exercises those invariants against a simulated, fault-injecting world.
-
-````
+```
 
 - [ ] **Step 3: Verify the drift check still passes**
 
-Run: `deno task check`
-Expected: PASS (generated files in sync; this file is not a generator input).
+Run: `deno task check` Expected: PASS (generated files in sync; this file is not
+a generator input).
 
 - [ ] **Step 4: Commit**
 
@@ -443,6 +491,7 @@ git commit -m "docs(testing-practices): cover DST, Jepsen, chaos, Antithesis & B
 ### Task 6: Per-language reference docs — golden + DST/Antithesis rows
 
 **Files:**
+
 - Modify: `skills/testing-practices/references/rust.md`
 - Modify: `skills/testing-practices/references/go.md`
 - Modify: `skills/testing-practices/references/python.md`
@@ -450,7 +499,9 @@ git commit -m "docs(testing-practices): cover DST, Jepsen, chaos, Antithesis & B
 - Modify: `skills/testing-practices/references/haskell.md`
 
 **Interfaces:**
-- Consumes: tool names from Task 5; the `Golden / snapshot` and `Simulation / DST` matrix labels from Task 1.
+
+- Consumes: tool names from Task 5; the `Golden / snapshot` and
+  `Simulation / DST` matrix labels from Task 1.
 - Produces: nothing downstream.
 
 - [ ] **Step 1: rust.md — add Golden and Simulation rows**
@@ -523,8 +574,7 @@ In the table, after the `| Mutation | mucheck | … |` row, add:
 
 - [ ] **Step 6: Verify the drift check still passes**
 
-Run: `deno task check`
-Expected: PASS.
+Run: `deno task check` Expected: PASS.
 
 - [ ] **Step 7: Commit**
 
@@ -538,23 +588,27 @@ git commit -m "docs(testing-practices): add golden + DST/Antithesis rows to per-
 ### Task 7: Full verification & regeneration gate
 
 **Files:**
-- Modify (only if drift detected): generated harness outputs via `deno task generate`
+
+- Modify (only if drift detected): generated harness outputs via
+  `deno task generate`
 
 **Interfaces:**
+
 - Consumes: all prior tasks.
 - Produces: a clean `deno task ci`.
 
 - [ ] **Step 1: Run the full CI gate**
 
-Run: `deno task ci`
-Expected: PASS (fmt-check, lint, typecheck, generated-file drift check, validate-manifests, lint-skills, test).
+Run: `deno task ci` Expected: PASS (fmt-check, lint, typecheck, generated-file
+drift check, validate-manifests, lint-skills, test).
 
 - [ ] **Step 2: If the drift check fails, regenerate and inspect**
 
-Run: `deno task generate && git status --short`
-Expected: either no changes, or only regenerated harness outputs (never hand-edit them).
+Run: `deno task generate && git status --short` Expected: either no changes, or
+only regenerated harness outputs (never hand-edit them).
 
-- [ ] **Step 3: Commit any regenerated outputs (only if Step 2 produced changes)**
+- [ ] **Step 3: Commit any regenerated outputs (only if Step 2 produced
+      changes)**
 
 ```bash
 git add -A
@@ -563,8 +617,7 @@ git commit -m "chore(testing-practices): regenerate harness outputs after skill 
 
 - [ ] **Step 4: Re-run CI to confirm green**
 
-Run: `deno task ci`
-Expected: PASS.
+Run: `deno task ci` Expected: PASS.
 
 ---
 
@@ -573,17 +626,27 @@ Expected: PASS.
 **Spec coverage** (against `2026-06-26-testing-practices-update-design.md`):
 
 - Golden tests — matrix row (Task 1) + dedicated subsection (Task 2). ✓
-- Oracle framing (specified/recorded/derived/invariant) incl. differential — Task 2. ✓
+- Oracle framing (specified/recorded/derived/invariant) incl. differential —
+  Task 2. ✓
 - Minimal-test ("Goldilocks") — Task 3. ✓
 - E2E discipline — Task 3. ✓
-- Suite maintenance & velocity (tiering, nightly, value-per-time/criticality, flakiness, parallelism) — Task 4. ✓
+- Suite maintenance & velocity (tiering, nightly, value-per-time/criticality,
+  flakiness, parallelism) — Task 4. ✓
 - Simulation/DST + Chaos matrix rows; ladder update — Task 1. ✓
-- formal-methods.md: DST (madsim/turmoil/synctest/shuttle/loom/VOPR/Antithesis), Jepsen, chaos (Chaos Mesh/Litmus/AWS FIS/Gremlin/Toxiproxy), Bombadil — Task 5. ✓
-- Per-language golden libs (insta/goldie/syrupy/vitest/tasty-golden) + DST/Antithesis notes — Task 6. ✓
+- formal-methods.md: DST (madsim/turmoil/synctest/shuttle/loom/VOPR/Antithesis),
+  Jepsen, chaos (Chaos Mesh/Litmus/AWS FIS/Gremlin/Toxiproxy), Bombadil —
+  Task 5. ✓
+- Per-language golden libs (insta/goldie/syrupy/vitest/tasty-golden) +
+  DST/Antithesis notes — Task 6. ✓
 - formal-methods.md filename kept, H1 broadened — Task 5. ✓
-- No install commands; delegation lines preserved — Global Constraints + every task. ✓
+- No install commands; delegation lines preserved — Global Constraints + every
+  task. ✓
 - Marketplace drift/CI gate — Task 7. ✓
 
-**Placeholder scan:** No TBD/TODO; every prose block is the literal final content. ✓
+**Placeholder scan:** No TBD/TODO; every prose block is the literal final
+content. ✓
 
-**Type/label consistency:** Matrix labels `Golden / snapshot`, `Simulation / DST`, `Chaos / resilience` used identically in Task 1 and Tasks 5–6; tool names (madsim, turmoil, `testing/synctest`, Antithesis, Bombadil, Jepsen) spelled consistently across Tasks 5–6. ✓
+**Type/label consistency:** Matrix labels `Golden / snapshot`,
+`Simulation / DST`, `Chaos / resilience` used identically in Task 1 and Tasks
+5–6; tool names (madsim, turmoil, `testing/synctest`, Antithesis, Bombadil,
+Jepsen) spelled consistently across Tasks 5–6. ✓

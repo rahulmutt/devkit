@@ -33,6 +33,14 @@ earn its keep_, not line count.
 A module, function, or file should have a single reason to change. Growing size
 is the smell that surfaces a violation, not the violation itself.
 
+### Prefer small, modular units
+
+Compose behavior from many small, independently replaceable units rather than a
+few large coupled ones — a unit you can understand, test, and swap without
+holding the rest in your head. Counter-pull: don't shatter one coherent behavior
+into a dozen trivial units that only ever change together — premature
+decomposition couples through indirection what was clear inline.
+
 ### Domain-driven design
 
 Name things in the domain's language; let module boundaries follow domain
@@ -47,9 +55,25 @@ inward toward the domain. See
 
 ### Optimize for the next reader (human or agent)
 
-Locality of behavior, explicit over clever, small focused files that fit in a
-context window, names that make comments redundant. Counter-pull: don't fragment
-so far that following one behavior means opening ten files.
+Locality of behavior, explicit over clever, names that make comments redundant.
+Counter-pull: don't chase brevity at the cost of legibility — a terse line the
+next reader must decode is not optimizing for them.
+
+### Prefer small, isolated files
+
+One unit per file; keep files small enough to hold in a context window, and
+isolated enough that one file's internals aren't entangled with another's.
+Counter-pull: don't fragment so far that following one behavior means opening ten
+files — locality matters as much as size.
+
+### Every line is a liability
+
+Every line added is a line to read, test, and maintain — the cheapest code is
+the code you don't write, so reach for the simplest thing that works (YAGNI).
+When code is reachable from no code path and you are _absolutely sure_, delete
+it; dead code misleads the next reader. Counter-pull: "unused" is easy to get
+wrong — check for reflection, dynamic dispatch, public API surface, feature
+flags, and external callers before deleting. When unsure, leave it and flag it.
 
 ## Coding style
 

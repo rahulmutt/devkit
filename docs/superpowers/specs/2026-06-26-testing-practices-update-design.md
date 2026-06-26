@@ -171,6 +171,16 @@ needs expensive or rate-limited external resources; it's a full cross-matrix
 sweep; or its marginal bug-catch per minute is low relative to the blocking
 tier. (Mutation, fuzz, and DST from the matrix are the usual nightly residents.)
 
+**Judge each test by value-per-time, and budget by criticality.** A test's
+worth is the bugs it catches (and the confidence it buys) *relative to the
+wall-clock it spends on every run* — a slow test that rarely fails meaningfully
+is a poor trade and a candidate for nightly or deletion. Allocate the
+blocking-tier time budget across suites in proportion to the **criticality of
+the system area each guards**: spend generously on the parts whose failure is
+catastrophic (money movement, auth, data integrity) and sparingly on
+low-risk/low-churn areas. This is the concrete rule behind "move to nightly when
+marginal bug-catch per minute is low."
+
 **Flakiness is the #1 velocity killer.** A test that fails intermittently
 trains the team to ignore red, which defeats the suite. Rules: quarantine a
 flaky test fast (out of the blocking tier, tracked), then **fix-or-delete** —
@@ -287,6 +297,9 @@ Where a language has an Antithesis SDK, add a one-line pointer to the DST tier i
   first-class velocity problem.
 - An agent defaults to integration over e2e, reserving e2e for the
   impossible/impractical-to-test-otherwise and keeping it minimal and stable.
+- An agent weighs a test's value (bugs caught, confidence) against its
+  wall-clock cost, and allocates suite time budget by the criticality of the
+  system area each suite guards.
 - `formal-methods.md` lets an agent distinguish DST vs Jepsen vs chaos
   engineering and name the right tool per language, without emitting install
   commands.

@@ -49,6 +49,9 @@ never emits install commands.
   from DST (real cluster, not deterministically reproducible).
 - **Minimal-test principle:** a named "Goldilocks" subsection under *Aligning
   tests with implementation*.
+- **E2E discipline:** a subsection — delegate down to integration wherever
+  possible; reserve e2e for the impossible/impractical-to-test-otherwise; keep
+  them few, minimal, and engineered against flakiness.
 - **Suite maintenance / velocity:** its own `SKILL.md` section covering tiering
   (pre-commit → PR/CI → nightly), when-to-go-nightly guidelines, flakiness
   (quarantine, fix-or-delete), and parallelism / test selection.
@@ -126,7 +129,26 @@ Under *Aligning tests with implementation*:
 Tie-ins: one-behavior-per-test, narrow oracles, and the over-broad-snapshot
 pitfall from §4.
 
-### 6. New section — "Test suite maintenance & developer velocity"
+### 6. New subsection — "Keep end-to-end tests few and stable"
+
+Under *Aligning tests with implementation*, the pyramid's top corollary:
+
+- **Push coverage down the pyramid.** Anything an integration test can cover —
+  wiring, contracts, collaborator behavior against a `devenv.nix`-provisioned
+  real dependency — belongs at the integration layer, not in an e2e/UI test.
+- **Reserve e2e for what is impossible or impractical to test lower:** true
+  full-stack user journeys, cross-service flows, and browser-rendered behavior
+  that only emerges end-to-end.
+- **Keep them minimal and stable.** E2E tests are the slowest and flakiest layer;
+  each one is a standing tax on the blocking tier. Prefer a small number of
+  high-value journeys over broad e2e coverage; engineer out flakiness (explicit
+  waits over sleeps, stable selectors, deterministic data) and quarantine/fix
+  anything intermittent immediately.
+
+Cross-links: feeds the "right altitude" weighting, the flakiness rules in the
+suite-maintenance section, and the UI row in the decision matrix.
+
+### 7. New section — "Test suite maintenance & developer velocity"
 
 A test suite is a standing liability, not just an asset: it costs wall-clock on
 every change and erodes trust when slow or flaky. This section gives the levers
@@ -163,7 +185,7 @@ naturally across workers and nightly windows.
 Cross-link: this is where the "right altitude" pyramid pays off — a top-heavy
 suite blows the blocking-tier budget first.
 
-### 7. References pointer
+### 8. References pointer
 
 Update the `formal-methods.md` bullet to reflect its broadened scope (formal
 methods, specifications **and simulation / fault injection**).
@@ -263,6 +285,8 @@ Where a language has an Antithesis SDK, add a one-line pointer to the DST tier i
 - An agent can decide which tier a given test belongs in (pre-commit / blocking
   PR / nightly), knows when to push a test to nightly, and treats flakiness as a
   first-class velocity problem.
+- An agent defaults to integration over e2e, reserving e2e for the
+  impossible/impractical-to-test-otherwise and keeping it minimal and stable.
 - `formal-methods.md` lets an agent distinguish DST vs Jepsen vs chaos
   engineering and name the right tool per language, without emitting install
   commands.

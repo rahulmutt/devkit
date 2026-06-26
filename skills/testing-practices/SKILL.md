@@ -9,7 +9,7 @@ Match the form of validation to the failure mode you are guarding against, and
 default to the **cheapest layer that catches the bug class**. Climb the ladder
 only when a cheaper layer cannot catch the failure:
 
-`static checks → unit → integration → property / model / fuzz / mutation → UI → formal methods`
+`static checks → unit → integration → property / model / fuzz / mutation → simulation (DST) → UI → formal methods`
 
 ## Static validation — the base of the pyramid
 
@@ -28,16 +28,19 @@ A strict typechecker config is itself a form of spec: keeping types precise and
 
 ## Decision matrix
 
-| Type                | Catches                                                 | Reach for it when                                                                        | Cost        |
-| ------------------- | ------------------------------------------------------- | ---------------------------------------------------------------------------------------- | ----------- |
-| Unit                | Logic errors in a single unit                           | Pure logic, branches, edge cases                                                         | Low         |
-| Integration         | Wiring/contract errors between components & real deps   | Behavior depends on collaborators, DB, services                                          | Medium      |
-| Property-based      | Violated invariants across the input space              | A property holds for all inputs (round-trips, idempotence, ordering)                     | Medium      |
-| Model-based         | Divergence from a reference model over action sequences | Stateful systems with a simpler model; the bridge to formal specs                        | Medium-High |
-| Fuzz                | Crashes / panics / UB on malformed input                | Parsers, decoders, anything taking untrusted bytes                                       | Medium      |
-| Mutation            | Weak or missing assertions (tests that don't test)      | Auditing an existing suite's real strength                                               | High (slow) |
-| UI                  | Broken user-visible flows in a real browser             | Critical end-to-end paths through the UI                                                 | High        |
-| Formal verification | Spec violations proven absent                           | Concurrency, protocols, critical invariants, security (see references/formal-methods.md) | Highest     |
+| Type                | Catches                                                 | Reach for it when                                                                                             | Cost        |
+| ------------------- | ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- | ----------- |
+| Unit                | Logic errors in a single unit                           | Pure logic, branches, edge cases                                                                              | Low         |
+| Golden / snapshot   | Unintended changes to large structured output           | Stable, reviewable serialized output (codegen, CLI, AST/IR, API JSON, render trees)                           | Low         |
+| Integration         | Wiring/contract errors between components & real deps   | Behavior depends on collaborators, DB, services                                                               | Medium      |
+| Property-based      | Violated invariants across the input space              | A property holds for all inputs (round-trips, idempotence, ordering)                                          | Medium      |
+| Model-based         | Divergence from a reference model over action sequences | Stateful systems with a simpler model; the bridge to formal specs                                             | Medium-High |
+| Fuzz                | Crashes / panics / UB on malformed input                | Parsers, decoders, anything taking untrusted bytes                                                            | Medium      |
+| Mutation            | Weak or missing assertions (tests that don't test)      | Auditing an existing suite's real strength                                                                    | High (slow) |
+| UI                  | Broken user-visible flows in a real browser             | Critical end-to-end paths through the UI                                                                      | High        |
+| Simulation / DST    | Heisenbugs from timing, faults, interleavings           | Distributed/concurrent systems where reproducibility is the core problem (see `references/formal-methods.md`) | High        |
+| Chaos / resilience  | Availability/resilience failures under real faults      | Validating a live distributed system stays up and degrades gracefully                                         | High        |
+| Formal verification | Spec violations proven absent                           | Concurrency, protocols, critical invariants, security (see references/formal-methods.md)                      | Highest     |
 
 ## Aligning tests with the implementation
 

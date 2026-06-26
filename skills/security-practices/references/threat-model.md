@@ -18,7 +18,7 @@ Four passes. Most components need only this.
 1. **Assets** — what is worth protecting: data, credentials, availability,
    integrity, money, reputation. If losing it hurts, it is an asset.
 2. **Boundaries** — enumerate the trust boundaries with the
-   [`distributed-systems`](distributed-systems.md) lens. Each boundary is where
+   [`distributed-systems.md`](distributed-systems.md) lens. Each boundary is where
    a threat acts.
 3. **Adversaries** — who might attack, and the capability you assume: anonymous
    internet user, authenticated tenant reaching across tenants, malicious
@@ -67,8 +67,9 @@ walking **STRIDE** across each boundary:
 | **D**enial of service   | Can it be exhausted or wedged?              | Rate limits, timeouts, quotas          |
 | **E**levation of priv.  | Can a caller gain rights they should not?   | Authorization, least privilege         |
 
-The controls are the same ones tabulated in
-[`SKILL.md`](../SKILL.md) — STRIDE just routes each boundary to them. For each
+Most of these route back to the controls tabulated in
+[`SKILL.md`](../SKILL.md) — plus a few primitives (audit logging, integrity
+checks) that STRIDE surfaces and the controls table does not. For each
 boundary × category that is plausible, record the threat and its mitigation in
 the template above. Skip categories that do not apply: STRIDE is a checklist to
 jog enumeration, not a quota to fill.

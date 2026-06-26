@@ -26,16 +26,16 @@ Extend the `writing-clean-code` skill with three principles the current
 
 ## Existing principles (for overlap reconciliation)
 
-- **One purpose per unit** — single reason to change (cohesion). *Distinct from
-  new modularity principle, which is about decomposition granularity.*
+- **One purpose per unit** — single reason to change (cohesion). _Distinct from
+  new modularity principle, which is about decomposition granularity._
 - **Explicit boundaries and dependency direction** — narrow interfaces,
-  dependencies point inward. *Distinct from new modularity principle, which is
-  about composability, not interface shape.*
+  dependencies point inward. _Distinct from new modularity principle, which is
+  about composability, not interface shape._
 - **Optimize for the next reader** — currently carries the line "small focused
   files that fit in a context window" and the "don't fragment so far that
-  following one behavior means opening ten files" counter-pull. *Both move to
+  following one behavior means opening ten files" counter-pull. _Both move to
   the new "small, isolated files" principle; this principle is tightened to
-  avoid duplication.*
+  avoid duplication._
 
 ## Changes
 
@@ -44,8 +44,8 @@ Extend the `writing-clean-code` skill with three principles the current
 > Compose behavior from many small, independently replaceable units rather than
 > a few large coupled ones — a unit you can understand, test, and swap without
 > holding the rest in your head. Counter-pull: don't shatter one coherent
-> behavior into a dozen trivial units that only ever change together —
-> premature decomposition couples through indirection what was clear inline.
+> behavior into a dozen trivial units that only ever change together — premature
+> decomposition couples through indirection what was clear inline.
 
 ### 2. New principle — "Prefer small, isolated files"
 
@@ -58,7 +58,7 @@ Extend the `writing-clean-code` skill with three principles the current
 
 > Every line added is a line to read, test, and maintain — the cheapest code is
 > the code you don't write, so reach for the simplest thing that works (YAGNI).
-> When code is reachable from no code path and you are *absolutely sure*, delete
+> When code is reachable from no code path and you are _absolutely sure_, delete
 > it; dead code misleads the next reader. Counter-pull: "unused" is easy to get
 > wrong — check for reflection, dynamic dispatch, public API surface, feature
 > flags, and external callers before deleting. When unsure, leave it and flag

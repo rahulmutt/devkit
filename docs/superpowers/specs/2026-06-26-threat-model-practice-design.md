@@ -2,7 +2,7 @@
 
 ## Problem
 
-The `security-practices` skill teaches a trust-boundary threat *lens* —
+The `security-practices` skill teaches a trust-boundary threat _lens_ —
 enumerate boundaries, ask "what happens if the other side is hostile," match a
 control. But that reasoning is **ephemeral**: it happens in the moment during
 design and then evaporates. Nothing in the skill instructs the developer to
@@ -10,7 +10,7 @@ write the result down, commit it, or make it discoverable.
 
 The consequence: every agent and contributor re-derives what the system is
 protecting and against whom — usually incompletely. The skill's own description
-promises a "threat lens" but never produces a durable threat *model artifact*
+promises a "threat lens" but never produces a durable threat _model artifact_
 that records assets, adversaries, and explicitly out-of-scope assumptions. The
 design spec and plan never considered this, so it is an unaddressed gap, not a
 deliberate omission.
@@ -48,7 +48,7 @@ reasoning reference (`references/distributed-systems.md`):
 ### `SKILL.md` — new section `## Commit a threat model`
 
 Placed after the opening lens paragraph and before `## Controls` — the threat
-model is the *what/whom* that the controls (*how*) serve. Roughly two short
+model is the _what/whom_ that the controls (_how_) serve. Roughly two short
 paragraphs:
 
 - A threat model is the boundary lens written down and committed, so agents and
@@ -57,17 +57,17 @@ paragraphs:
   of scope.
 - Write one when a component handles untrusted input, secrets, or
   cross-trust-boundary traffic; revisit when those boundaries change. Keep it in
-  the repo (location is the team's choice) and point to it from
-  `CLAUDE.md` / `AGENTS.md` so agents load it before touching security-sensitive
-  code. Pointer to `references/threat-model.md` for the full method.
+  the repo (location is the team's choice) and point to it from `CLAUDE.md` /
+  `AGENTS.md` so agents load it before touching security-sensitive code. Pointer
+  to `references/threat-model.md` for the full method.
 
 Add one entry to the `## References` list pointing at the new file.
 
 ### `references/threat-model.md` (new)
 
-- **Intro:** a threat model is the `distributed-systems.md` lens written down and
-  committed; it records what you protect, from whom, and what you have decided
-  *not* to defend. Commit it and link it from `CLAUDE.md` / `AGENTS.md`.
+- **Intro:** a threat model is the `distributed-systems.md` lens written down
+  and committed; it records what you protect, from whom, and what you have
+  decided _not_ to defend. Commit it and link it from `CLAUDE.md` / `AGENTS.md`.
 
 - **Tier 1 — lightweight method (default):** four passes, sufficient for most
   components:
@@ -75,7 +75,7 @@ Add one entry to the `## References` list pointing at the new file.
      integrity, money, reputation).
   2. **Boundaries** — enumerate trust boundaries, reusing the
      `distributed-systems` lens.
-  3. **Adversaries** — who attacks and the assumed *capability* (anonymous
+  3. **Adversaries** — who attacks and the assumed _capability_ (anonymous
      internet user, cross-tenant authenticated caller, malicious dependency,
      insider, compromised neighbor service). Name the capability, not just the
      label.

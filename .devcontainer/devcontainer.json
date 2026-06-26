@@ -1,6 +1,6 @@
 {
   "name": "devkit",
-  "image": "ghcr.io/rahulmutt/dev:sha-42641e0",
+  "image": "ghcr.io/rahulmutt/dev:sha-0a6b9e3",
   "workspaceFolder": "/workspace",
   "remoteUser": "dev",
   "postCreateCommand": "post-create.sh",

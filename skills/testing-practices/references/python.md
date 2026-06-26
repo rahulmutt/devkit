@@ -9,9 +9,12 @@
 | Model-based | hypothesis | `RuleBasedStateMachine` |
 | Fuzz | atheris | libFuzzer-based `TestOneInput` harness |
 | Mutation | mutmut (or cosmic-ray) | `mutmut run` to audit assertion strength |
+| Golden / snapshot | syrupy | `assert x == snapshot` |
 | UI | Playwright for Python | `page.goto(...)` / `expect(locator)` |
 
 **Emphasis:** Python is dynamically typed — a strict typechecker (mypy/pyright) is the single highest-leverage layer and recovers guarantees a compiler would give for free. Run it in CI, not just in the editor.
+
+**DST / hypervisor:** no mature in-process DST framework; a Python Antithesis SDK exists — see `formal-methods.md`.
 
 **Integration deps:** do **not** use `pytest-docker` or `testcontainers`. Provision Postgres/Redis via `devenv.nix` and connect with `psycopg` / `redis-py`.
 

@@ -11,6 +11,7 @@
 | Model-based | hedgehog (or quickcheck-state-machine) | state-machine commands |
 | Fuzz | hedgehog/QuickCheck byte generators | no mature coverage-guided fuzzer; generate bytes as a property |
 | Mutation | mucheck | research-grade; expect limited tooling maturity |
+| Golden / snapshot | tasty-golden | `goldenVsString` / `goldenVsFile` |
 
 **Emphasis:** the compiler and an exhaustive type model catch most defect classes statically — concentrate runtime testing on properties and stateful models.
 

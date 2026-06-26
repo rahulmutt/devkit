@@ -19,8 +19,9 @@ design did not cover:
    pointers to Antithesis, Bombadil, madsim, turmoil, Go `synctest`, Jepsen, and
    the CNCF chaos tools.
 
-Plus one cross-cutting authoring principle: **find the minimal test that
-captures a behavior** ("Goldilocks").
+Plus two cross-cutting concerns: **find the minimal test that captures a
+behavior** ("Goldilocks"), and **test-suite maintenance & developer velocity**
+(tiering fast vs slow suites, when to go nightly, flakiness, parallelism).
 
 The skill stays a *decision framework*. All install/tooling concerns remain
 delegated to `developer-environment`; this skill names libraries and idioms and
@@ -48,6 +49,9 @@ never emits install commands.
   from DST (real cluster, not deterministically reproducible).
 - **Minimal-test principle:** a named "Goldilocks" subsection under *Aligning
   tests with implementation*.
+- **Suite maintenance / velocity:** its own `SKILL.md` section covering tiering
+  (pre-commit → PR/CI → nightly), when-to-go-nightly guidelines, flakiness
+  (quarantine, fix-or-delete), and parallelism / test selection.
 - **`formal-methods.md` filename:** kept (broaden the H1 only) to avoid breaking
   the SKILL pointer.
 - **Ladder:** `simulation (DST)` inserted just before formal methods; golden
@@ -122,7 +126,44 @@ Under *Aligning tests with implementation*:
 Tie-ins: one-behavior-per-test, narrow oracles, and the over-broad-snapshot
 pitfall from §4.
 
-### 6. References pointer
+### 6. New section — "Test suite maintenance & developer velocity"
+
+A test suite is a standing liability, not just an asset: it costs wall-clock on
+every change and erodes trust when slow or flaky. This section gives the levers
+to keep that cost from throttling iteration.
+
+**Tier the suite by speed and blast radius:**
+
+- **pre-commit / on-save** — static checks + fast unit tests. Sub-second to a
+  few seconds; runs constantly, must never block flow.
+- **PR / CI (blocking)** — unit + the key integration tests. Hold it to a
+  **wall-clock budget** (state an explicit target, e.g. "keep the blocking tier
+  under N minutes"); it gates merges, so its speed *is* team velocity.
+- **nightly / scheduled** — e2e, mutation, fuzz, DST soak runs, chaos
+  experiments, full cross-matrix (OS / runtime versions). Slow, broad, or
+  long-running; not on the critical path of a merge.
+
+**Move a test to nightly/scheduled when** any holds: it's too slow for the PR
+budget; it's an inherently long-running campaign (fuzz, DST soak, chaos); it
+needs expensive or rate-limited external resources; it's a full cross-matrix
+sweep; or its marginal bug-catch per minute is low relative to the blocking
+tier. (Mutation, fuzz, and DST from the matrix are the usual nightly residents.)
+
+**Flakiness is the #1 velocity killer.** A test that fails intermittently
+trains the team to ignore red, which defeats the suite. Rules: quarantine a
+flaky test fast (out of the blocking tier, tracked), then **fix-or-delete** —
+never paper over it with blind retry-to-green. Track flake rate as a health
+metric.
+
+**Keep the blocking tier fast as the suite grows** via parallelization /
+sharding across workers, and **test selection** (run only the tests impacted by
+a change) once the full suite outgrows the budget. Mutation and fuzz parallelize
+naturally across workers and nightly windows.
+
+Cross-link: this is where the "right altitude" pyramid pays off — a top-heavy
+suite blows the blocking-tier budget first.
+
+### 7. References pointer
 
 Update the `formal-methods.md` bullet to reflect its broadened scope (formal
 methods, specifications **and simulation / fault injection**).
@@ -219,6 +260,9 @@ Where a language has an Antithesis SDK, add a one-line pointer to the DST tier i
   DST, or chaos engineering, and pick a test oracle deliberately.
 - The minimal-test ("Goldilocks") principle is stated as a named, actionable
   rule.
+- An agent can decide which tier a given test belongs in (pre-commit / blocking
+  PR / nightly), knows when to push a test to nightly, and treats flakiness as a
+  first-class velocity problem.
 - `formal-methods.md` lets an agent distinguish DST vs Jepsen vs chaos
   engineering and name the right tool per language, without emitting install
   commands.

@@ -1,14 +1,12 @@
 ---
 name: using-devkit
-description: Use when starting any conversation in a repo with devkit installed — establishes that devkit skills exist and must be checked before acting.
+description: Use when starting any conversation or new engineering task in a repo with devkit installed — establishes that devkit skills exist and must be checked before acting.
 ---
 
 # Using Devkit
 
 You have devkit skills. Devkit is a small marketplace of developer-workflow
 skills that work across AI coding agents.
-
-## The Rule
 
 **Before acting on a task, check whether a devkit skill applies.** If one does,
 invoke it and follow it. Even a small chance a skill applies means you should

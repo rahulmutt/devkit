@@ -2,8 +2,6 @@
 
 | Role | Library | Idiom |
 |------|---------|-------|
-| Lint | clippy | `cargo clippy -- -D warnings` |
-| Format | rustfmt | `cargo fmt --check` |
 | Typecheck | the compiler | the type system already does the heavy lifting |
 | Unit / integration | built-in | `#[test]` in-module; `tests/` dir for integration |
 | Property-based | proptest (or quickcheck) | `proptest! { ... }` |
@@ -13,6 +11,10 @@
 | Golden / snapshot | insta | `assert_snapshot!`, redactions, `cargo insta review` |
 | Simulation / DST | madsim / turmoil | deterministic async runtime / sim network; `shuttle`/`loom` for interleavings |
 | Code-level formal | kani | see formal-methods.md |
+
+**Lint & format:** owned by the `writing-clean-code` skill — see its
+`references/rust.md` for the canonical formatter + linter (`rustfmt` + `clippy`);
+treat them as the static-validation base of the pyramid here.
 
 **Emphasis:** the compiler and clippy catch most defect classes statically — invest test budget in property and fuzz tests where the type system can't reach (invariants, untrusted input).
 

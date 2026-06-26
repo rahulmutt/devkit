@@ -1,6 +1,6 @@
 ---
 name: security-practices
-description: Use when designing, changing, or reviewing a distributed component, handling untrusted input or secrets, or choosing security tooling — apply a trust-boundary threat lens (authn, authz, transport, validation, secrets, supply chain) and select free OSS scanners (secret, dependency/SCA, SAST, container/IaC) for the repo's stack. Delegates all tool installation to developer-environment.
+description: Use when designing, changing, or reviewing a distributed component, writing or revisiting a threat model, handling untrusted input or secrets, or choosing security tooling — apply a trust-boundary threat lens (authn, authz, transport, validation, secrets, supply chain) and select free OSS scanners (secret, dependency/SCA, SAST, container/IaC) for the repo's stack. Delegates all tool installation to developer-environment.
 ---
 
 # Security Practices
@@ -26,7 +26,8 @@ Write one when a component handles untrusted input, secrets, or
 cross-trust-boundary traffic, and revisit it when those boundaries change. Keep
 it in the repo (location is yours) and point to it from `CLAUDE.md` /
 `AGENTS.md` so agents load it before touching security-sensitive code. Full
-method and template → [`references/threat-model.md`](references/threat-model.md).
+method and template →
+[`references/threat-model.md`](references/threat-model.md).
 
 ## Controls — match the boundary to its control
 
@@ -70,11 +71,11 @@ scanning is conditional: run it only when the repo actually has those artifacts.
 Multi-purpose scanners (Trivy, osv-scanner) span several categories — prefer one
 that covers the need over stacking redundant tools.
 
-## Installing tools
+## Boundaries with sibling skills
 
-This skill names the tool and the idiom; it never gives install commands. To
-install any scanner, use **`developer-environment`** (mise-pinned, devenv.nix
-fallback).
+- Scanner / tool installation → **`developer-environment`** (mise-pinned,
+  devenv.nix fallback). This skill names the tool and the idiom; it never gives
+  install commands.
 
 ## References
 

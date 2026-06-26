@@ -1,6 +1,6 @@
 ---
 name: writing-clean-code
-description: Use when authoring or restructuring code — how to design abstractions, decide what to inline vs. extract, draw module boundaries, apply domain-driven design and hexagonal architecture, and follow each language's canonical style. The guiding principle is code that humans and coding agents can both maintain and evolve long-term. Delegates all tool installation to developer-environment.
+description: Use when authoring, restructuring, or simplifying code — how to design abstractions, decide what to inline vs. extract, draw module boundaries, name things in the domain's language, delete dead code (YAGNI), apply domain-driven design and hexagonal architecture, and follow each language's canonical style. The guiding principle is code that humans and coding agents can both maintain and evolve long-term. Delegates all tool installation to developer-environment.
 ---
 
 # Writing Clean Code
@@ -63,8 +63,8 @@ next reader must decode is not optimizing for them.
 
 One unit per file; keep files small enough to hold in a context window, and
 isolated enough that one file's internals aren't entangled with another's.
-Counter-pull: don't fragment so far that following one behavior means opening ten
-files — locality matters as much as size.
+Counter-pull: don't fragment so far that following one behavior means opening
+ten files — locality matters as much as size.
 
 ### Every line is a liability
 
@@ -83,22 +83,22 @@ hand-policing what a formatter already enforces. See the per-language references
 below for the canonical guide, formatter, linter, and key idioms for each
 supported language.
 
-## Installing tools
+## Boundaries with sibling skills
 
-To install any formatter or linter, use **`developer-environment`**
-(mise-pinned, devenv.nix fallback). This skill names the style guide and idiom
-and never gives install commands.
+- Formatter / linter installation → **`developer-environment`** (mise-pinned,
+  devenv.nix fallback). This skill names the style guide and idiom and never
+  gives install commands.
+- Counterpart skill for _validating_ code: `testing-practices` (this skill is
+  the _authoring_ counterpart).
 
 ## References
 
 - [`references/hexagonal-architecture.md`](references/hexagonal-architecture.md)
   — ports & adapters, the dependency rule, and when it earns its cost vs.
   over-engineering.
-- [`references/typescript.md`](references/typescript.md) — canonical style
-  guide, formatter/linter, and key idioms for TypeScript.
-- [`references/python.md`](references/python.md) — same, for Python.
-- [`references/rust.md`](references/rust.md) — same, for Rust.
-- [`references/go.md`](references/go.md) — same, for Go.
-- [`references/haskell.md`](references/haskell.md) — same, for Haskell.
-
-The counterpart skill for _validating_ code is `testing-practices`.
+- Per-language canonical style guide, formatter, linter, and idioms:
+  [`references/typescript.md`](references/typescript.md),
+  [`references/python.md`](references/python.md),
+  [`references/rust.md`](references/rust.md),
+  [`references/go.md`](references/go.md),
+  [`references/haskell.md`](references/haskell.md).

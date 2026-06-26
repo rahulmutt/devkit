@@ -1,6 +1,6 @@
 ---
 name: testing-practices
-description: Use when deciding how to test or validate code — which form of validation (static checks, unit, integration, property/model/fuzz/mutation, UI, or formal methods), when to reach for each, and how to align it with the implementation. Delegates all tool installation to developer-environment.
+description: Use when deciding how to test or validate code — which form of validation (static checks, unit, integration, golden/snapshot, property/model/fuzz/mutation, simulation/DST, UI, or formal methods), when to reach for each, how to align it with the implementation, and how to keep a test suite fast and trustworthy (speed tiering, flakiness, CI/PR wall-clock budgets). Delegates all tool installation to developer-environment.
 ---
 
 # Testing Practices
@@ -40,7 +40,7 @@ A strict typechecker config is itself a form of spec: keeping types precise and
 | UI                  | Broken user-visible flows in a real browser             | Critical end-to-end paths through the UI                                                                      | High        |
 | Simulation / DST    | Heisenbugs from timing, faults, interleavings           | Distributed/concurrent systems where reproducibility is the core problem (see `references/formal-methods.md`) | High        |
 | Chaos / resilience  | Availability/resilience failures under real faults      | Validating a live distributed system stays up and degrades gracefully                                         | High        |
-| Formal verification | Spec violations proven absent                           | Concurrency, protocols, critical invariants, security (see references/formal-methods.md)                      | Highest     |
+| Formal verification | Spec violations proven absent                           | Concurrency, protocols, critical invariants, security (see `references/formal-methods.md`)                    | Highest     |
 
 ## Choosing a test oracle
 
@@ -174,23 +174,22 @@ e.g. validating a container image bound for Kubernetes.
 This is the "system service" case `developer-environment`'s mise-first /
 devenv.nix-fallback rule already covers.
 
-## Installing tools
+## Boundaries with sibling skills
 
-To install any runner, linter, typechecker, fuzzer, or service, use
-**`developer-environment`** (mise-pinned, devenv.nix fallback). This skill names
-the library and idiom and never gives install commands.
+- Runner / linter / typechecker / fuzzer / service installation →
+  **`developer-environment`** (mise-pinned, devenv.nix fallback). This skill
+  names the library and idiom and never gives install commands.
+- Counterpart skill for _authoring_ code: `writing-clean-code` (this skill is
+  the _validating_ counterpart).
 
 ## References
 
-- [`references/typescript.md`](references/typescript.md) — concrete library per
-  role for TypeScript.
-- [`references/python.md`](references/python.md) — concrete library per role for
-  Python.
-- [`references/rust.md`](references/rust.md) — concrete library per role for
-  Rust.
-- [`references/go.md`](references/go.md) — concrete library per role for Go.
-- [`references/haskell.md`](references/haskell.md) — concrete library per role
-  for Haskell.
+- Per-language library per role (lint, typecheck, unit, property, fuzz, golden,
+  UI): [`references/typescript.md`](references/typescript.md),
+  [`references/python.md`](references/python.md),
+  [`references/rust.md`](references/rust.md),
+  [`references/go.md`](references/go.md),
+  [`references/haskell.md`](references/haskell.md).
 - [`references/formal-methods.md`](references/formal-methods.md) — when formal
   methods, simulation, and fault injection (DST, Jepsen, chaos engineering) earn
   their cost and which tool fits which problem.

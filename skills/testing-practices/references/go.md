@@ -2,9 +2,6 @@
 
 | Role | Library | Idiom |
 |------|---------|-------|
-| Vet | go vet | `go vet ./...` |
-| Format | gofmt | `gofmt -l` (fail if non-empty) |
-| Static analysis | staticcheck | `staticcheck ./...` |
 | Unit / integration | built-in `testing` | `func TestX(t *testing.T)`; build tags for integration |
 | Property-based | rapid (default) | `rapid.Check(t, func(t *rapid.T){...})` |
 | Model-based | rapid state machine | `rapid.Run` with a state machine |
@@ -13,6 +10,10 @@
 | Golden / snapshot | goldie (or autogold) | golden files; `-update` to regenerate |
 | Simulation / DST | testing/synctest | stdlib fake-clock bubble (stable in Go 1.25) |
 | UI | Playwright-go (or chromedp) | drive a real browser |
+
+**Vet, lint & format:** owned by the `writing-clean-code` skill — see its
+`references/go.md` for the canonical `gofmt` + `staticcheck` (with `go vet`);
+treat them as the static-validation base of the pyramid here.
 
 **Property choice:** default to **rapid** — native `go test` integration, automatic shrinking, minimal boilerplate. Use **gopter** instead when you need its richer generator/command combinators or its explicit state-machine API.
 

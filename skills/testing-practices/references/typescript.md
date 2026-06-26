@@ -2,8 +2,6 @@
 
 | Role | Library | Idiom |
 |------|---------|-------|
-| Lint | eslint | `eslint .` in CI; fail on warnings |
-| Format | prettier (or `deno fmt`) | format-on-save |
 | Typecheck | `tsc --noEmit --strict` | strict mode; ban `any` |
 | Unit / integration | vitest (or `node:test`) | `describe` / `it` / `expect` |
 | Property-based | fast-check | `fc.assert(fc.property(arb, pred))` |
@@ -12,6 +10,10 @@
 | Mutation | Stryker | `stryker run` to audit assertion strength |
 | Golden / snapshot | vitest (or jest) snapshots | `toMatchSnapshot` / `toMatchInlineSnapshot` |
 | UI | Playwright | `page.goto(...)` / `expect(locator)` |
+
+**Lint & format:** owned by the `writing-clean-code` skill — see its
+`references/typescript.md` for the canonical formatter + linter; treat them as
+the static-validation base of the pyramid here.
 
 **Emphasis:** JS is dynamically typed — `tsc --strict` is the single highest-leverage validation layer; treat type errors as build failures.
 

@@ -1,14 +1,12 @@
 ---
 name: developer-environment
-description: Use when installing a tool, pinning a language version, adding a dependency, setting up a project's dev environment, or deciding whether to adopt a build system (Bazel). Enforces mise-first, devenv.nix-fallback with pinned versions; native build tooling by default.
+description: Use when installing a tool, pinning a language version, adding or updating a dependency (tool, runtime, or application library), setting up a project's dev environment, or deciding whether to adopt a build system (Bazel). Enforces mise-first, devenv.nix-fallback with pinned versions; native build tooling by default.
 ---
 
 # Developer Environment
 
 Install developer tools with **mise**, pinned to exact versions. Fall back to
 **devenv.nix** only when mise cannot provide the tool.
-
-## The rule
 
 1. **mise is the default** for languages, CLIs, and runtimes. One declarative
    `mise.toml`, fast, per-project.
@@ -36,9 +34,11 @@ reproducibility bug.
    cargo, npm, pipx, go)? → install via that backend, still pinned, e.g.
    `mise use --pin "cargo:ripgrep@14.1.1"`.
 3. **Genuinely unavailable through mise** (system lib, complex Nix derivation)?
-   → add it to `devenv.nix` (see `references/devenv.nix`).
+   → add it to `devenv.nix` (see
+   [`references/devenv.nix`](references/devenv.nix)).
 
-See `references/decision-tree.md` for worked examples.
+See [`references/decision-tree.md`](references/decision-tree.md) for worked
+examples.
 
 ## Verify after installing
 
@@ -46,7 +46,7 @@ Never claim a tool is installed without checking. After install:
 
 ```bash
 mise install
-<tool> --version   # confirm it resolves to the pinned version
+<tool> --version   # confirm the pinned version (use the binary's real name, e.g. rg for ripgrep)
 ```
 
 If the version printed does not match the pin, the install is not done.
@@ -56,6 +56,29 @@ If the version printed does not match the pin, the install is not done.
 mise and devenv.nix can live in one repo: mise for the common case, devenv.nix
 for the exceptions. Keep each tool in exactly one place — don't pin the same
 tool in both.
+
+## Application dependencies
+
+mise and devenv.nix provision the **toolchain**; a project's **application and
+library dependencies** are owned by the language's native package manager —
+`npm`/`pnpm`, `cargo`, `go mod`, `uv`/`pip`, `cabal`. mise installs the package
+manager (pinned); the package manager resolves the libraries.
+
+1. **Commit the lockfile.** A committed lockfile is the application-dependency
+   echo of pinning — it makes resolution deterministic across machines and CI.
+   Pin to exact versions, or to the tightest range your lockfile fully resolves;
+   never depend on a floating latest.
+2. **Every dependency is a liability.** Each one is code you don't control but
+   must read, update, and trust — `writing-clean-code`'s "every line is a
+   liability" carried into the supply chain. Prefer the standard library or one
+   small, well-maintained dependency over several overlapping ones, and weigh
+   the transitive cost before adding.
+3. **Update on a cadence, not in a panic.** Keep dependencies current with an
+   automated updater (Renovate, Dependabot) gated by CI, so upgrades land in
+   small reviewable steps instead of a risky big-bang bump.
+
+Scanning those dependencies for known CVEs is `security-practices`' supply-chain
+control (SCA), not this skill's job.
 
 ## Build orchestration
 
@@ -88,11 +111,12 @@ mise use --pin bazelisk@<version>   # then: echo "<bazel-version>" > .bazelversi
 ```
 
 When a trigger holds and you're migrating, follow the phased path in
-`references/bazel-migration.md`.
+[`references/bazel-migration.md`](references/bazel-migration.md).
 
 ## Templates
 
 Copy and adapt:
 
-- `references/mise.toml` — pinned `[tools]`, `[env]`, `[tasks]`.
-- `references/devenv.nix` — minimal fallback shell.
+- [`references/mise.toml`](references/mise.toml) — pinned `[tools]`, `[env]`,
+  `[tasks]`.
+- [`references/devenv.nix`](references/devenv.nix) — minimal fallback shell.

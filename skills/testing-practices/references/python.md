@@ -2,7 +2,6 @@
 
 | Role | Library | Idiom |
 |------|---------|-------|
-| Lint + format | ruff | `ruff check` + `ruff format` |
 | Typecheck | mypy or pyright (strict) | `--strict`; ban implicit `Any` |
 | Unit / integration | pytest | `def test_x(): assert ...` |
 | Property-based | hypothesis | `@given(strategy)` |
@@ -11,6 +10,10 @@
 | Mutation | mutmut (or cosmic-ray) | `mutmut run` to audit assertion strength |
 | Golden / snapshot | syrupy | `assert x == snapshot` |
 | UI | Playwright for Python | `page.goto(...)` / `expect(locator)` |
+
+**Lint & format:** owned by the `writing-clean-code` skill — see its
+`references/python.md` for the canonical formatter + linter (`ruff`); treat them
+as the static-validation base of the pyramid here.
 
 **Emphasis:** Python is dynamically typed — a strict typechecker (mypy/pyright) is the single highest-leverage layer and recovers guarantees a compiler would give for free. Run it in CI, not just in the editor.
 

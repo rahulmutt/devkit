@@ -38,8 +38,8 @@ restating them. See
 ### Workflows as named tasks
 
 Every workflow a contributor repeats — test, build, lint, run, regenerate — is
-one named command defined in one place (the runner `developer-environment`
-installs). This skill exposes and names the workflows; it never installs the
+one named command, defined once in the runner that `developer-environment`
+installs. This skill exposes and names the workflows; it never installs the
 runner. Counter-pull: don't wrap a trivial one-liner in indirection or mint a
 task for something run twice a year. Name what people actually repeat.
 
@@ -70,8 +70,8 @@ the source. This is what separates this skill from "just write docs."
 
 ## Boundaries with sibling skills
 
-- Tool / runner **installation** → `developer-environment`.
-- Module **boundaries and code structure** → `writing-clean-code` (this skill
+- Tool / runner installation → **`developer-environment`**.
+- Module boundaries and code structure → **`writing-clean-code`** (this skill
   documents and maps them; it doesn't decide where they fall).
 
 `navigable-codebases` is the navigation and discoverability layer _over_ those.

@@ -42,6 +42,50 @@ A strict typechecker config is itself a form of spec: keeping types precise and
 | Chaos / resilience  | Availability/resilience failures under real faults      | Validating a live distributed system stays up and degrades gracefully                                         | High        |
 | Formal verification | Spec violations proven absent                           | Concurrency, protocols, critical invariants, security (see references/formal-methods.md)                      | Highest     |
 
+## Choosing a test oracle
+
+The **oracle** is how a test decides pass/fail. Pick it by what you can know
+about the correct answer:
+
+- **Specified** — assert the exact expected value. Use when you know the answer.
+- **Recorded** — golden / snapshot: capture a known-good output and diff future
+  runs against it. Use when the answer is stable but tedious to hand-write.
+- **Derived** — compare against another oracle you trust: **differential**
+  testing (run a reference or previous implementation on the same input and
+  compare outputs) or **metamorphic** testing (assert relations between
+  outputs). Use when you cannot state the answer but can compare.
+- **Invariant** — property-based: assert a rule that must hold for all inputs.
+  Use when you know a rule, not a value.
+
+Golden, differential, and property tests are points on this spectrum, not
+separate disciplines — choose the oracle that matches what you can actually
+assert.
+
+## Golden / snapshot tests
+
+A golden (snapshot) test records a known-good output as a committed reference
+and fails when future output diverges. It is a **recorded oracle**, not a rung
+on the cheapest-layer ladder — apply it at unit, integration, or UI altitude.
+
+**Reach for it** when the output is large, structured, and serialization-stable
+enough for a human to review: CLI/terminal output, rendered DOM or component
+trees, compiler/AST/IR, API JSON, generated code, formatter output. **Skip it**
+for small scalars (assert them explicitly) or blobs no reviewer can judge.
+
+Keep them honest:
+
+- Keep snapshots **narrow** — a focused value, not a whole page; over-broad
+  snapshots are brittle and unreviewable.
+- **Review** every snapshot change in code review; never blind-accept with an
+  `--update` / `-u` flag.
+- Make output **deterministic** — redact timestamps, UUIDs, ANSI codes, and
+  unstable ordering.
+
+Golden/snapshot is the more-automated member of the **approval-testing** family:
+the same compare-against-a-committed-reference mechanism, differing mainly in
+how explicit the human approval step is. See `references/<language>.md` for the
+library per language.
+
 ## Aligning tests with the implementation
 
 **Test behavior, not internals** — avoid brittle coupling to implementation

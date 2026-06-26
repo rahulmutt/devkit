@@ -100,6 +100,22 @@ no longer reflects the code is worse than none.
 Test-first is **one valid workflow** — use it when it helps; this skill does not
 mandate it.
 
+**One behavior, minimally captured** — for each behavior, find the _smallest_
+test that pins it. Too simple and it passes without exercising the behavior; too
+broad and it is redundant, brittle, and churns. Aim for a test that fails if and
+only if _this_ behavior breaks — favor narrow oracles and inline snapshots over
+whole-output dumps.
+
+**Keep end-to-end tests few and stable** — push coverage down the pyramid:
+anything an integration test can cover (wiring, contracts, collaborator behavior
+against a `devenv.nix`-provisioned dependency) belongs at the integration layer.
+Reserve e2e/UI for what is impossible or impractical to test lower — true
+full-stack journeys, cross-service flows, browser-rendered behavior. E2E is the
+slowest, flakiest layer and a standing tax on the blocking tier, so keep it to a
+few high-value journeys and engineer out flakiness (explicit waits over sleeps,
+stable selectors, deterministic data); quarantine and fix anything intermittent
+at once.
+
 ## Integration tests: provision dependencies via devenv.nix
 
 Integration tests needing real external services (Postgres, Redis, etc.) should

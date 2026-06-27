@@ -2,8 +2,8 @@
 
 Releases are **git-native** and automated with
 [release-please](https://github.com/googleapis/release-please). There is no
-external registry publish — consumers pin to a git tag (`devkit@v0.2.0`) or
-track `main`.
+external registry publish — consumers pin to a git tag (`v0.2.0`) or track
+`main`.
 
 ## How it works
 
@@ -18,6 +18,20 @@ track `main`.
    bump is consistent.
 4. **Merge the release PR** when you want to ship. release-please then tags
    `vX.Y.Z` and creates the GitHub Release.
+
+## First release: tag the baseline
+
+The release workflow runs on **every** push to `main`, including the merge that
+first introduced it. Before any `feat:`/`fix:` commit lands on `main`, create
+the baseline tag so release-please computes the first version from commits made
+_after_ it rather than restating all history:
+
+```bash
+git tag -a v0.1.0 -m "Baseline release before automated releasing"
+git push origin v0.1.0
+```
+
+This is a one-time bootstrap step; subsequent releases are fully automated.
 
 ## Versioning (pre-1.0)
 

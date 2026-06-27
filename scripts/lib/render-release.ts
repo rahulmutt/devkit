@@ -11,7 +11,6 @@ const CONFIG = {
   "bump-minor-pre-major": true,
   "bump-patch-for-minor-pre-major": false,
   "include-component-in-tag": false,
-  "tag-separator": "-",
   "changelog-sections": [
     { type: "feat", section: "Features" },
     { type: "fix", section: "Bug Fixes" },

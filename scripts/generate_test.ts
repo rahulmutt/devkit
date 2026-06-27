@@ -7,6 +7,9 @@ const TEMPLATES = new URL("./templates", import.meta.url).pathname;
 Deno.test("every JSON manifest agrees on version", async () => {
   const files = await renderAll(config);
   const versions = files
+    // Exclude manifests that carry no version field: the hooks manifests, and
+    // release-please-config.json (its versions live inside extra-files, not a
+    // top-level `version`/`plugins[0].version`).
     .filter((f) =>
       f.path.endsWith(".json") && !f.path.endsWith("hooks.json") &&
       !f.path.endsWith("hooks-codex.json") &&

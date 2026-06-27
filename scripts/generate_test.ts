@@ -10,7 +10,8 @@ Deno.test("every JSON manifest agrees on version", async () => {
     .filter((f) =>
       f.path.endsWith(".json") && !f.path.endsWith("hooks.json") &&
       !f.path.endsWith("hooks-codex.json") &&
-      !f.path.endsWith("hooks-cursor.json")
+      !f.path.endsWith("hooks-cursor.json") &&
+      f.path !== "release-please-config.json"
     )
     .map((f) => {
       const o = JSON.parse(f.content);

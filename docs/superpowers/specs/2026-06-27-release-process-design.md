@@ -17,10 +17,9 @@ There is no actual release process. Concretely:
   has never moved, and nothing automates moving it.
 - No `CHANGELOG.md`, no GitHub Releases, no `RELEASING.md`.
 
-The original marketplace design spec
-(`2026-06-24-devkit-marketplace-design.md`) explicitly deferred external
-registry sync as "a possible future addition," so a release process is the
-natural next step, not scope creep.
+The original marketplace design spec (`2026-06-24-devkit-marketplace-design.md`)
+explicitly deferred external registry sync as "a possible future addition," so a
+release process is the natural next step, not scope creep.
 
 ## Goal
 
@@ -29,8 +28,9 @@ Establish a **git-native release process** so that:
 1. Each release produces a git **tag** (`vX.Y.Z`) that consumers can pin to, and
    a **GitHub Release** + **`CHANGELOG.md`** entry that documents what changed.
    (Releases serve a dual purpose: pinnable artifact _and_ human milestone.)
-2. Releasing is **near-zero-manual**, driven by the conventional commits the repo
-   already uses — via [release-please](https://github.com/googleapis/release-please).
+2. Releasing is **near-zero-manual**, driven by the conventional commits the
+   repo already uses — via
+   [release-please](https://github.com/googleapis/release-please).
 3. The version stays **single-sourced** in `marketplace.config.ts` and the
    existing drift guard keeps the 7 generated manifests consistent at release
    time — preserving the repo's "one source of truth, machine-checked" ethos.
@@ -53,9 +53,8 @@ Establish a **git-native release process** so that:
 ### The core problem: version fan-out (decision A2)
 
 The version lives in **one source** (`marketplace.config.ts`) and is fanned out
-by `scripts/generate.ts` into 7 generated manifests
-(`package.json`, `gemini-extension.json`,
-`.claude-plugin/{plugin,marketplace}.json`,
+by `scripts/generate.ts` into 7 generated manifests (`package.json`,
+`gemini-extension.json`, `.claude-plugin/{plugin,marketplace}.json`,
 `.codex-plugin/plugin.json`, `.cursor-plugin/plugin.json`,
 `.kimi-plugin/plugin.json`), all guarded by the drift check (`deno task check`).
 release-please must bump the version without fighting that guard.
@@ -67,31 +66,31 @@ declaratively, and the generator owns the list:**
   whose `extra-files` entries enumerate each manifest with a JSONPath to its
   version field (`$.version`, and `$.plugins[0].version` for the marketplace
   manifest), plus `marketplace.config.ts` as a generic-annotated file.
-- `marketplace.config.ts` gets a `// x-release-please-version` annotation comment
-  on its `version:` line so the TS source is updatable by release-please's
-  generic updater.
+- `marketplace.config.ts` gets a `// x-release-please-version` annotation
+  comment on its `version:` line so the TS source is updatable by
+  release-please's generic updater.
 - On a release, release-please bumps **all 8 version-bearing files to the same
   value** in the release PR. Because they all move together, the existing drift
   check stays green — and that green check is the **correctness proof** that the
   bump is consistent.
 
 Why this over the alternative (release-please bumps only the source, CI
-regenerates the manifests onto the PR branch): release-please force-pushes its PR
-branch on each run, which races with any post-hoc regenerate commit. Having
+regenerates the manifests onto the PR branch): release-please force-pushes its
+PR branch on each run, which races with any post-hoc regenerate commit. Having
 release-please own every version file is **race-free**, and folding the
 release-please config into `generate.ts` keeps the file list **single-sourced**
 and drift-guarded — matching the repo's existing philosophy.
 
 ### Components
 
-| # | Artifact | Status | Purpose |
-|---|----------|--------|---------|
-| 1 | `release-please-config.json` | **generated** by `generate.ts`, drift-guarded | `extra-files` list (each manifest + JSONPath) + `marketplace.config.ts`; release-type config (versioning policy, changelog sections). |
-| 2 | `.release-please-manifest.json` | committed, bot-maintained | release-please's record of the current version; bootstrapped to `0.1.0`. |
-| 3 | `marketplace.config.ts` | edited once | `// x-release-please-version` annotation on the `version:` line. |
-| 4 | `.github/workflows/release.yml` | new | Runs `googleapis/release-please-action` on push to `main`; maintains the release PR; on merge → tag + GitHub Release. |
-| 5 | `CHANGELOG.md` | bot-maintained | Generated from conventional commits. |
-| 6 | `RELEASING.md` + README section | new | Short human guide to the flow and how to cut/approve a release. |
+| # | Artifact                        | Status                                        | Purpose                                                                                                                               |
+| - | ------------------------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| 1 | `release-please-config.json`    | **generated** by `generate.ts`, drift-guarded | `extra-files` list (each manifest + JSONPath) + `marketplace.config.ts`; release-type config (versioning policy, changelog sections). |
+| 2 | `.release-please-manifest.json` | committed, bot-maintained                     | release-please's record of the current version; bootstrapped to `0.1.0`.                                                              |
+| 3 | `marketplace.config.ts`         | edited once                                   | `// x-release-please-version` annotation on the `version:` line.                                                                      |
+| 4 | `.github/workflows/release.yml` | new                                           | Runs `googleapis/release-please-action` on push to `main`; maintains the release PR; on merge → tag + GitHub Release.                 |
+| 5 | `CHANGELOG.md`                  | bot-maintained                                | Generated from conventional commits.                                                                                                  |
+| 6 | `RELEASING.md` + README section | new                                           | Short human guide to the flow and how to cut/approve a release.                                                                       |
 
 ### Flow
 

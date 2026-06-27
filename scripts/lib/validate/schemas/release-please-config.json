@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["packages"],
+  "properties": {
+    "packages": {
+      "type": "object",
+      "required": ["."],
+      "properties": {
+        ".": {
+          "type": "object",
+          "required": ["extra-files"],
+          "properties": {
+            "extra-files": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "object",
+                "required": ["type", "path"],
+                "properties": {
+                  "type": { "type": "string" },
+                  "path": { "type": "string" },
+                  "jsonpath": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

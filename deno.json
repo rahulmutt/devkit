@@ -28,6 +28,8 @@
   },
   "fmt": {
     "exclude": [
+      "CHANGELOG.md",
+      ".release-please-manifest.json",
       "assets",
       ".impeccable",
       "skills/developer-environment/references",

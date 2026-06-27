@@ -103,6 +103,14 @@ then `mise run generate`.
   `.kimi-plugin/`, `gemini-extension.json`, `GEMINI.md`, `hooks/`, `.pi/`,
   `.opencode/`
 
+## Releasing
+
+Releases are git-native and automated with **release-please**. Merge
+Conventional-Commit work to `main`; release-please maintains a release PR that
+bumps the version and updates `CHANGELOG.md`. Merging that PR tags `vX.Y.Z` and
+cuts a GitHub Release — consumers pin to the tag or track `main`. No external
+registry is published. See [RELEASING.md](RELEASING.md) for details.
+
 ## License
 
 MIT — see [LICENSE](LICENSE).

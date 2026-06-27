@@ -12,6 +12,7 @@ export const MANIFEST_SCHEMAS: Record<string, string> = {
   ".kimi-plugin/plugin.json": "kimi-plugin",
   "gemini-extension.json": "gemini-extension",
   "package.json": "package",
+  "release-please-config.json": "release-please-config",
   "hooks/hooks.json": "hooks",
   "hooks/hooks-codex.json": "hooks",
   "hooks/hooks-cursor.json": "hooks",

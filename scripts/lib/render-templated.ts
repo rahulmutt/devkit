@@ -27,7 +27,10 @@ export async function renderTemplated(
   const out: GeneratedFile[] = [];
   for (const [src, dest, executable] of HOOK_FILES) {
     const text = await Deno.readTextFile(join(templatesDir, src));
-    const file: GeneratedFile = { path: dest, content: renderTemplate(text, vars) };
+    const file: GeneratedFile = {
+      path: dest,
+      content: renderTemplate(text, vars),
+    };
     if (executable) file.executable = true;
     out.push(file);
   }

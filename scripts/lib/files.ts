@@ -38,7 +38,9 @@ export async function checkFiles(
     if (actual === null) results.push({ path: f.path, status: "missing" });
     else if (actual !== f.content) {
       results.push({ path: f.path, status: "drift" });
-    } else if (f.executable && !WINDOWS && mode !== null && (mode & 0o111) === 0) {
+    } else if (
+      f.executable && !WINDOWS && mode !== null && (mode & 0o111) === 0
+    ) {
       results.push({ path: f.path, status: "drift" });
     } else results.push({ path: f.path, status: "ok" });
   }

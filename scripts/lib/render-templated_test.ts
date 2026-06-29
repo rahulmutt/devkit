@@ -24,3 +24,11 @@ Deno.test("pi extension references the bootstrap skill", async () => {
   const pi = files.find((f) => f.path === ".pi/extensions/devkit.ts")!;
   assertStringIncludes(pi.content, "using-devkit");
 });
+
+Deno.test("run-hook.cmd is marked executable, session-start is not", async () => {
+  const files = await renderTemplated(config, TEMPLATES);
+  const cmd = files.find((f) => f.path === "hooks/run-hook.cmd")!;
+  assertEquals(cmd.executable, true);
+  const session = files.find((f) => f.path === "hooks/session-start")!;
+  assertEquals(session.executable ?? false, false);
+});

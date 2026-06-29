@@ -9,9 +9,14 @@ function find(files: { path: string; content: string }[], p: string) {
 }
 
 Deno.test("all JSON manifests agree on version and plugin name", () => {
+  // The canonical version is single-sourced in marketplace.config.ts (bumped
+  // by release-please). Assert every manifest matches that source rather than a
+  // frozen literal, so this stays green across releases — agreement with the
+  // source is the invariant this test exists to protect.
+  const expected = config.plugin.version;
   const files = renderJson(config);
   const claudeMkt = find(files, ".claude-plugin/marketplace.json");
-  assertEquals(claudeMkt.plugins[0].version, "0.1.0");
+  assertEquals(claudeMkt.plugins[0].version, expected);
   assertEquals(claudeMkt.plugins[0].name, "devkit");
 
   for (
@@ -24,7 +29,7 @@ Deno.test("all JSON manifests agree on version and plugin name", () => {
       "package.json",
     ]
   ) {
-    assertEquals(find(files, p).version, "0.1.0", `${p} version`);
+    assertEquals(find(files, p).version, expected, `${p} version`);
   }
 });
 

@@ -7,7 +7,7 @@ export const config: MarketplaceConfig = {
   },
   plugin: {
     name: "devkit",
-    version: "0.1.0", // x-release-please-version
+    version: "0.2.0", // x-release-please-version
     description:
       "Developer-environment skills for AI coding agents: install tools with mise, fall back to devenv.nix",
     homepage: "https://github.com/rahulmutt/devkit",

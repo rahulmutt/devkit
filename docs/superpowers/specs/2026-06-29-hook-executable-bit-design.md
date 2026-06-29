@@ -1,7 +1,6 @@
 # Fix: `run-hook.cmd` missing executable bit on Unix
 
-**Date:** 2026-06-29
-**Status:** Approved (design)
+**Date:** 2026-06-29 **Status:** Approved (design)
 
 ## Problem
 
@@ -19,7 +18,7 @@ error on every session start and the session-start hook never runs.
 
 `hooks/run-hook.cmd` is a **polyglot** wrapper: the same file is a valid Windows
 `.cmd` batch script (top block, fenced as a shell heredoc) and a valid POSIX
-shell script (bottom block). All three hook configs invoke it *directly*:
+shell script (bottom block). All three hook configs invoke it _directly_:
 
 ```json
 "command": "\"${CLAUDE_PLUGIN_ROOT}/hooks/run-hook.cmd\" session-start"
@@ -32,13 +31,13 @@ the **execute permission bit**. The file does not have it, so `/bin/sh` reports
 
 Three places reinforce the same gap:
 
-1. `hooks/run-hook.cmd` and `scripts/templates/hooks/run-hook.cmd` are tracked in
-   git as mode `100644` — so a marketplace checkout has no execute bit.
+1. `hooks/run-hook.cmd` and `scripts/templates/hooks/run-hook.cmd` are tracked
+   in git as mode `100644` — so a marketplace checkout has no execute bit.
 2. The generator writes generated files via `Deno.writeTextFile`
    (`scripts/lib/files.ts` → `writeFiles`), which creates mode `0644` and never
    sets `+x`. So `deno task generate` would re-break the file even if it were
    chmod'd manually.
-3. `checkFiles` (same file) compares only *content*, not mode — so
+3. `checkFiles` (same file) compares only _content_, not mode — so
    `generate --check` / CI cannot catch the drift.
 
 Only `run-hook.cmd` is affected. The `session-start` / `session-start-codex`

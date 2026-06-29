@@ -30,4 +30,8 @@ export interface MarketplaceConfig {
   };
 }
 
-export type GeneratedFile = { path: string; content: string };
+export type GeneratedFile = {
+  path: string;
+  content: string;
+  executable?: boolean;
+};

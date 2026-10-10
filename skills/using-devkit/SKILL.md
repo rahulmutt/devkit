@@ -20,6 +20,12 @@ testing-practices).
 
 <!-- BEGIN GENERATED: skill index -->
 
+- **ci-pipelines** — Use when creating or editing CI workflows
+  (.github/workflows, .gitlab-ci.yml, Buildkite pipelines), adding a nightly,
+  scheduled, or cron job; when CI is slow, flaky, or fails only in CI; when
+  pinning or updating GitHub Actions or setting up Renovate or Dependabot; or
+  when configuring CI caching, required checks, branch protection, or workflow
+  token permissions.
 - **developer-environment** — Use when installing or upgrading any tool,
   runtime, CLI, or library — brew, apt, npm i -g, pip install, cargo install,
   nvm, pyenv, asdf — editing mise.toml or .tool-versions, bumping or pinning

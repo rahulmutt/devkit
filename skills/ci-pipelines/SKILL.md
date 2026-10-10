@@ -47,9 +47,16 @@ A nightly never runs on PRs, so a change that breaks it merges green. Give the
 nightly a **smoke mode** (same workflow, same entry command, tiny budget: fuzz
 for 30s, one matrix entry, one simulation seed) and run it in the PR pipeline,
 feeding the gate. Lint the workflow files in the fast checks. Route scheduled
-failures somewhere loud (an issue or channel). Counter-pull: smoke mode checks
-that the setup works, not the nightly's coverage. If it grows toward the full
-run, it eats the PR time budget.
+failures somewhere loud (an issue or channel). GitHub disables scheduled
+workflows after 60 days without repository activity. Counter-pull: smoke mode
+checks that the setup works, not the nightly's coverage. If it grows toward the
+full run, it eats the PR time budget.
+
+## Also
+
+Never check out and run PR-head code under `pull_request_target` (it has secrets
+and a write token). Same-command CI, token permissions, and CI-only failures:
+see the reference.
 
 ## Boundaries with sibling skills
 

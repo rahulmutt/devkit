@@ -7,7 +7,8 @@ Concrete forms of each `ci-pipelines` principle.
 ```yaml
 steps:
   - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-  - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1 (installs mise.toml tools, caches them)
+  # installs mise.toml tools and caches them
+  - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
   - run: mise run release
 ```
 
@@ -94,10 +95,9 @@ or run locally with `act`.
 ## Nightly with smoke mode
 
 ```yaml
-# .github/workflows/nightly.yml
+# .github/workflows/nightly.yml (reusable; read-only)
 name: Nightly
 on:
-  schedule: [{ cron: "0 3 * * *" }]
   workflow_dispatch:
   workflow_call:
     inputs:
@@ -111,9 +111,22 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
       - run: mise run nightly ${{ inputs.smoke && '--smoke' || '' }}
+```
+
+```yaml
+# .github/workflows/nightly-schedule.yml (schedule + failure reporter)
+name: Nightly schedule
+on:
+  schedule: [{ cron: "0 3 * * *" }]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  nightly:
+    uses: ./.github/workflows/nightly.yml
   report-failure:
     needs: nightly
-    if: failure() && github.event_name == 'schedule'
+    if: failure()
     runs-on: ubuntu-24.04
     permissions:
       issues: write
@@ -123,6 +136,10 @@ jobs:
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: gh issue create --repo "$GITHUB_REPOSITORY" --title "Nightly failed" --body "$RUN_URL"
 ```
+
+The reporter lives outside the reusable file because a called workflow can't
+grant more than its caller holds: the PR pipeline is read-only, so an
+`issues: write` job inside `nightly.yml` would fail every PR run.
 
 ```yaml
 # in ci.yml (PR pipeline)

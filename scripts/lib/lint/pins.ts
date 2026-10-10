@@ -1,5 +1,7 @@
 // Action pins (`owner/action@<sha> # vX.Y.Z`) are copied into skill docs,
 // where Renovate can't bump them. This flags any action pinned two ways.
+// After a Renovate bump in .github/workflows, update the same pin in
+// skills/ci-pipelines/SKILL.md and references/github-actions.md.
 
 export interface PinSource {
   path: string;

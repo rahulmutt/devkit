@@ -59,3 +59,15 @@ pins are listed, and any other action is resolved with `git ls-remote` or left
 out. The runner and updater misses in that run were judge verdicts on replies
 that did use `ubuntu-24.04` and did add `renovate.json`; they passed 3/3 after
 the change, which suggests judge noise rather than a wording problem.
+
+## Caveats
+
+- The RED arm was the with-plugin arm under `--ablation none`, run before the
+  skill existed.
+- 3 runs per case is coarse; a 3/3 vs 0/3 split is a strong signal, anything in
+  between is not.
+- The reference deliberately keeps snippets for principles cut from SKILL.md
+  because RED already satisfied them.
+- The final-review additions to SKILL.md (the `pull_request_target` line, the
+  pointer line, and the 60-day clause) were made after GREEN and were not
+  re-measured.

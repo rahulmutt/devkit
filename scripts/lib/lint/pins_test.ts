@@ -1,5 +1,5 @@
 import { assertEquals } from "@std/assert";
-import { join } from "@std/path";
+import { fromFileUrl, join } from "@std/path";
 import { pinDrift, type PinSource } from "./pins.ts";
 
 const SHA_A = "a".repeat(40);
@@ -61,10 +61,15 @@ async function collect(
 }
 
 Deno.test("action pins in skill docs and workflows agree", async () => {
-  const root = new URL("../../../", import.meta.url).pathname;
+  const root = fromFileUrl(new URL("../../../", import.meta.url));
   const sources = [
     ...await collect(join(root, "skills"), ".md", true),
     ...await collect(join(root, ".github/workflows"), ".yml", false),
   ];
+  assertEquals(
+    sources.some((s) => s.path.includes(".github/workflows")),
+    true,
+    "expected at least one workflow file",
+  );
   assertEquals(pinDrift(sources), []);
 });

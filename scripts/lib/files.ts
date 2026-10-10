@@ -1,4 +1,4 @@
-import { dirname, join } from "jsr:@std/path@^1.0.0";
+import { dirname, join } from "@std/path";
 import type { GeneratedFile } from "./types.ts";
 
 const WINDOWS = Deno.build.os === "windows";

@@ -9,7 +9,7 @@
   "plugins": [
     {
       "name": "devkit",
-      "description": "Developer-environment skills for AI coding agents: install tools with mise, fall back to devenv.nix",
+      "description": "Engineering-discipline skills for AI coding agents: pinned dev environments, test strategy, clean code, security, and navigable repos",
       "version": "0.2.0",
       "source": "./",
       "author": {

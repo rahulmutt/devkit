@@ -1,6 +1,6 @@
 ---
 name: security-practices
-description: Use when designing, changing, or reviewing a distributed component, writing or revisiting a threat model, handling untrusted input or secrets, or choosing security tooling — apply a trust-boundary threat lens (authn, authz, transport, validation, secrets, supply chain) and select free OSS scanners (secret, dependency/SCA, SAST, container/IaC) for the repo's stack. Delegates all tool installation to developer-environment.
+description: Use when code touches a trust boundary — HTTP endpoints, webhooks, file uploads, auth, sessions, permissions, SQL or shell built from input, deserialization, service-to-service calls — when handling secrets, API keys, or .env files, on a CVE or vulnerability alert, when writing a threat model, or when choosing secret, SCA, SAST, or container scanners.
 ---
 
 # Security Practices

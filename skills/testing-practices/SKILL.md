@@ -1,6 +1,6 @@
 ---
 name: testing-practices
-description: Use when deciding how to test or validate code — which form of validation (static checks, unit, integration, golden/snapshot, property/model/fuzz/mutation, simulation/DST, UI, or formal methods), when to reach for each, how to align it with the implementation, and how to keep a test suite fast and trustworthy (speed tiering, flakiness, CI/PR wall-clock budgets). Delegates all tool installation to developer-environment.
+description: Use when writing, adding, or reviewing tests; choosing between unit, integration, snapshot/golden, property, fuzz, mutation, e2e/UI, or formal methods; when a test is flaky or the suite or CI is slow; or when deciding what runs in pre-commit, PR CI, or nightly.
 ---
 
 # Testing Practices
@@ -116,47 +116,15 @@ few high-value journeys and engineer out flakiness (explicit waits over sleeps,
 stable selectors, deterministic data); quarantine and fix anything intermittent
 at once.
 
-## Test suite maintenance & developer velocity
+## Keeping the suite fast and trustworthy
 
-A test suite is a standing liability as well as an asset: it costs wall-clock on
-every change and erodes trust when slow or flaky.
+Tier tests by speed: **pre-commit** (static + fast unit), **PR CI** (blocking,
+held to a wall-clock budget), **nightly** (e2e, mutation, fuzz, DST soak, chaos,
+cross-matrix). **A flaky test is quarantined out of the blocking tier at once,
+then fixed or deleted — never retried to green.**
 
-**Tier the suite by speed and blast radius:**
-
-- **pre-commit / on-save** — static checks + fast unit tests; sub-second to a
-  few seconds; runs constantly and must never block flow.
-- **PR / CI (blocking)** — unit + the key integration tests. Hold it to an
-  explicit **wall-clock budget**; it gates every merge, so its speed _is_ team
-  velocity.
-- **nightly / scheduled** — e2e, mutation, fuzz, DST soak runs, chaos
-  experiments, full cross-matrix (OS / runtime versions); slow, broad, or
-  long-running, and off the merge critical path.
-
-**Move a test to nightly/scheduled** when it is too slow for the PR budget, is
-an inherently long-running campaign (fuzz, DST soak, chaos), needs expensive or
-rate-limited resources, is a full cross-matrix sweep, or its marginal
-bug-catch-per-minute is low.
-
-**Judge each test by value-per-time, and budget by criticality.** A test's worth
-is the bugs it catches and the confidence it buys _relative to the wall-clock it
-spends on every run_; a slow test that rarely fails meaningfully is a candidate
-for nightly or deletion. Allocate the blocking-tier budget in proportion to the
-**criticality of the system area each suite guards** — generously where failure
-is catastrophic (money movement, auth, data integrity), sparingly on
-low-risk/low-churn areas.
-
-**Flakiness is the #1 velocity killer** — an intermittently failing test trains
-the team to ignore red, which defeats the suite. Quarantine a flaky test out of
-the blocking tier fast, then **fix-or-delete**; never paper over it with blind
-retry-to-green. Track flake rate as a health metric.
-
-**Keep the blocking tier fast as the suite grows** via parallelization /
-sharding across workers and **test selection** (run only the tests a change
-impacts). Mutation and fuzz parallelize naturally across workers and nightly
-windows.
-
-This is where the "right altitude" pyramid pays off: a top-heavy suite blows the
-blocking-tier budget first.
+When CI is slow, a test flakes, or you're deciding which tier a test belongs in,
+read [`references/suite-velocity.md`](references/suite-velocity.md) first.
 
 ## Integration tests: provision dependencies via devenv.nix
 
@@ -190,6 +158,8 @@ devenv.nix-fallback rule already covers.
   [`references/rust.md`](references/rust.md),
   [`references/go.md`](references/go.md),
   [`references/haskell.md`](references/haskell.md).
+- [`references/suite-velocity.md`](references/suite-velocity.md) — speed tiers,
+  value-per-time budgeting, flakiness, sharding and test selection.
 - [`references/formal-methods.md`](references/formal-methods.md) — when formal
   methods, simulation, and fault injection (DST, Jepsen, chaos engineering) earn
   their cost and which tool fits which problem.

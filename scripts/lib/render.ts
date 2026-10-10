@@ -2,8 +2,10 @@ import type { GeneratedFile, MarketplaceConfig } from "./types.ts";
 import { renderJson } from "./render-json.ts";
 import { renderReleaseConfig } from "./render-release.ts";
 import { renderTemplated } from "./render-templated.ts";
+import { renderPrimer } from "./render-primer.ts";
 
 const TEMPLATES_DIR = new URL("../templates", import.meta.url).pathname;
+const SKILLS_DIR = new URL("../../skills", import.meta.url).pathname;
 
 export async function renderAll(
   config: MarketplaceConfig,
@@ -12,5 +14,6 @@ export async function renderAll(
     ...renderJson(config),
     ...renderReleaseConfig(),
     ...(await renderTemplated(config, TEMPLATES_DIR)),
+    ...(await renderPrimer(SKILLS_DIR, config.bootstrapSkill)),
   ];
 }

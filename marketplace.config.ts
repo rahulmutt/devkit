@@ -9,11 +9,20 @@ export const config: MarketplaceConfig = {
     name: "devkit",
     version: "0.2.0", // x-release-please-version
     description:
-      "Developer-environment skills for AI coding agents: install tools with mise, fall back to devenv.nix",
+      "Engineering-discipline skills for AI coding agents: pinned dev environments, test strategy, clean code, security, and navigable repos",
     homepage: "https://github.com/rahulmutt/devkit",
     repository: "https://github.com/rahulmutt/devkit",
     license: "MIT",
-    keywords: ["mise", "devenv", "developer-environment", "skills", "tooling"],
+    keywords: [
+      "skills",
+      "mise",
+      "devenv",
+      "developer-environment",
+      "testing",
+      "clean-code",
+      "security",
+      "documentation",
+    ],
   },
   owner: { name: "Rahul Muttineni", email: "rahulmutt@gmail.com" },
   bootstrapSkill: "using-devkit",

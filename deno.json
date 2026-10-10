@@ -1,21 +1,23 @@
 {
   "tasks": {
-    "generate": "deno run --allow-read=. --allow-write=. scripts/generate.ts",
-    "check": "deno run --allow-read=. scripts/generate.ts --check",
-    "test": "deno test --allow-read --allow-write",
+    "generate": "deno run --allow-read=. --allow-write=. --allow-run=deno scripts/generate.ts",
+    "check": "deno run --allow-read=. --allow-run=deno scripts/generate.ts --check",
+    "test": "deno test --allow-read --allow-write --allow-run=deno",
     "rasterize": "deno run --allow-read --allow-write=assets --allow-env --allow-ffi --allow-sys scripts/rasterize.ts",
     "fmt": "deno fmt && deno task generate",
     "fmt-check": "deno fmt --check",
     "lint": "deno lint",
     "lint-skills": "deno run --allow-read=. scripts/lint-skills.ts",
-    "validate-manifests": "deno run --allow-read=. scripts/validate-manifests.ts",
+    "validate-manifests": "deno run --allow-read=. --allow-run=deno scripts/validate-manifests.ts",
     "typecheck": "deno check scripts/generate.ts scripts/rasterize.ts scripts/lint-skills.ts scripts/validate-manifests.ts marketplace.config.ts",
+    "eval-triggers": "claude plugin eval . --tag trigger --ablation none --no-publish",
     "ci": "deno task fmt-check && deno task lint && deno task typecheck && deno task check && deno task validate-manifests && deno task lint-skills && deno task test"
   },
   "imports": {
     "@std/assert": "jsr:@std/assert@^1.0.0",
     "@std/path": "jsr:@std/path@^1.0.0",
-    "@cfworker/json-schema": "npm:@cfworker/json-schema@^4.0.0"
+    "@cfworker/json-schema": "npm:@cfworker/json-schema@^4.0.0",
+    "@resvg/resvg-js": "npm:@resvg/resvg-js@2.6.2"
   },
   "nodeModulesDir": "auto",
   "lint": {

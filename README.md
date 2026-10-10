@@ -85,14 +85,22 @@ mise run release    # full gate: fmt-check, lint, typecheck, generated-files in 
 `mise run release` is the release gate — it also runs in **pre-commit** and in
 **GitHub Actions CI**, so a change can't merge with stale generated files or a
 failing check. Individual steps are also available: `mise run fmt`, `fmt-check`,
-`lint`, `typecheck`, `check`, `validate-manifests`, `lint-skills`, `test`.
+`lint`, `typecheck`, `check`, `validate-manifests`, `lint-skills`, `test`,
+`eval-triggers`.
 
 **Change metadata** (name, version, description): edit `marketplace.config.ts`,
 then `mise run generate`.
 
 **Add a skill:** create `skills/<name>/SKILL.md` (frontmatter `name` +
-`description`), list it under `## Available skills` in
-`skills/using-devkit/SKILL.md`, then `mise run generate`.
+`description`), then `mise run generate` — the skill index in the `using-devkit`
+primer is rendered from every skill's `description`. Write the description as
+triggers only ("Use when …" plus the words users actually type), never a summary
+of the skill's rules.
+
+**Check triggering:** `evals/` holds one case per realistic prompt asserting
+which skill fires (plus negatives that must fire none). Add a case for each new
+skill or trigger, then `mise run eval-triggers` (uses API credit; not part of
+the release gate).
 
 ### Repo layout
 

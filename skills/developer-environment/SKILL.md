@@ -1,6 +1,6 @@
 ---
 name: developer-environment
-description: Use when installing a tool, pinning a language version, adding or updating a dependency (tool, runtime, or application library), setting up a project's dev environment, or deciding whether to adopt a build system (Bazel). Enforces mise-first, devenv.nix-fallback with pinned versions; native build tooling by default.
+description: Use when installing or upgrading any tool, runtime, CLI, or library — brew, apt, npm i -g, pip install, cargo install, nvm, pyenv, asdf — editing mise.toml or .tool-versions, bumping or pinning versions, adding a dependency, hitting "command not found", setting up a dev or CI toolchain, reviewing Renovate or Dependabot version bumps, or considering Bazel.
 ---
 
 # Developer Environment
@@ -50,6 +50,25 @@ mise install
 ```
 
 If the version printed does not match the pin, the install is not done.
+
+## Upgrading pinned versions
+
+A bump is a change like any other — it lands only when the project's full check
+passes.
+
+1. **See what's behind:** `mise outdated`, then `mise upgrade --bump` to rewrite
+   the pins in `mise.toml` (it keeps exact pins exact;
+   `mise upgrade
+   <tool>@latest --bump` would write a floating `latest` —
+   don't).
+2. **Find every other pin of the same tools.** Versions also hide in CI
+   (`uses: owner/action@vN`, `setup-*` inputs), `.devcontainer/`, Dockerfiles,
+   `package.json` `engines`, and `.tool-versions`. Update them together or the
+   environments diverge.
+3. **Run the full gate** (the repo's CI/release task), not just `--version`.
+4. **On failure, check the old pin first** (`mise x <tool>@<old> -- <cmd>`). A
+   failure that reproduces on the old version predates the bump — fix it
+   separately and say so; don't blame or revert the bump for it.
 
 ## Coexistence
 

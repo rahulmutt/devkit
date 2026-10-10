@@ -1,6 +1,6 @@
 ---
 name: navigable-codebases
-description: Use when shaping a repo so the next contributor (human or an agent with a bounded context window) can orient fast — a discoverable front door (README + AGENTS.md/CLAUDE.md), common workflows exposed as named tasks, a codebase map that explains the boundaries, and onboarding you verify by running it. Keep the discoverability surface single-sourced so it can't drift. Delegates runner install to developer-environment and code structure to writing-clean-code.
+description: Use when writing or updating a README, AGENTS.md, CLAUDE.md, GEMINI.md, ARCHITECTURE.md, or onboarding docs; when setting up a new repository; when adding or naming task-runner commands (mise tasks, Makefile, justfile, npm scripts); or when getting-started steps are missing, stale, or slow for newcomers.
 ---
 
 # Navigable Codebases

@@ -1,6 +1,6 @@
 ---
 name: writing-clean-code
-description: Use when authoring, restructuring, or simplifying code — how to design abstractions, decide what to inline vs. extract, draw module boundaries, name things in the domain's language, delete dead code (YAGNI), apply domain-driven design and hexagonal architecture, and follow each language's canonical style. The guiding principle is code that humans and coding agents can both maintain and evolve long-term. Delegates all tool installation to developer-environment.
+description: Use when refactoring or restructuring code, splitting a file or module that has grown too large, deciding whether to extract a helper or inline it, naming things, removing dead or unused code, drawing module or package boundaries, handling errors, writing comments, applying DDD or hexagonal (ports and adapters) architecture, or checking a language's idiomatic style.
 ---
 
 # Writing Clean Code
@@ -58,6 +58,22 @@ inward toward the domain. See
 Locality of behavior, explicit over clever, names that make comments redundant.
 Counter-pull: don't chase brevity at the cost of legibility — a terse line the
 next reader must decode is not optimizing for them.
+
+### Handle errors where you can act on them
+
+Validate at the boundary, then let the core trust its inputs. Catch an error
+only where something useful can happen — retry, fall back, add context, or
+report it to the user — and otherwise let it propagate with context attached.
+Never swallow an error silently. Counter-pull: don't wrap every call in
+defensive try/catch or re-validate data the boundary already checked; noise
+hides the handling that matters.
+
+### Comments say why, code says what
+
+Comment the non-obvious — the reason, the constraint, the rejected alternative,
+the workaround's upstream issue. Counter-pull: a comment restating the code is a
+second copy that drifts; rename or restructure until it's redundant, then delete
+it.
 
 ### Prefer small, isolated files
 

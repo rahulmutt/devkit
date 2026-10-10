@@ -1,9 +1,9 @@
 // Rasterize the source SVG icon to a PNG the harness manifests reference.
 // Run with: `deno task rasterize`. Re-run whenever assets/devkit.svg changes.
 //
-// Uses @resvg/resvg-js (deno caches the dep + deno.lock pins it), so the PNG
+// Uses @resvg/resvg-js (mapped in deno.json; deno.lock pins it), so the PNG
 // reproduces from the SVG without any system tool (rsvg-convert/ImageMagick).
-import { Resvg } from "npm:@resvg/resvg-js@2.6.2";
+import { Resvg } from "@resvg/resvg-js";
 
 const ROOT = new URL("../", import.meta.url);
 const SVG = new URL("assets/devkit.svg", ROOT);

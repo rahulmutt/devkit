@@ -10,6 +10,7 @@
     "lint-skills": "deno run --allow-read=. scripts/lint-skills.ts",
     "validate-manifests": "deno run --allow-read=. --allow-run=deno scripts/validate-manifests.ts",
     "typecheck": "deno check scripts/generate.ts scripts/rasterize.ts scripts/lint-skills.ts scripts/validate-manifests.ts marketplace.config.ts",
+    "eval-triggers": "claude plugin eval . --tag trigger --ablation none --no-publish",
     "ci": "deno task fmt-check && deno task lint && deno task typecheck && deno task check && deno task validate-manifests && deno task lint-skills && deno task test"
   },
   "imports": {

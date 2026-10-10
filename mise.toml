@@ -46,6 +46,11 @@ run = "deno task validate-manifests"
 description = "Lint skills/ (frontmatter, links, primer listing)"
 run = "deno task lint-skills"
 
+# Not part of the release gate: runs real agent sessions on your credential.
+[tasks.eval-triggers]
+description = "Measure whether each skill fires on realistic prompts (evals/, costs API usage)"
+run = "deno task eval-triggers"
+
 # Release gate: every check must pass before publishing. Includes the
 # generated-files drift check so a release can't ship stale manifests.
 [tasks.release]

@@ -18,6 +18,7 @@ Install once; the agent does the rest.
 | **using-devkit**          | The primer that ties it together: tells the agent these skills exist and to check them before acting.                                                                                                                                                                                                                                                                                                                                |
 | **security-practices**    | Before touching a distributed component or untrusted input, the agent applies a trust-boundary threat lens — authn, authz, transport, validation, secrets, supply chain — and wires in free OSS scanners (secret, dependency/SCA, SAST, container/IaC) matched to the repo's stack. Tool installation delegates to developer-environment.                                                                                            |
 | **navigable-codebases**   | Your agent leaves the repo navigable for whoever comes next — human or agent: a discoverable front door (README + AGENTS.md/CLAUDE.md), common workflows exposed as named tasks, a codebase map that explains the boundaries, and onboarding it verifies by running. Keeps the discoverability surface single-sourced so it can't drift; delegates runner install to developer-environment and code structure to writing-clean-code. |
+| **ci-pipelines**          | Your agent builds CI as a thin wrapper around the repo's own gate command, pins every action by SHA and keeps the pins current with Renovate, grants workflow tokens only what each job needs, and makes sure nightly jobs are smoke-run on every PR so they can't silently break.                                                                                                                                                   |
 
 ## Install
 
@@ -85,8 +86,8 @@ mise run release    # full gate: fmt-check, lint, typecheck, generated-files in 
 `mise run release` is the release gate — it also runs in **pre-commit** and in
 **GitHub Actions CI**, so a change can't merge with stale generated files or a
 failing check. Individual steps are also available: `mise run fmt`, `fmt-check`,
-`lint`, `typecheck`, `check`, `validate-manifests`, `lint-skills`, `test`,
-`eval-triggers`.
+`lint`, `lint-workflows`, `typecheck`, `check`, `validate-manifests`,
+`lint-skills`, `test`, `eval-triggers`, `eval-behavior`.
 
 **Change metadata** (name, version, description): edit `marketplace.config.ts`,
 then `mise run generate`.
@@ -100,7 +101,8 @@ of the skill's rules.
 **Check triggering:** `evals/` holds one case per realistic prompt asserting
 which skill fires (plus negatives that must fire none). Add a case for each new
 skill or trigger, then `mise run eval-triggers` (uses API credit; not part of
-the release gate).
+the release gate). Behaviour cases (tag `behavior`) compare the agent with and
+without devkit: `mise run eval-behavior`.
 
 ### Repo layout
 

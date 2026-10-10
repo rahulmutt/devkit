@@ -1,5 +1,6 @@
 # Root toolchain for devkit. Pin exact versions with `mise use --pin`.
 [tools]
+actionlint = "1.7.12"
 deno = "2.9.7"
 node = "26.11.1"
 
@@ -34,6 +35,10 @@ run = "deno task fmt-check"
 description = "Lint the Deno tooling code (foreign-runtime extension code excluded)"
 run = "deno task lint"
 
+[tasks.lint-workflows]
+description = "Lint GitHub Actions workflows (actionlint)"
+run = "deno task lint-workflows"
+
 [tasks.typecheck]
 description = "Type-check the generator entry points and marketplace.config.ts"
 run = "deno task typecheck"
@@ -50,6 +55,10 @@ run = "deno task lint-skills"
 [tasks.eval-triggers]
 description = "Measure whether each skill fires on realistic prompts (evals/, costs API usage)"
 run = "deno task eval-triggers"
+
+[tasks.eval-behavior]
+description = "Measure skill behaviour with vs. without devkit (evals/, costs API usage)"
+run = "deno task eval-behavior"
 
 # Release gate: every check must pass before publishing. Includes the
 # generated-files drift check so a release can't ship stale manifests.

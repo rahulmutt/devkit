@@ -149,6 +149,8 @@ devenv.nix-fallback rule already covers.
   names the library and idiom and never gives install commands.
 - Counterpart skill for _authoring_ code: `writing-clean-code` (this skill is
   the _validating_ counterpart).
+- How the pipeline runs those tiers (pinning, caching, required checks,
+  smoke-running nightlies on every change) → **`ci-pipelines`**.
 
 ## References
 

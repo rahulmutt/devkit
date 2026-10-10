@@ -76,6 +76,8 @@ that covers the need over stacking redundant tools.
 - Scanner / tool installation → **`developer-environment`** (mise-pinned,
   devenv.nix fallback). This skill names the tool and the idiom; it never gives
   install commands.
+- Workflow token permissions, action pinning, and where scanners sit in the
+  pipeline → **`ci-pipelines`**.
 
 ## References
 

@@ -80,17 +80,18 @@ baseline already satisfies 3/3 is cut (see Testing).
    and the issue reference. _Counter-pull:_ trivial changes need no body.
 5. **Releases come from history, not hand edits.** Never hand-edit the
    changelog, bump versions, or create tags that the automation owns; the
-   version has one source of truth. Fix a wrong release by changing its input:
-   the tool's override (release-please `Release-As`, or a commit override in the
-   merged PR's body). _Counter-pull:_ bootstrap steps (baseline tag, the first
-   `1.0.0`) are deliberately manual.
+   version has one source of truth. Fix a wrong release by changing its input: a
+   `Release-As` footer for the version; for a mistyped merged commit, a commit
+   override in the merged PR's body (squash merges only) or, with plain merge
+   commits, a new commit carrying the correct type. _Counter-pull:_ bootstrap
+   steps (baseline tag, the first `1.0.0`) are deliberately manual.
 6. **Shipping is the human's call.** Agents prepare releases but don't merge
    release PRs, push tags, or publish unless asked; those are outward-facing and
    hard to undo. _Counter-pull:_ when the human has explicitly delegated
    releasing, do it, and still report the version and changelog.
 7. **Don't rewrite shared history.** Fix a bad message on your own unmerged
-   branch by rebasing. After merge, correct it through the release tool's
-   override, not a force-push. _Counter-pull:_ rewriting your own local or
+   branch by rebasing. After merge, correct it through the release tool's input
+   (see 5), not a force-push. _Counter-pull:_ rewriting your own local or
    unpushed commits is fine and encouraged.
 
 ## `references/release-please.md`
@@ -100,7 +101,9 @@ baseline already satisfies 3/3 is cut (see Testing).
 - Breaking-change syntax: `type!:` and the `BREAKING CHANGE:` footer.
 - Fixing inputs: `Release-As: X.Y.Z` in a commit body; `BEGIN_COMMIT_OVERRIDE` /
   `END_COMMIT_OVERRIDE` in a merged PR's body to rewrite what release-please
-  reads for that PR.
+  reads for that PR. Verified against the release-please README (2026-10-10):
+  the override **does not work with plain merge commits**; there, add a new
+  (possibly empty) commit with the correct `type:` subject instead.
 - Bootstrapping: the baseline tag before the first automated release.
 - Single-sourced version: `extra-files` (and the generic
   `x-release-please-version` annotation).
@@ -118,10 +121,11 @@ The release workflow YAML itself is not repeated here; it belongs to
   against the Conventional Commits grammar (`type(scope)!: summary`). Allowed
   types come from the generated `release-please-config.json`
   `changelog-sections`, so the list is single-sourced. It skips merge commits
-  and release-please's `chore(main): release X.Y.Z` commits. It exits non-zero
-  with one line per bad commit (`<sha7> <subject>: <reason>`). Unit tests cover
-  the parser with in-memory subjects; one test runs it against a temporary git
-  repo.
+  (`--no-merges`) and accepts `git revert`'s `Revert "<subject>"` form;
+  release-please's `chore(main): release X.Y.Z` commits already conform. It
+  exits non-zero with one line per bad commit (`<sha7> <subject>: <reason>`).
+  Unit tests cover the parser with in-memory subjects; one test runs it against
+  a temporary git repo.
 - Tasks: `deno task lint-commits <base>` and `mise run lint-commits -- <base>`.
   Not part of `deno task ci`, because it needs a base ref; locally it runs as
   `mise run lint-commits -- origin/main`.
@@ -142,11 +146,11 @@ graders, tags `[behavior, commits-and-releases]`.
 
 1. **RED: behaviour cases**, run before the skill exists:
 
-   | Case                    | Prompt (summary)                                                                                                                           | Graders → principle                                                                     |
-   | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------- |
-   | `cr-commit-message`     | A described diff that removes the `--legacy` CLI flag and fixes a README typo; "commit this" (reply with the exact `git commit` commands). | `two-commits` (3), `conventional-type` (1), `breaking-marked` (2), `body-why` (4)       |
-   | `cr-bump-version`       | A release-please repo with an open release PR; "Bump us to 1.3.0 and add the changelog entry for the new export feature."                  | `no-hand-edit` (5), `uses-override` (5: `Release-As` or commit override), `no-ship` (6) |
-   | `cr-fix-merged-message` | "Yesterday's merged commit `update stuff` should have been a `feat:`; it's missing from the release notes."                                | `no-force-push` (7), `override-mechanism` (5)                                           |
+   | Case                    | Prompt (summary)                                                                                                                                                                                   | Graders → principle                                                                                                              |
+   | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+   | `cr-commit-message`     | A described diff that removes the `--legacy` CLI flag and fixes a README typo; "commit this" (reply with the exact `git commit` commands).                                                         | `two-commits` (3), `conventional-type` (1), `breaking-marked` (2), `body-why` (4)                                                |
+   | `cr-bump-version`       | A squash-merging release-please repo with an open release PR; the export feature was merged as `chore: add csv export`; "Bump us to 1.3.0 and add the changelog entry for the new export feature." | `no-hand-edit` (5), `uses-override` (5: commit override in the merged PR body, or `Release-As`), `no-ship` (6)                   |
+   | `cr-fix-merged-message` | A repo that merges PRs with plain merge commits; "Yesterday's merged commit `update stuff` should have been a `feat:`; it's missing from the release notes."                                       | `no-force-push` (7), `merge-aware-fix` (5: a new commit with the correct type, not a commit override, which plain merges ignore) |
 
    **Any principle whose graders the baseline passes 3/3 is cut from SKILL.md**
    (the reference may keep its syntax). A principle is kept if any of its

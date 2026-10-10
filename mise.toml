@@ -51,6 +51,10 @@ run = "deno task lint-skills"
 description = "Measure whether each skill fires on realistic prompts (evals/, costs API usage)"
 run = "deno task eval-triggers"
 
+[tasks.eval-behavior]
+description = "Measure skill behaviour with vs. without devkit (evals/, costs API usage)"
+run = "deno task eval-behavior"
+
 # Release gate: every check must pass before publishing. Includes the
 # generated-files drift check so a release can't ship stale manifests.
 [tasks.release]

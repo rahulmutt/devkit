@@ -1,7 +1,7 @@
 # Root toolchain for devkit. Pin exact versions with `mise use --pin`.
 [tools]
-deno = "2.9.4"
-node = "26.5.0"
+deno = "2.9.7"
+node = "26.11.1"
 
 # Tasks delegate to `deno task <name>` so the actual commands live in EXACTLY
 # one place (deno.json). Don't inline the deno commands here — that would

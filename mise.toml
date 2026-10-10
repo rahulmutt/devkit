@@ -38,6 +38,14 @@ run = "deno task lint"
 description = "Type-check the generator entry points and marketplace.config.ts"
 run = "deno task typecheck"
 
+[tasks.validate-manifests]
+description = "Validate generated harness manifests against their schemas"
+run = "deno task validate-manifests"
+
+[tasks.lint-skills]
+description = "Lint skills/ (frontmatter, links, primer listing)"
+run = "deno task lint-skills"
+
 # Release gate: every check must pass before publishing. Includes the
 # generated-files drift check so a release can't ship stale manifests.
 [tasks.release]

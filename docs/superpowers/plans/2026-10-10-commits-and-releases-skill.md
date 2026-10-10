@@ -826,8 +826,9 @@ async function repoWithBranch(): Promise<string> {
 Deno.test("commitsInRange skips merge commits", async () => {
   const dir = await repoWithBranch();
   try {
-    const subjects = (await commitsInRange("main", dir)).map((c) => c.subject);
-    assertEquals(subjects, ["update stuff", "feat: side work"]);
+    const subjects = (await commitsInRange("main", dir)).map((c) => c.subject)
+      .sort();
+    assertEquals(subjects, ["feat: side work", "update stuff"]);
   } finally {
     await Deno.remove(dir, { recursive: true });
   }
@@ -1039,8 +1040,11 @@ Run `deno task lint-workflows`. Expected: no findings.
 - [ ] **Step 7: Update `RELEASING.md` and `README.md`**
 
 In `RELEASING.md`, in "How it works", step 1, append this sentence:
-`CI checks every PR commit's subject with \`mise run lint-commits\` (run it
-locally as \`mise run lint-commits -- origin/main\`).`
+
+```markdown
+CI checks every PR commit's subject with `mise run lint-commits`; run it locally
+as `mise run lint-commits -- origin/main`.
+```
 
 In `README.md`:
 

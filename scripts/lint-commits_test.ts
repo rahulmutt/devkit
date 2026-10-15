@@ -30,3 +30,10 @@ Deno.test("lint-commits on an empty range exits 0 and says so", async () => {
   assertEquals(r.code, 0);
   assertStringIncludes(r.stdout, "0 commit(s) checked");
 });
+
+Deno.test("lint-commits rejects a base that looks like an option", async () => {
+  const r = await run("--output=/tmp/x");
+  assertEquals(r.code, 2);
+  assertMatch(r.stderr, /^lint-commits: base ref must not start with "-"/);
+  assertEquals(r.stderr.includes("    at "), false);
+});

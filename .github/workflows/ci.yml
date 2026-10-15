@@ -24,4 +24,6 @@ jobs:
         run: mise run release
       - name: Commit messages
         if: github.event_name == 'pull_request'
-        run: mise run lint-commits -- "origin/${{ github.base_ref }}"
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: mise run lint-commits -- "origin/$BASE_REF"

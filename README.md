@@ -19,6 +19,7 @@ Install once; the agent does the rest.
 | **security-practices**    | Before touching a distributed component or untrusted input, the agent applies a trust-boundary threat lens — authn, authz, transport, validation, secrets, supply chain — and wires in free OSS scanners (secret, dependency/SCA, SAST, container/IaC) matched to the repo's stack. Tool installation delegates to developer-environment.                                                                                            |
 | **navigable-codebases**   | Your agent leaves the repo navigable for whoever comes next — human or agent: a discoverable front door (README + AGENTS.md/CLAUDE.md), common workflows exposed as named tasks, a codebase map that explains the boundaries, and onboarding it verifies by running. Keeps the discoverability surface single-sourced so it can't drift; delegates runner install to developer-environment and code structure to writing-clean-code. |
 | **ci-pipelines**          | Your agent pins every action by SHA and keeps the pins current with Renovate, sets an explicit runner, keeps feedback fast, requires one check, and smoke-runs nightlies on every PR.                                                                                                                                                                                                                                                |
+| **commits-and-releases**  | Your agent writes one Conventional Commit per logical change, marks breaking changes, explains why in the body, and fixes releases by correcting their input instead of hand-editing changelogs, versions, or tags. Shipping stays your call.                                                                                                                                                                                        |
 
 ## Install
 
@@ -86,8 +87,8 @@ mise run release    # full gate: fmt-check, lint, typecheck, generated-files in 
 `mise run release` is the release gate — it also runs in **pre-commit** and in
 **GitHub Actions CI**, so a change can't merge with stale generated files or a
 failing check. Individual steps are also available: `mise run fmt`, `fmt-check`,
-`lint`, `lint-workflows`, `typecheck`, `check`, `validate-manifests`,
-`lint-skills`, `test`, `eval-triggers`, `eval-behavior`.
+`lint`, `lint-workflows`, `lint-commits`, `typecheck`, `check`,
+`validate-manifests`, `lint-skills`, `test`, `eval-triggers`, `eval-behavior`.
 
 **Change metadata** (name, version, description): edit `marketplace.config.ts`,
 then `mise run generate`.

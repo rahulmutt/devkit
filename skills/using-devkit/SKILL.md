@@ -26,6 +26,11 @@ testing-practices).
   pinning or updating GitHub Actions or setting up Renovate or Dependabot; or
   when configuring CI caching, required checks, branch protection, or workflow
   token permissions.
+- **commits-and-releases** — Use when writing commit messages or splitting work
+  into commits; when cutting, versioning, or tagging a release; when editing a
+  CHANGELOG or bumping a version number; when setting up or fixing
+  release-please, semantic-release, or changesets; or when a release has the
+  wrong version or is missing changelog entries.
 - **developer-environment** — Use when installing or upgrading any tool,
   runtime, CLI, or library — brew, apt, npm i -g, pip install, cargo install,
   nvm, pyenv, asdf — editing mise.toml or .tool-versions, bumping or pinning

@@ -9,7 +9,9 @@ external registry publish — consumers pin to a git tag (`v0.2.0`) or track
 
 1. Merge work to `main` using
    [Conventional Commits](https://www.conventionalcommits.org/) (`feat:`,
-   `fix:`, `docs:`, etc.). CI runs the release gate on every PR.
+   `fix:`, `docs:`, etc.). CI runs the release gate and checks every PR commit's
+   subject on every PR; run the subject check locally as
+   `mise run lint-commits -- origin/main`.
 2. The `release-please` workflow (`.github/workflows/release.yml`) keeps a
    **`chore(main): release X.Y.Z`** PR open, continuously updating
    `CHANGELOG.md` and bumping the version across every version-bearing file.

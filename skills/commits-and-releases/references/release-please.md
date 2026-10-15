@@ -7,10 +7,12 @@ its README on 2026-10-10.
 ## Commits
 
 Subject: `type(scope): imperative summary`. Pick the type by the change's effect
-on users: `feat` and `fix` bump the version and reach the release notes; `docs`,
-`chore`, `refactor`, `test`, `ci` don't. A docs typo is `docs`, never `fix`. The
-repo's allowed types are the `changelog-sections[].type` entries in
-`release-please-config.json`.
+on users. `feat` and `fix` (and `deps`, where the repo uses it) are the
+releasable units: they bump the version and reach the release notes. Whether any
+other type bumps or appears in the notes depends on `changelog-sections` in
+`release-please-config.json`: a type listed there un-hidden appears in the notes
+(and can produce a release); a hidden one doesn't. Those entries are also the
+repo's allowed types. A docs typo is `docs`, never `fix`.
 
 One logical change per commit, each passing the gate, so it reverts cleanly and
 maps to one changelog line. With squash merges, the PR title becomes the commit
@@ -19,16 +21,17 @@ subject. The body says why (the diff shows what) and references the issue
 
 ## Types and version bumps
 
-| Commit                                | 1.x and later | Pre-1.0 with `bump-minor-pre-major: true`         |
-| ------------------------------------- | ------------- | ------------------------------------------------- |
-| `fix:` / `perf:`                      | patch         | patch                                             |
-| `feat:`                               | minor         | minor (patch if `bump-patch-for-minor-pre-major`) |
-| `type!:` or `BREAKING CHANGE:` footer | major         | minor                                             |
-| `docs:`, `chore:`, `test:`, `ci:`, …  | none          | none                                              |
+| Commit                                    | 1.x and later | Pre-1.0 with `bump-minor-pre-major: true`         |
+| ----------------------------------------- | ------------- | ------------------------------------------------- |
+| `fix:` / `perf:`                          | patch         | patch                                             |
+| `feat:`                                   | minor         | minor (patch if `bump-patch-for-minor-pre-major`) |
+| `type!:` or `BREAKING CHANGE:` footer     | major         | minor                                             |
+| Types in hidden sections (default config) | none          | none                                              |
 
-Which types appear in the changelog comes from `changelog-sections` in
-`release-please-config.json`. Hidden sections still parse, but they don't
-produce a release on their own.
+The `none` row holds for hidden sections (release-please's defaults). Check
+`changelog-sections` in `release-please-config.json`: a type set visible there
+reaches the notes and can produce a release. Hidden sections still parse, but
+they don't produce a release on their own.
 
 ## Breaking changes
 
@@ -63,6 +66,10 @@ release-please uses this the next time it runs.
 > **Plain merge commits ignore the override.** release-please can't tell which
 > commit the override applies to. Add a new commit with the correct type
 > instead, e.g. `git commit --allow-empty -m "feat: add --json output flag"`.
+>
+> If the original commit was a visible type (a `fix:` that should have been
+> `feat:`), the new commit adds a second entry and the old line stays in the
+> notes.
 
 Never force-push a shared branch to reword a merged commit. Rebasing your own
 unmerged branch is fine.

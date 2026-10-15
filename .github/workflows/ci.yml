@@ -17,6 +17,11 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
       - uses: jdx/mise-action@2d8d4cafcbd33be2ea37d2b6f5ad595363d1f1ca # v5.1.1
       - name: Release gate
         run: mise run release
+      - name: Commit messages
+        if: github.event_name == 'pull_request'
+        run: mise run lint-commits -- "origin/${{ github.base_ref }}"

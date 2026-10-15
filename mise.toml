@@ -51,6 +51,11 @@ run = "deno task validate-manifests"
 description = "Lint skills/ (frontmatter, links, primer listing)"
 run = "deno task lint-skills"
 
+# Not part of the release gate: needs a base ref (e.g. `mise run lint-commits -- origin/main`).
+[tasks.lint-commits]
+description = "Check commit subjects since <base> are Conventional Commits"
+run = "deno task lint-commits"
+
 # Not part of the release gate: runs real agent sessions on your credential.
 [tasks.eval-triggers]
 description = "Measure whether each skill fires on realistic prompts (evals/, costs API usage)"

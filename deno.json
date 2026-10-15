@@ -2,15 +2,16 @@
   "tasks": {
     "generate": "deno run --allow-read=. --allow-write=. --allow-run=deno scripts/generate.ts",
     "check": "deno run --allow-read=. --allow-run=deno scripts/generate.ts --check",
-    "test": "deno test --allow-read --allow-write --allow-run=deno",
+    "test": "deno test --allow-read --allow-write --allow-run=deno,git",
     "rasterize": "deno run --allow-read --allow-write=assets --allow-env --allow-ffi --allow-sys scripts/rasterize.ts",
     "fmt": "deno fmt && deno task generate",
     "fmt-check": "deno fmt --check",
     "lint": "deno lint",
     "lint-workflows": "actionlint",
     "lint-skills": "deno run --allow-read=. scripts/lint-skills.ts",
+    "lint-commits": "deno run --allow-read=. --allow-run=git scripts/lint-commits.ts",
     "validate-manifests": "deno run --allow-read=. --allow-run=deno scripts/validate-manifests.ts",
-    "typecheck": "deno check scripts/generate.ts scripts/rasterize.ts scripts/lint-skills.ts scripts/validate-manifests.ts marketplace.config.ts",
+    "typecheck": "deno check scripts/generate.ts scripts/rasterize.ts scripts/lint-skills.ts scripts/lint-commits.ts scripts/validate-manifests.ts marketplace.config.ts",
     "eval-triggers": "claude plugin eval . --tag trigger --ablation none --no-publish",
     "eval-behavior": "claude plugin eval . --tag behavior --no-publish",
     "ci": "deno task fmt-check && deno task lint && deno task lint-workflows && deno task typecheck && deno task check && deno task validate-manifests && deno task lint-skills && deno task test"

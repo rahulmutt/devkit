@@ -63,9 +63,11 @@ baseline already satisfies 3/3 is cut (see Testing).
 1. **The subject line is the changelog line.**
    `type(scope): imperative
    summary`. The type follows the change's effect on
-   users: `feat`/`fix` bump the version and appear in release notes; `refactor`,
-   `test`, `docs`, `chore`, `ci` don't. _Counter-pull:_ don't label internal
-   work `feat` to make it look important; that ships a version bump for nothing.
+   users: `feat`/`fix` bump the version and appear in release notes; whether
+   other types do depends on the repo's `changelog-sections` (hidden ones
+   don't). _Corrected 2026-10-15: visibility depends on changelog-sections._
+   _Counter-pull:_ don't label internal work `feat` to make it look important;
+   that ships a version bump for nothing.
 2. **Breaking changes are marked.** `!` or a `BREAKING CHANGE:` footer whenever
    a public interface changes (removed flag, renamed config key, changed
    default). It is the only signal that bumps the version correctly.

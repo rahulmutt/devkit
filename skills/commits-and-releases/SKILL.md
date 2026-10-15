@@ -7,11 +7,11 @@ description: Use when writing commit messages or splitting work into commits; wh
 
 Commit history is the input to the release: release tooling reads each commit
 subject to pick the version bump and write the changelog. So a wrong release is
-fixed by changing that input, never the output. Tool syntax:
-[`references/release-please.md`](references/release-please.md).
+fixed by changing that input, never the output.
 
-Commit format, breaking-change syntax, type-to-bump mapping, and when to ship:
-see the reference.
+Commit format, breaking-change syntax, type-to-bump mapping, when to ship, and
+fixing merged history: see
+[`references/release-please.md`](references/release-please.md).
 
 ## Releases come from history, not hand edits
 

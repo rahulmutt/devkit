@@ -45,3 +45,10 @@ Kept graders: `merge-aware-fix` goes from 0/3 (RED) and 1/3 (without) to 3/3.
 this time, so that gain is within 3-run noise. `uses-override` holds at 3/3.
 
 No Step 6 wording changes were needed.
+
+## Open items
+
+- The spec's criterion "with-skill beats the without arm on every kept grader"
+  is met only by `merge-aware-fix`. `no-hand-edit` and `uses-override` tie at
+  3/3.
+- `uses-override` was kept only because principle 5's other graders failed.

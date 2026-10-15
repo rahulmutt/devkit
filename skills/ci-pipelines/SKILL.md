@@ -65,3 +65,4 @@ see the reference.
   **`testing-practices`**.
 - Which scanners run, and secrets handling → **`security-practices`**.
 - Exposing the gate as a named task → **`navigable-codebases`**.
+- Release versioning, changelogs, and tags → **`commits-and-releases`**.

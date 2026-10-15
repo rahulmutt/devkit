@@ -156,6 +156,10 @@ Both were "falls between skills" areas at review time. Resolved:
   of suite scope.** No owner added. Revisit if the suite later expands to cover
   collaboration process; the most plausible home would be a new skill rather
   than stretching `navigable-codebases`.
+- **Update 2026-10-10:** commits are now in scope, owned by
+  `commits-and-releases`, because release automation consumes them (see
+  `docs/superpowers/specs/2026-10-10-commits-and-releases-design.md`). PR
+  process (size, stacking, review etiquette) stays out of scope.
 
 ## Method
 

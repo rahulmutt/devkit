@@ -5,5 +5,12 @@
     ":semanticCommits",
     "helpers:pinGitHubActionDigests"
   ],
-  "minimumReleaseAge": "14 days"
+  "minimumReleaseAge": "14 days",
+  "packageRules": [
+    {
+      "description": "Keep the Bun runtime (mise.toml) and its type definitions (scripts/package.json) in step",
+      "matchDepNames": ["bun", "@types/bun"],
+      "groupName": "bun"
+    }
+  ]
 }

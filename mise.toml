@@ -1,8 +1,17 @@
 # Root toolchain for devkit. Pin exact versions with `mise use --pin`.
 [tools]
 actionlint = "1.7.12"
+bun = "1.4.2"
 deno = "2.9.7"
 node = "26.12.0"
+
+[env]
+_.path = ["{{config_root}}/scripts/node_modules/.bin"]
+
+[tasks.deps]
+description = "Install scripts/ JS dev dependencies (frozen lockfile)"
+dir = "{{config_root}}/scripts"
+run = "bun install --frozen-lockfile"
 
 # Tasks delegate to `deno task <name>` so the actual commands live in EXACTLY
 # one place (deno.json). Don't inline the deno commands here — that would

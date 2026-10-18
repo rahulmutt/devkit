@@ -1,18 +1,17 @@
-import { assertEquals, assertThrows } from "@std/assert";
+import { expect, test } from "bun:test";
 import { renderTemplate, templateVars } from "./templates.ts";
 import { config } from "../../marketplace.config.ts";
 
-Deno.test("renderTemplate substitutes tokens", () => {
-  assertEquals(
-    renderTemplate("hi {{pluginName}}", { pluginName: "devkit" }),
+test("renderTemplate substitutes tokens", () => {
+  expect(renderTemplate("hi {{pluginName}}", { pluginName: "devkit" })).toEqual(
     "hi devkit",
   );
 });
 
-Deno.test("renderTemplate throws on unresolved token", () => {
-  assertThrows(() => renderTemplate("a {{missing}}", {}), Error, "missing");
+test("renderTemplate throws on unresolved token", () => {
+  expect(() => renderTemplate("a {{missing}}", {})).toThrow("missing");
 });
 
-Deno.test("templateVars includes bootstrapSkill", () => {
-  assertEquals(templateVars(config).bootstrapSkill, "using-devkit");
+test("templateVars includes bootstrapSkill", () => {
+  expect(templateVars(config).bootstrapSkill).toEqual("using-devkit");
 });

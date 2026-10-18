@@ -1,58 +1,61 @@
-import { assertEquals, assertRejects } from "@std/assert";
+import { expect, test } from "bun:test";
+import { mkdir, mkdtemp, writeFile } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { discoverSkills, parseFrontmatter } from "./discover.ts";
 
-Deno.test("parseFrontmatter reads name, description, and body", () => {
+test("parseFrontmatter reads name, description, and body", () => {
   const src =
     "---\nname: foo\ndescription: Use when testing.\n---\n# Body\ntext\n";
   const fm = parseFrontmatter(src);
-  assertEquals(fm.hasFrontmatter, true);
-  assertEquals(fm.name, "foo");
-  assertEquals(fm.description, "Use when testing.");
-  assertEquals(fm.body.includes("# Body"), true);
+  expect(fm.hasFrontmatter).toEqual(true);
+  expect(fm.name).toEqual("foo");
+  expect(fm.description).toEqual("Use when testing.");
+  expect(fm.body.includes("# Body")).toEqual(true);
 });
 
-Deno.test("parseFrontmatter flags a file with no frontmatter", () => {
+test("parseFrontmatter flags a file with no frontmatter", () => {
   const fm = parseFrontmatter("# Just a heading\n");
-  assertEquals(fm.hasFrontmatter, false);
-  assertEquals(fm.name, "");
-  assertEquals(fm.description, "");
+  expect(fm.hasFrontmatter).toEqual(false);
+  expect(fm.name).toEqual("");
+  expect(fm.description).toEqual("");
 });
 
-Deno.test("discoverSkills finds skills, parses them, lists reference files", async () => {
-  const dir = await Deno.makeTempDir();
-  await Deno.mkdir(`${dir}/alpha/references`, { recursive: true });
-  await Deno.writeTextFile(
+test("discoverSkills finds skills, parses them, lists reference files", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "devkit-"));
+  await mkdir(`${dir}/alpha/references`, { recursive: true });
+  await writeFile(
     `${dir}/alpha/SKILL.md`,
     "---\nname: alpha\ndescription: Use when alpha.\n---\nsee references/x.md\n",
   );
-  await Deno.writeTextFile(`${dir}/alpha/references/x.md`, "x\n");
-  await Deno.mkdir(`${dir}/not-a-skill`, { recursive: true });
+  await writeFile(`${dir}/alpha/references/x.md`, "x\n");
+  await mkdir(`${dir}/not-a-skill`, { recursive: true });
 
   const records = await discoverSkills(dir);
-  assertEquals(records.length, 1);
-  assertEquals(records[0].name, "alpha");
-  assertEquals(records[0].dir, "alpha");
-  assertEquals(records[0].description, "Use when alpha.");
-  assertEquals(records[0].referenceFiles, ["x.md"]);
+  expect(records.length).toEqual(1);
+  expect(records[0].name).toEqual("alpha");
+  expect(records[0].dir).toEqual("alpha");
+  expect(records[0].description).toEqual("Use when alpha.");
+  expect(records[0].referenceFiles).toEqual(["x.md"]);
 });
 
-Deno.test("discoverSkills rethrows a non-NotFound error reading SKILL.md", async () => {
-  const dir = await Deno.makeTempDir();
-  // SKILL.md present but a directory — readTextFile fails with a non-NotFound
+test("discoverSkills rethrows a non-NotFound error reading SKILL.md", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "devkit-"));
+  // SKILL.md present but a directory — readFile fails with a non-NotFound
   // error, which must propagate rather than silently drop the skill.
-  await Deno.mkdir(`${dir}/alpha/SKILL.md`, { recursive: true });
-  await assertRejects(() => discoverSkills(dir));
+  await mkdir(`${dir}/alpha/SKILL.md`, { recursive: true });
+  await expect(discoverSkills(dir)).rejects.toThrow();
 });
 
-Deno.test("discoverSkills rethrows a non-NotFound error listing references", async () => {
-  const dir = await Deno.makeTempDir();
-  await Deno.mkdir(`${dir}/alpha`, { recursive: true });
-  await Deno.writeTextFile(
+test("discoverSkills rethrows a non-NotFound error listing references", async () => {
+  const dir = await mkdtemp(join(tmpdir(), "devkit-"));
+  await mkdir(`${dir}/alpha`, { recursive: true });
+  await writeFile(
     `${dir}/alpha/SKILL.md`,
     "---\nname: alpha\ndescription: Use when alpha.\n---\nbody\n",
   );
-  // references present but a file, not a directory — readDir fails with a
+  // references present but a file, not a directory — readdir fails with a
   // non-NotFound error, which must propagate rather than be swallowed.
-  await Deno.writeTextFile(`${dir}/alpha/references`, "not a dir\n");
-  await assertRejects(() => discoverSkills(dir));
+  await writeFile(`${dir}/alpha/references`, "not a dir\n");
+  await expect(discoverSkills(dir)).rejects.toThrow();
 });

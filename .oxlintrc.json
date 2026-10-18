@@ -1,0 +1,9 @@
+{
+  "ignorePatterns": [
+    "scripts/templates/pi",
+    "scripts/templates/opencode",
+    ".pi/extensions",
+    ".opencode/plugins",
+    "scripts/node_modules"
+  ]
+}

@@ -1,6 +1,8 @@
 // scripts/lib/lint/commits.ts
-// Conventional Commits subject check for `deno task lint-commits`. Allowed types
+// Conventional Commits subject check for `mise run lint-commits`. Allowed types
 // come from release-please-config.json so the list has one source.
+
+import { exec } from "../exec.ts";
 
 export interface Commit {
   sha: string;
@@ -11,9 +13,9 @@ const HEADER = /^([a-z]+)(\([\w./-]+\))?!?: \S/;
 const REVERT = /^Revert ".+"$/;
 const MALFORMED = "not `type(scope)!: summary`";
 
-export function allowedTypes(
-  config: { "changelog-sections": { type: string }[] },
-): string[] {
+export function allowedTypes(config: {
+  "changelog-sections": { type: string }[];
+}): string[] {
   return config["changelog-sections"].map((s) => s.type);
 }
 
@@ -43,23 +45,26 @@ export function lintCommits(
 }
 
 export function parseLog(output: string): Commit[] {
-  return output.split("\n").filter((line) => line.length > 0).map((line) => {
-    const tab = line.indexOf("\t");
-    return { sha: line.slice(0, tab), subject: line.slice(tab + 1) };
-  });
+  return output
+    .split("\n")
+    .filter((line) => line.length > 0)
+    .map((line) => {
+      const tab = line.indexOf("\t");
+      return { sha: line.slice(0, tab), subject: line.slice(tab + 1) };
+    });
 }
 
 export async function commitsInRange(
   base: string,
   cwd: string,
 ): Promise<Commit[]> {
-  const { code, stdout, stderr } = await new Deno.Command("git", {
-    args: ["log", "--no-merges", "--format=%H%x09%s", `${base}..HEAD`],
+  const { code, stdout, stderr } = await exec(
+    "git",
+    ["log", "--no-merges", "--format=%H%x09%s", `${base}..HEAD`],
     cwd,
-  }).output();
+  );
   if (code !== 0) {
-    const detail = new TextDecoder().decode(stderr).trim();
-    throw new Error(`git log ${base}..HEAD failed: ${detail}`);
+    throw new Error(`git log ${base}..HEAD failed: ${stderr.trim()}`);
   }
-  return parseLog(new TextDecoder().decode(stdout));
+  return parseLog(stdout);
 }

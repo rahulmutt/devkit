@@ -1,0 +1,13 @@
+{
+  "name": "devkit-scripts",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@cfworker/json-schema": "4.1.1",
+    "@resvg/resvg-js": "2.6.2",
+    "@types/bun": "1.4.2",
+    "oxlint": "1.86.0",
+    "prettier": "3.9.9",
+    "typescript": "7.0.2"
+  }
+}

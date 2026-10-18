@@ -20,44 +20,13 @@ testing-practices).
 
 <!-- BEGIN GENERATED: skill index -->
 
-- **ci-pipelines** — Use when creating or editing CI workflows
-  (.github/workflows, .gitlab-ci.yml, Buildkite pipelines), adding a nightly,
-  scheduled, or cron job; when CI is slow, flaky, or fails only in CI; when
-  pinning or updating GitHub Actions or setting up Renovate or Dependabot; or
-  when configuring CI caching, required checks, branch protection, or workflow
-  token permissions.
-- **commits-and-releases** — Use when writing commit messages or splitting work
-  into commits; when cutting, versioning, or tagging a release; when editing a
-  CHANGELOG or bumping a version number; when setting up or fixing
-  release-please, semantic-release, or changesets; or when a release has the
-  wrong version or is missing changelog entries.
-- **developer-environment** — Use when installing or upgrading any tool,
-  runtime, CLI, or library — brew, apt, npm i -g, pip install, cargo install,
-  nvm, pyenv, asdf — editing mise.toml or .tool-versions, bumping or pinning
-  versions, adding a dependency, hitting "command not found", setting up a dev
-  or CI toolchain, reviewing Renovate or Dependabot version bumps, or
-  considering Bazel.
-- **navigable-codebases** — Use when writing or updating a README, AGENTS.md,
-  CLAUDE.md, GEMINI.md, ARCHITECTURE.md, or onboarding docs; when setting up a
-  new repository; when adding or naming task-runner commands (mise tasks,
-  Makefile, justfile, npm scripts); or when getting-started steps are missing,
-  stale, or slow for newcomers.
-- **security-practices** — Use when code touches a trust boundary — HTTP
-  endpoints, webhooks, file uploads, auth, sessions, permissions, SQL or shell
-  built from input, deserialization, service-to-service calls — when handling
-  secrets, API keys, or .env files, on a CVE or vulnerability alert, when
-  writing a threat model, or when choosing secret, SCA, SAST, or container
-  scanners.
-- **testing-practices** — Use when writing, adding, or reviewing tests; choosing
-  between unit, integration, snapshot/golden, property, fuzz, mutation, e2e/UI,
-  or formal methods; when a test is flaky or the suite or CI is slow; or when
-  deciding what runs in pre-commit, PR CI, or nightly.
-- **writing-clean-code** — Use when refactoring or restructuring code, splitting
-  a file or module that has grown too large, deciding whether to extract a
-  helper or inline it, naming things, removing dead or unused code, drawing
-  module or package boundaries, handling errors, writing comments, applying DDD
-  or hexagonal (ports and adapters) architecture, or checking a language's
-  idiomatic style.
+- **ci-pipelines** — Use when creating or editing CI workflows (.github/workflows, .gitlab-ci.yml, Buildkite pipelines), adding a nightly, scheduled, or cron job; when CI is slow, flaky, or fails only in CI; when pinning or updating GitHub Actions or setting up Renovate or Dependabot; or when configuring CI caching, required checks, branch protection, or workflow token permissions.
+- **commits-and-releases** — Use when writing commit messages or splitting work into commits; when cutting, versioning, or tagging a release; when editing a CHANGELOG or bumping a version number; when setting up or fixing release-please, semantic-release, or changesets; or when a release has the wrong version or is missing changelog entries.
+- **developer-environment** — Use when installing or upgrading any tool, runtime, CLI, or library — brew, apt, npm i -g, pip install, cargo install, nvm, pyenv, asdf — editing mise.toml or .tool-versions, bumping or pinning versions, adding a dependency, hitting "command not found", setting up a dev or CI toolchain, reviewing Renovate or Dependabot version bumps, or considering Bazel.
+- **navigable-codebases** — Use when writing or updating a README, AGENTS.md, CLAUDE.md, GEMINI.md, ARCHITECTURE.md, or onboarding docs; when setting up a new repository; when adding or naming task-runner commands (mise tasks, Makefile, justfile, npm scripts); or when getting-started steps are missing, stale, or slow for newcomers.
+- **security-practices** — Use when code touches a trust boundary — HTTP endpoints, webhooks, file uploads, auth, sessions, permissions, SQL or shell built from input, deserialization, service-to-service calls — when handling secrets, API keys, or .env files, on a CVE or vulnerability alert, when writing a threat model, or when choosing secret, SCA, SAST, or container scanners.
+- **testing-practices** — Use when writing, adding, or reviewing tests; choosing between unit, integration, snapshot/golden, property, fuzz, mutation, e2e/UI, or formal methods; when a test is flaky or the suite or CI is slow; or when deciding what runs in pre-commit, PR CI, or nightly.
+- **writing-clean-code** — Use when refactoring or restructuring code, splitting a file or module that has grown too large, deciding whether to extract a helper or inline it, naming things, removing dead or unused code, drawing module or package boundaries, handling errors, writing comments, applying DDD or hexagonal (ports and adapters) architecture, or checking a language's idiomatic style.
 
 <!-- END GENERATED: skill index -->
 

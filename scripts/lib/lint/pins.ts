@@ -21,12 +21,12 @@ export function pinDrift(sources: PinSource[]): string[] {
     }
   }
   const problems: string[] = [];
-  for (
-    const [action, pins] of [...seen].sort(([a], [b]) => a.localeCompare(b))
-  ) {
+  for (const [action, pins] of [...seen].sort(([a], [b]) =>
+    a.localeCompare(b),
+  )) {
     if (pins.size > 1) {
-      const detail = [...pins].map(([pin, paths]) =>
-        `${pin} (${paths.join(", ")})`
+      const detail = [...pins].map(
+        ([pin, paths]) => `${pin} (${paths.join(", ")})`,
       );
       problems.push(`${action} pinned differently: ${detail.join("; ")}`);
     }

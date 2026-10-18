@@ -1,29 +1,29 @@
-import { assertEquals } from "@std/assert";
+import { expect, test } from "bun:test";
 import { buildReport } from "./report.ts";
 import type { Finding } from "./types.ts";
 
-Deno.test("clean run passes with exit 0", () => {
+test("clean run passes with exit 0", () => {
   const r = buildReport([], 4);
-  assertEquals(r.exitCode, 0);
-  assertEquals(r.header, "skill-lint: 4 skills checked");
-  assertEquals(r.summary, "✓ all checks passed");
-  assertEquals(r.lines, []);
+  expect(r.exitCode).toEqual(0);
+  expect(r.header).toEqual("skill-lint: 4 skills checked");
+  expect(r.summary).toEqual("✓ all checks passed");
+  expect(r.lines).toEqual([]);
 });
 
-Deno.test("any error sets exit 1 and summary counts", () => {
+test("any error sets exit 1 and summary counts", () => {
   const findings: Finding[] = [
     { level: "warn", skill: "b", message: "warn msg" },
     { level: "error", skill: "a", message: "err msg" },
   ];
   const r = buildReport(findings, 2);
-  assertEquals(r.exitCode, 1);
-  assertEquals(r.summary, "✗ 1 error, 1 warn");
-  assertEquals(r.lines.length, 2);
-  assertEquals(r.lines[0].includes("a"), true); // sorted by skill: a before b
+  expect(r.exitCode).toEqual(1);
+  expect(r.summary).toEqual("✗ 1 error, 1 warn");
+  expect(r.lines.length).toEqual(2);
+  expect(r.lines[0].includes("a")).toEqual(true); // sorted by skill: a before b
 });
 
-Deno.test("only warnings keep exit 0", () => {
+test("only warnings keep exit 0", () => {
   const r = buildReport([{ level: "warn", skill: "a", message: "w" }], 1);
-  assertEquals(r.exitCode, 0);
-  assertEquals(r.summary, "✗ 0 errors, 1 warn");
+  expect(r.exitCode).toEqual(0);
+  expect(r.summary).toEqual("✗ 0 errors, 1 warn");
 });

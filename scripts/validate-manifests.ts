@@ -19,5 +19,5 @@ if (import.meta.main) {
     console.error("");
   }
   console.log(report.summary);
-  Deno.exit(report.exitCode);
+  process.exit(report.exitCode);
 }

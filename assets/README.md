@@ -7,10 +7,10 @@
 
 `app-icon.png` is generated from `devkit.svg` — re-run this whenever the SVG
 changes. The default path needs no system tools (it uses `@resvg/resvg-js`,
-pinned in `deno.lock`):
+pinned in `scripts/bun.lock`):
 
 ```bash
-deno task rasterize   # writes assets/app-icon.png at 512x512
+mise run rasterize   # writes assets/app-icon.png at 512x512
 ```
 
 Alternatively, with a system rasterizer:

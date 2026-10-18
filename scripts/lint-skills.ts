@@ -16,7 +16,7 @@ async function main() {
     console.error(
       `skill-lint: bootstrap skill "${config.bootstrapSkill}" not found`,
     );
-    Deno.exit(1);
+    process.exit(1);
   }
 
   const findings = [
@@ -34,7 +34,7 @@ async function main() {
     console.error("");
   }
   console.log(report.summary);
-  Deno.exit(report.exitCode);
+  process.exit(report.exitCode);
 }
 
 await main();

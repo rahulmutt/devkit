@@ -75,11 +75,11 @@ The per-harness manifests, hooks, and bootstrap injectors are **generated** from
 a single source of truth, `marketplace.config.ts`. **Never hand-edit generated
 files** — change the config (or a template) and regenerate.
 
-Tasks run through **mise** (which delegates to `deno task` so the commands live
-in one place, `deno.json`):
+Tasks are defined directly in `mise.toml` and run through **mise**;
+dependencies install automatically the first time a task runs:
 
 ```bash
-mise install        # get deno + node, pinned from mise.toml
+mise install        # get bun + node, pinned from mise.toml
 mise run generate   # render all manifests + bootstraps from marketplace.config.ts
 mise run release    # full gate: fmt-check, lint, typecheck, generated-files in sync, tests
 ```
@@ -88,7 +88,10 @@ mise run release    # full gate: fmt-check, lint, typecheck, generated-files in 
 **GitHub Actions CI**, so a change can't merge with stale generated files or a
 failing check. Individual steps are also available: `mise run fmt`, `fmt-check`,
 `lint`, `lint-workflows`, `lint-commits`, `typecheck`, `check`,
-`validate-manifests`, `lint-skills`, `test`, `eval-triggers`, `eval-behavior`.
+`validate-manifests`, `lint-skills`, `test`, `eval-triggers`, `eval-behavior`,
+`deps`. The JS dev dependencies (Prettier, oxlint, TypeScript and so on) live in
+`scripts/package.json` with `scripts/bun.lock`; `deps` installs them before each
+task that needs them.
 
 **Change metadata** (name, version, description): edit `marketplace.config.ts`,
 then `mise run generate`.
@@ -108,7 +111,7 @@ without devkit: `mise run eval-behavior`.
 ### Repo layout
 
 - `marketplace.config.ts` — source of truth
-- `scripts/` — Deno generator (`generate.ts`, `lib/`, `templates/`)
+- `scripts/` — TypeScript generator run with Bun (`generate.ts`, `lib/`, `templates/`)
 - `skills/` — harness-agnostic skill content
 - generated: `.claude-plugin/`, `.codex-plugin/`, `.cursor-plugin/`,
   `.kimi-plugin/`, `gemini-extension.json`, `GEMINI.md`, `hooks/`, `.pi/`,

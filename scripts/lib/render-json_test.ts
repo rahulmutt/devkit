@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { expect, test } from "bun:test";
 import { renderJson } from "./render-json.ts";
 import { config } from "../../marketplace.config.ts";
 
@@ -8,7 +8,7 @@ function find(files: { path: string; content: string }[], p: string) {
   return JSON.parse(f.content);
 }
 
-Deno.test("all JSON manifests agree on version and plugin name", () => {
+test("all JSON manifests agree on version and plugin name", () => {
   // The canonical version is single-sourced in marketplace.config.ts (bumped
   // by release-please). Assert every manifest matches that source rather than a
   // frozen literal, so this stays green across releases — agreement with the
@@ -16,28 +16,26 @@ Deno.test("all JSON manifests agree on version and plugin name", () => {
   const expected = config.plugin.version;
   const files = renderJson(config);
   const claudeMkt = find(files, ".claude-plugin/marketplace.json");
-  assertEquals(claudeMkt.plugins[0].version, expected);
-  assertEquals(claudeMkt.plugins[0].name, "devkit");
+  expect(claudeMkt.plugins[0].version).toEqual(expected);
+  expect(claudeMkt.plugins[0].name).toEqual("devkit");
 
-  for (
-    const p of [
-      ".claude-plugin/plugin.json",
-      ".codex-plugin/plugin.json",
-      ".cursor-plugin/plugin.json",
-      ".kimi-plugin/plugin.json",
-      "gemini-extension.json",
-      "package.json",
-    ]
-  ) {
-    assertEquals(find(files, p).version, expected, `${p} version`);
+  for (const p of [
+    ".claude-plugin/plugin.json",
+    ".codex-plugin/plugin.json",
+    ".cursor-plugin/plugin.json",
+    ".kimi-plugin/plugin.json",
+    "gemini-extension.json",
+    "package.json",
+  ]) {
+    expect(find(files, p).version, `${p} version`).toEqual(expected);
   }
 });
 
-Deno.test("codex and kimi carry skills path and interface", () => {
+test("codex and kimi carry skills path and interface", () => {
   const files = renderJson(config);
   const codex = find(files, ".codex-plugin/plugin.json");
-  assertEquals(codex.skills, "./skills/");
-  assertEquals(codex.interface.displayName, "Devkit");
+  expect(codex.skills).toEqual("./skills/");
+  expect(codex.interface.displayName).toEqual("Devkit");
   const kimi = find(files, ".kimi-plugin/plugin.json");
-  assertEquals(kimi.sessionStart.skill, "using-devkit");
+  expect(kimi.sessionStart.skill).toEqual("using-devkit");
 });

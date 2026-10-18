@@ -8,19 +8,20 @@ export interface Report {
 }
 
 export function buildReport(findings: Finding[], skillCount: number): Report {
-  const sorted = [...findings].sort((a, b) =>
-    a.skill.localeCompare(b.skill) || rank(a.level) - rank(b.level)
+  const sorted = [...findings].sort(
+    (a, b) => a.skill.localeCompare(b.skill) || rank(a.level) - rank(b.level),
   );
-  const lines = sorted.map((f) =>
-    `  ${f.level.padEnd(5)}  ${f.skill.padEnd(20)} ${f.message}`
+  const lines = sorted.map(
+    (f) => `  ${f.level.padEnd(5)}  ${f.skill.padEnd(20)} ${f.message}`,
   );
 
   const errors = findings.filter((f) => f.level === "error").length;
   const warns = findings.filter((f) => f.level === "warn").length;
   const header = `skill-lint: ${skillCount} skills checked`;
-  const summary = errors === 0 && warns === 0
-    ? "✓ all checks passed"
-    : `✗ ${plural(errors, "error")}, ${plural(warns, "warn")}`;
+  const summary =
+    errors === 0 && warns === 0
+      ? "✓ all checks passed"
+      : `✗ ${plural(errors, "error")}, ${plural(warns, "warn")}`;
 
   return { header, lines, summary, exitCode: errors > 0 ? 1 : 0 };
 }

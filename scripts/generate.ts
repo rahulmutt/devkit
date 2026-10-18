@@ -5,7 +5,7 @@ import { checkFiles, writeFiles } from "./lib/files.ts";
 const ROOT = new URL("../", import.meta.url).pathname;
 
 async function main() {
-  const check = Deno.args.includes("--check");
+  const check = process.argv.slice(2).includes("--check");
   const config = loadConfig();
   const files = await renderAll(config);
 
@@ -18,8 +18,8 @@ async function main() {
     }
     console.error("✗ generated files out of sync:");
     for (const r of bad) console.error(`  ${r.status.padEnd(8)} ${r.path}`);
-    console.error("\nRun `deno task generate` to regenerate.");
-    Deno.exit(1);
+    console.error("\nRun `mise run generate` to regenerate.");
+    process.exit(1);
   }
 
   const written = await writeFiles(files, ROOT);

@@ -59,7 +59,7 @@ passes.
 1. **See what's behind:** `mise outdated`, then `mise upgrade --bump` to rewrite
    the pins in `mise.toml` (it keeps exact pins exact;
    `mise upgrade
-   <tool>@latest --bump` would write a floating `latest` —
+<tool>@latest --bump` would write a floating `latest` —
    don't).
 2. **Find every other pin of the same tools.** Versions also hide in CI
    (`uses: owner/action@vN`, `setup-*` inputs), `.devcontainer/`, Dockerfiles,

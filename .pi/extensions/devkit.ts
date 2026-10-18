@@ -82,11 +82,13 @@ function messageContainsBootstrap(message: unknown): boolean {
   const content = (message as { content?: unknown }).content;
   if (typeof content === "string") return content.includes(BOOTSTRAP_MARKER);
   if (!Array.isArray(content)) return false;
-  return content.some((part) =>
-    part && typeof part === "object" &&
-    (part as { type?: unknown }).type === "text" &&
-    typeof (part as { text?: unknown }).text === "string" &&
-    (part as { text: string }).text.includes(BOOTSTRAP_MARKER)
+  return content.some(
+    (part) =>
+      part &&
+      typeof part === "object" &&
+      (part as { type?: unknown }).type === "text" &&
+      typeof (part as { text?: unknown }).text === "string" &&
+      (part as { text: string }).text.includes(BOOTSTRAP_MARKER),
   );
 }
 
@@ -94,7 +96,8 @@ function firstNonCompactionSummaryIndex(messages: unknown[]): number {
   let i = 0;
   while (
     (messages[i] as { role?: unknown } | undefined)?.role ===
-      "compactionSummary"
-  ) i += 1;
+    "compactionSummary"
+  )
+    i += 1;
   return i;
 }

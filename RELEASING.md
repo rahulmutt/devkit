@@ -16,7 +16,7 @@ external registry publish — consumers pin to a git tag (`v0.2.0`) or track
    **`chore(main): release X.Y.Z`** PR open, continuously updating
    `CHANGELOG.md` and bumping the version across every version-bearing file.
 3. The CI drift check runs on that PR. Because release-please moves all files to
-   the **same** version, `deno task check` stays green — that is the proof the
+   the **same** version, `mise run check` stays green — that is the proof the
    bump is consistent.
 4. **Merge the release PR** when you want to ship. release-please then tags
    `vX.Y.Z` and creates the GitHub Release.

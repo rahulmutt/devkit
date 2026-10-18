@@ -2,7 +2,7 @@
 [tools]
 actionlint = "1.7.12"
 deno = "2.9.7"
-node = "26.11.1"
+node = "26.12.0"
 
 # Tasks delegate to `deno task <name>` so the actual commands live in EXACTLY
 # one place (deno.json). Don't inline the deno commands here — that would

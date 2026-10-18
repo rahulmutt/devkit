@@ -1,0 +1,30 @@
+# Not formatted: generated, vendored, or intentionally hand-laid-out.
+CHANGELOG.md
+.release-please-manifest.json
+assets
+.impeccable
+.superpowers/
+skills/developer-environment/references
+skills/testing-practices/references
+skills/writing-clean-code/references
+skills/security-practices/references
+skills/navigable-codebases/references
+docs/superpowers/**
+evals/**
+scripts/node_modules/**
+node_modules/
+bun.lock
+
+# Generated JSON manifests (formatted by the generator, not Prettier).
+package.json
+gemini-extension.json
+release-please-config.json
+.claude-plugin/
+.codex-plugin/
+.cursor-plugin/
+.kimi-plugin/
+hooks/*.json
+
+# Generated foreign-runtime extension code (also excluded from oxlint).
+.pi/extensions/
+.opencode/plugins/

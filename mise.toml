@@ -2,7 +2,6 @@
 [tools]
 actionlint = "1.7.12"
 bun = "1.4.2"
-deno = "2.9.7"
 node = "26.12.0"
 
 [env]
@@ -13,69 +12,89 @@ description = "Install scripts/ JS dev dependencies (frozen lockfile)"
 dir = "{{config_root}}/scripts"
 run = "bun install --frozen-lockfile"
 
-# Tasks delegate to `deno task <name>` so the actual commands live in EXACTLY
-# one place (deno.json). Don't inline the deno commands here — that would
-# re-introduce hand-maintained duplication outside the drift guard.
+# Task commands live here, in one place (mise.toml); there is no other task
+# runner config. JS tooling is installed by the `deps` task.
 [tasks.generate]
 description = "Render all per-harness manifests from marketplace.config.ts"
-run = "deno task generate"
+depends = ["deps"]
+run = "bun scripts/generate.ts"
 
 [tasks.check]
 description = "Verify generated files are in sync (no writes)"
-run = "deno task check"
+depends = ["deps"]
+run = "bun scripts/generate.ts --check"
 
 [tasks.test]
 description = "Run the generator test suite"
-run = "deno task test"
+depends = ["deps"]
+run = "bun test ./scripts"
 
 [tasks.rasterize]
 description = "Rasterize assets/devkit.svg -> assets/app-icon.png (run when the SVG changes)"
-run = "deno task rasterize"
+depends = ["deps"]
+run = "bun scripts/rasterize.ts"
 
 [tasks.fmt]
 description = "Format the tree and regenerate outputs so generated files stay in sync"
-run = "deno task fmt"
+depends = ["deps"]
+run = ["prettier --write .", "mise run generate"]
 
 [tasks.fmt-check]
 description = "Check formatting without writing any files"
-run = "deno task fmt-check"
+depends = ["deps"]
+run = "prettier --check ."
 
 [tasks.lint]
-description = "Lint the Deno tooling code (foreign-runtime extension code excluded)"
-run = "deno task lint"
+description = "Lint the tooling code (foreign-runtime extension code excluded)"
+depends = ["deps"]
+run = "oxlint"
 
 [tasks.lint-workflows]
 description = "Lint GitHub Actions workflows (actionlint)"
-run = "deno task lint-workflows"
+run = "actionlint"
 
 [tasks.typecheck]
 description = "Type-check the generator entry points and marketplace.config.ts"
-run = "deno task typecheck"
+depends = ["deps"]
+run = "tsc -p scripts"
 
 [tasks.validate-manifests]
 description = "Validate generated harness manifests against their schemas"
-run = "deno task validate-manifests"
+depends = ["deps"]
+run = "bun scripts/validate-manifests.ts"
 
 [tasks.lint-skills]
 description = "Lint skills/ (frontmatter, links, primer listing)"
-run = "deno task lint-skills"
+depends = ["deps"]
+run = "bun scripts/lint-skills.ts"
 
 # Not part of the release gate: needs a base ref (e.g. `mise run lint-commits -- origin/main`).
 [tasks.lint-commits]
 description = "Check commit subjects since <base> are Conventional Commits"
-run = "deno task lint-commits"
+depends = ["deps"]
+run = "bun scripts/lint-commits.ts"
 
 # Not part of the release gate: runs real agent sessions on your credential.
 [tasks.eval-triggers]
 description = "Measure whether each skill fires on realistic prompts (evals/, costs API usage)"
-run = "deno task eval-triggers"
+run = "claude plugin eval . --tag trigger --ablation none --no-publish"
 
 [tasks.eval-behavior]
 description = "Measure skill behaviour with vs. without devkit (evals/, costs API usage)"
-run = "deno task eval-behavior"
+run = "claude plugin eval . --tag behavior --no-publish"
 
 # Release gate: every check must pass before publishing. Includes the
 # generated-files drift check so a release can't ship stale manifests.
 [tasks.release]
 description = "Release gate: fmt-check, lint, typecheck, generated-file drift, and tests"
-run = "deno task ci"
+depends = ["deps"]
+run = [
+  "mise run fmt-check",
+  "mise run lint",
+  "mise run lint-workflows",
+  "mise run typecheck",
+  "mise run check",
+  "mise run validate-manifests",
+  "mise run lint-skills",
+  "mise run test",
+]

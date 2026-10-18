@@ -35,7 +35,9 @@ test("validateManifest: wrong type is a violation", () => {
     properties: { name: { type: "string" } },
   };
   const m: GeneratedFile = { path: "x.json", content: '{"name":123}' };
-  expect(validateManifest(m, schema).some((x) => x.instancePath === "/name")).toEqual(true);
+  expect(
+    validateManifest(m, schema).some((x) => x.instancePath === "/name"),
+  ).toEqual(true);
 });
 
 test("validateManifest: bad enum is a violation", () => {
@@ -44,7 +46,9 @@ test("validateManifest: bad enum is a violation", () => {
     properties: { cap: { enum: ["Read", "Write"] } },
   };
   const m: GeneratedFile = { path: "x.json", content: '{"cap":"Delete"}' };
-  expect(validateManifest(m, schema).some((x) => x.instancePath === "/cap")).toEqual(true);
+  expect(
+    validateManifest(m, schema).some((x) => x.instancePath === "/cap"),
+  ).toEqual(true);
 });
 
 test("validateManifest: bad semver pattern is a violation", () => {
@@ -53,7 +57,9 @@ test("validateManifest: bad semver pattern is a violation", () => {
     properties: { version: { type: "string", pattern: "^\\d+\\.\\d+\\.\\d+" } },
   };
   const m: GeneratedFile = { path: "x.json", content: '{"version":"1.0"}' };
-  expect(validateManifest(m, schema).some((x) => x.instancePath === "/version")).toEqual(true);
+  expect(
+    validateManifest(m, schema).some((x) => x.instancePath === "/version"),
+  ).toEqual(true);
 });
 
 test("validateManifest: stray field fails additionalProperties", () => {
@@ -66,7 +72,9 @@ test("validateManifest: stray field fails additionalProperties", () => {
     path: "x.json",
     content: '{"name":"a","extra":1}',
   };
-  expect(validateManifest(m, schema).some((x) => x.instancePath === "/extra")).toEqual(true);
+  expect(
+    validateManifest(m, schema).some((x) => x.instancePath === "/extra"),
+  ).toEqual(true);
 });
 
 test("checkCoverage: unmapped manifest is a violation", () => {

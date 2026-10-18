@@ -12,9 +12,9 @@ const HEADER = /^([a-z]+)(\([\w./-]+\))?!?: \S/;
 const REVERT = /^Revert ".+"$/;
 const MALFORMED = "not `type(scope)!: summary`";
 
-export function allowedTypes(
-  config: { "changelog-sections": { type: string }[] },
-): string[] {
+export function allowedTypes(config: {
+  "changelog-sections": { type: string }[];
+}): string[] {
   return config["changelog-sections"].map((s) => s.type);
 }
 
@@ -44,10 +44,13 @@ export function lintCommits(
 }
 
 export function parseLog(output: string): Commit[] {
-  return output.split("\n").filter((line) => line.length > 0).map((line) => {
-    const tab = line.indexOf("\t");
-    return { sha: line.slice(0, tab), subject: line.slice(tab + 1) };
-  });
+  return output
+    .split("\n")
+    .filter((line) => line.length > 0)
+    .map((line) => {
+      const tab = line.indexOf("\t");
+      return { sha: line.slice(0, tab), subject: line.slice(tab + 1) };
+    });
 }
 
 export async function commitsInRange(

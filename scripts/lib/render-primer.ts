@@ -45,10 +45,12 @@ export async function renderPrimer(
     await discoverSkills(skillsDir),
     bootstrapSkill,
   );
-  return [{
-    path: `skills/${bootstrapSkill}/SKILL.md`,
-    content: await formatMarkdown(spliceRegion(src, REGION, index), path),
-  }];
+  return [
+    {
+      path: `skills/${bootstrapSkill}/SKILL.md`,
+      content: await formatMarkdown(spliceRegion(src, REGION, index), path),
+    },
+  ];
 }
 
 // Run the primer through Prettier so the generated region is already wrapped

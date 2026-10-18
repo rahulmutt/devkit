@@ -7,14 +7,12 @@ const TEMPLATES = new URL("../templates", import.meta.url).pathname;
 test("emits gemini, pi, opencode bootstraps", async () => {
   const files = await renderTemplated(config, TEMPLATES);
   const paths = files.map((f) => f.path);
-  for (
-    const p of [
-      "GEMINI.md",
-      ".pi/extensions/devkit.ts",
-      ".opencode/plugins/devkit.js",
-      ".opencode/INSTALL.md",
-    ]
-  ) {
+  for (const p of [
+    "GEMINI.md",
+    ".pi/extensions/devkit.ts",
+    ".opencode/plugins/devkit.js",
+    ".opencode/INSTALL.md",
+  ]) {
     expect(paths.includes(p), `missing ${p}`).toEqual(true);
   }
 });

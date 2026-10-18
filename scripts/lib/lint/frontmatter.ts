@@ -22,8 +22,7 @@ export function checkFrontmatter(records: SkillRecord[]): Finding[] {
       findings.push({
         level: "error",
         skill: r.dir,
-        message:
-          `frontmatter name "${r.name}" does not match directory "${r.dir}"`,
+        message: `frontmatter name "${r.name}" does not match directory "${r.dir}"`,
       });
     }
     if (!r.description) {

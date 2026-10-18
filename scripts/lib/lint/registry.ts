@@ -23,8 +23,7 @@ export function checkRegistry(
       findings.push({
         level: "error",
         skill: REGISTRY,
-        message:
-          `skill "${r.dir}" not listed in ${bootstrapSkill} (expected **${r.dir}**)`,
+        message: `skill "${r.dir}" not listed in ${bootstrapSkill} (expected **${r.dir}**)`,
       });
     }
   }
@@ -43,8 +42,7 @@ export function checkRegistry(
       findings.push({
         level: "error",
         skill: REGISTRY,
-        message:
-          `harness "${h}" missing its invoke-mapping row (references/${file})`,
+        message: `harness "${h}" missing its invoke-mapping row (references/${file})`,
       });
     }
   }

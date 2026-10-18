@@ -56,11 +56,13 @@ ${toolMapping}
       const firstUser = output.messages.find((m) => m.info.role === "user");
       if (!firstUser || !firstUser.parts.length) return;
       if (
-        firstUser.parts.some((p) =>
-          p.type === "text" &&
-          p.text.includes("You have {{pluginName}} skills.")
+        firstUser.parts.some(
+          (p) =>
+            p.type === "text" &&
+            p.text.includes("You have {{pluginName}} skills."),
         )
-      ) return;
+      )
+        return;
       const ref = firstUser.parts[0];
       firstUser.parts.unshift({ ...ref, type: "text", text: bootstrap });
     },

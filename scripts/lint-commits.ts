@@ -23,9 +23,7 @@ async function main() {
   let types: string[];
   try {
     types = allowedTypes(
-      JSON.parse(
-        await readFile(`${ROOT}release-please-config.json`, "utf8"),
-      ),
+      JSON.parse(await readFile(`${ROOT}release-please-config.json`, "utf8")),
     );
   } catch (e) {
     console.error(

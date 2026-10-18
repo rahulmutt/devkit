@@ -3,7 +3,9 @@ import { renderTemplate, templateVars } from "./templates.ts";
 import { config } from "../../marketplace.config.ts";
 
 test("renderTemplate substitutes tokens", () => {
-  expect(renderTemplate("hi {{pluginName}}", { pluginName: "devkit" })).toEqual("hi devkit");
+  expect(renderTemplate("hi {{pluginName}}", { pluginName: "devkit" })).toEqual(
+    "hi devkit",
+  );
 });
 
 test("renderTemplate throws on unresolved token", () => {

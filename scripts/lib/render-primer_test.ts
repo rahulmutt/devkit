@@ -30,14 +30,18 @@ test("skill index lists every skill but the bootstrap, from frontmatter", () => 
     ],
     "using-devkit",
   );
-  expect(index).toEqual("- **alpha** — Use when doing alpha things.\n" +
-      "- **beta** — Use when doing beta things.\n");
+  expect(index).toEqual(
+    "- **alpha** — Use when doing alpha things.\n" +
+      "- **beta** — Use when doing beta things.\n",
+  );
 });
 
 test("spliceRegion replaces only the text between the markers", () => {
   const src =
     "head\n<!-- BEGIN GENERATED: x -->\nold\n<!-- END GENERATED: x -->\ntail\n";
-  expect(spliceRegion(src, "x", "new\n")).toEqual("head\n<!-- BEGIN GENERATED: x -->\nnew\n<!-- END GENERATED: x -->\ntail\n");
+  expect(spliceRegion(src, "x", "new\n")).toEqual(
+    "head\n<!-- BEGIN GENERATED: x -->\nnew\n<!-- END GENERATED: x -->\ntail\n",
+  );
 });
 
 test("spliceRegion fails loudly when the markers are missing", () => {

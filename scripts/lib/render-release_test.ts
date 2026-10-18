@@ -26,16 +26,16 @@ test("release config lists all 8 version-bearing files", () => {
 
 test("marketplace.json updates the nested plugins[0].version", () => {
   const extra = parsed().packages["."]["extra-files"];
-  const mkt = extra.find((e: { path: string }) =>
-    e.path === ".claude-plugin/marketplace.json"
+  const mkt = extra.find(
+    (e: { path: string }) => e.path === ".claude-plugin/marketplace.json",
   );
   expect(mkt.jsonpath).toEqual("$.plugins[0].version");
 });
 
 test("marketplace.config.ts uses the generic updater", () => {
   const extra = parsed().packages["."]["extra-files"];
-  const ts = extra.find((e: { path: string }) =>
-    e.path === "marketplace.config.ts"
+  const ts = extra.find(
+    (e: { path: string }) => e.path === "marketplace.config.ts",
   );
   expect(ts.type).toEqual("generic");
 });

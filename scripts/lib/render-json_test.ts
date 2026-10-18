@@ -19,16 +19,14 @@ test("all JSON manifests agree on version and plugin name", () => {
   expect(claudeMkt.plugins[0].version).toEqual(expected);
   expect(claudeMkt.plugins[0].name).toEqual("devkit");
 
-  for (
-    const p of [
-      ".claude-plugin/plugin.json",
-      ".codex-plugin/plugin.json",
-      ".cursor-plugin/plugin.json",
-      ".kimi-plugin/plugin.json",
-      "gemini-extension.json",
-      "package.json",
-    ]
-  ) {
+  for (const p of [
+    ".claude-plugin/plugin.json",
+    ".codex-plugin/plugin.json",
+    ".cursor-plugin/plugin.json",
+    ".kimi-plugin/plugin.json",
+    "gemini-extension.json",
+    "package.json",
+  ]) {
     expect(find(files, p).version, `${p} version`).toEqual(expected);
   }
 });

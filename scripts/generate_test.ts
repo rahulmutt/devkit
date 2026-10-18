@@ -10,11 +10,13 @@ test("every JSON manifest agrees on version", async () => {
     // Exclude manifests that carry no version field: the hooks manifests, and
     // release-please-config.json (its versions live inside extra-files, not a
     // top-level `version`/`plugins[0].version`).
-    .filter((f) =>
-      f.path.endsWith(".json") && !f.path.endsWith("hooks.json") &&
-      !f.path.endsWith("hooks-codex.json") &&
-      !f.path.endsWith("hooks-cursor.json") &&
-      f.path !== "release-please-config.json"
+    .filter(
+      (f) =>
+        f.path.endsWith(".json") &&
+        !f.path.endsWith("hooks.json") &&
+        !f.path.endsWith("hooks-codex.json") &&
+        !f.path.endsWith("hooks-cursor.json") &&
+        f.path !== "release-please-config.json",
     )
     .map((f) => {
       const o = JSON.parse(f.content);
@@ -25,14 +27,12 @@ test("every JSON manifest agrees on version", async () => {
 
 test("bootstrap injectors reference the configured bootstrap skill", async () => {
   const files = await renderAll(config);
-  for (
-    const p of [
-      "hooks/session-start",
-      ".pi/extensions/devkit.ts",
-      ".opencode/plugins/devkit.js",
-      "GEMINI.md",
-    ]
-  ) {
+  for (const p of [
+    "hooks/session-start",
+    ".pi/extensions/devkit.ts",
+    ".opencode/plugins/devkit.js",
+    "GEMINI.md",
+  ]) {
     const f = files.find((x) => x.path === p)!;
     expect(f.content).toContain(config.bootstrapSkill);
   }
@@ -41,7 +41,10 @@ test("bootstrap injectors reference the configured bootstrap skill", async () =>
 test("no generated file contains an unresolved template token", async () => {
   const files = await renderAll(config);
   for (const f of files) {
-    expect(/\{\{\w+\}\}/.test(f.content), `${f.path} has an unresolved token`).toEqual(false);
+    expect(
+      /\{\{\w+\}\}/.test(f.content),
+      `${f.path} has an unresolved token`,
+    ).toEqual(false);
   }
 });
 

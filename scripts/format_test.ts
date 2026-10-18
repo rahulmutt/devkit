@@ -49,7 +49,10 @@ test("every generated file is Prettier-ignored or a Prettier fixed point", async
     // Prettier itself skips ignored files and files with no parser.
     if (info.ignored || !info.inferredParser) continue;
     const resolved = (await prettier.resolveConfig(abs)) ?? {};
-    const out = await prettier.format(f.content, { ...resolved, filepath: abs });
+    const out = await prettier.format(f.content, {
+      ...resolved,
+      filepath: abs,
+    });
     expect(out, `not a Prettier fixed point: ${f.path}`).toBe(f.content);
   }
 });

@@ -60,8 +60,10 @@ const CONFIG = {
 };
 
 export function renderReleaseConfig(): GeneratedFile[] {
-  return [{
-    path: "release-please-config.json",
-    content: JSON.stringify(CONFIG, null, 2) + "\n",
-  }];
+  return [
+    {
+      path: "release-please-config.json",
+      content: JSON.stringify(CONFIG, null, 2) + "\n",
+    },
+  ];
 }

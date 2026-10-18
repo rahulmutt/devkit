@@ -42,14 +42,18 @@ test("skill absent from primer is an error", () => {
     "claude-code-tools.md",
   ]);
   const f = checkRegistry(records, primer, ["claude"], "using-devkit");
-  expect(f.some((x) => x.level === "error" && x.message.includes("alpha"))).toEqual(true);
+  expect(
+    f.some((x) => x.level === "error" && x.message.includes("alpha")),
+  ).toEqual(true);
 });
 
 test("harness missing its tool-ref file is an error", () => {
   const records = [skill("using-devkit")];
   const primer = PRIMER("references/codex-tools.md", []);
   const f = checkRegistry(records, primer, ["codex"], "using-devkit");
-  expect(f.some((x) => x.level === "error" && x.message.includes("codex-tools.md"))).toEqual(true);
+  expect(
+    f.some((x) => x.level === "error" && x.message.includes("codex-tools.md")),
+  ).toEqual(true);
 });
 
 test("stale tool-ref for an unconfigured harness is a warn", () => {
@@ -57,5 +61,7 @@ test("stale tool-ref for an unconfigured harness is a warn", () => {
   const body = "references/claude-code-tools.md references/codex-tools.md";
   const primer = PRIMER(body, ["claude-code-tools.md", "codex-tools.md"]);
   const f = checkRegistry(records, primer, ["claude"], "using-devkit");
-  expect(f.some((x) => x.level === "warn" && x.message.includes("codex-tools.md"))).toEqual(true);
+  expect(
+    f.some((x) => x.level === "warn" && x.message.includes("codex-tools.md")),
+  ).toEqual(true);
 });

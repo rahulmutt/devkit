@@ -1,4 +1,5 @@
-import { join } from "@std/path";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import type { GeneratedFile, MarketplaceConfig } from "./types.ts";
 import { renderTemplate, templateVars } from "./templates.ts";
 
@@ -26,7 +27,7 @@ export async function renderTemplated(
   const vars = templateVars(config);
   const out: GeneratedFile[] = [];
   for (const [src, dest, executable] of HOOK_FILES) {
-    const text = await Deno.readTextFile(join(templatesDir, src));
+    const text = await readFile(join(templatesDir, src), "utf8");
     const file: GeneratedFile = {
       path: dest,
       content: renderTemplate(text, vars),
@@ -35,7 +36,7 @@ export async function renderTemplated(
     out.push(file);
   }
   for (const [src, destFn] of STATIC_FILES) {
-    const text = await Deno.readTextFile(join(templatesDir, src));
+    const text = await readFile(join(templatesDir, src), "utf8");
     out.push({
       path: destFn(config.plugin.name),
       content: renderTemplate(text, vars),

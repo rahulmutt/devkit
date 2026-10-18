@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { expect, test } from "bun:test";
 import { checkBudget } from "./budget.ts";
 import type { SkillRecord } from "./types.ts";
 
@@ -13,18 +13,18 @@ function withDesc(description: string): SkillRecord {
   };
 }
 
-Deno.test("short description is clean", () => {
-  assertEquals(checkBudget([withDesc("x".repeat(400))]), []);
+test("short description is clean", () => {
+  expect(checkBudget([withDesc("x".repeat(400))])).toEqual([]);
 });
 
-Deno.test("over 500 is a warn", () => {
+test("over 500 is a warn", () => {
   const f = checkBudget([withDesc("x".repeat(600))]);
-  assertEquals(f.length, 1);
-  assertEquals(f[0].level, "warn");
+  expect(f.length).toEqual(1);
+  expect(f[0].level).toEqual("warn");
 });
 
-Deno.test("over 1024 is an error", () => {
+test("over 1024 is an error", () => {
   const f = checkBudget([withDesc("x".repeat(1100))]);
-  assertEquals(f.length, 1);
-  assertEquals(f[0].level, "error");
+  expect(f.length).toEqual(1);
+  expect(f[0].level).toEqual("error");
 });

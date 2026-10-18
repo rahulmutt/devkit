@@ -1,3 +1,4 @@
+import { readdir, readFile } from "node:fs/promises";
 import { Validator } from "@cfworker/json-schema";
 import type { GeneratedFile } from "../types.ts";
 import type { ManifestViolation } from "./types.ts";
@@ -29,10 +30,10 @@ const SCHEMA_DIR = new URL("./schemas/", import.meta.url);
 
 export async function loadSchemas(): Promise<Map<string, unknown>> {
   const schemas = new Map<string, unknown>();
-  for await (const entry of Deno.readDir(SCHEMA_DIR)) {
-    if (!entry.isFile || !entry.name.endsWith(".json")) continue;
+  for (const entry of await readdir(SCHEMA_DIR, { withFileTypes: true })) {
+    if (!entry.isFile() || !entry.name.endsWith(".json")) continue;
     const stem = entry.name.slice(0, -".json".length);
-    const text = await Deno.readTextFile(new URL(entry.name, SCHEMA_DIR));
+    const text = await readFile(new URL(entry.name, SCHEMA_DIR), "utf8");
     schemas.set(stem, JSON.parse(text));
   }
   return schemas;

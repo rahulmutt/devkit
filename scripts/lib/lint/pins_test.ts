@@ -1,25 +1,24 @@
-import { assertEquals } from "@std/assert";
-import { fromFileUrl, join } from "@std/path";
+import { expect, test } from "bun:test";
+import { readdir, readFile } from "node:fs/promises";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { pinDrift, type PinSource } from "./pins.ts";
 
 const SHA_A = "a".repeat(40);
 const SHA_B = "b".repeat(40);
 
-Deno.test("matching pins and tag references are not drift", () => {
-  assertEquals(
-    pinDrift([
+test("matching pins and tag references are not drift", () => {
+  expect(pinDrift([
       { path: "x.md", text: `uses: actions/checkout@${SHA_A} # v7.0.1` },
       {
         path: "y.yml",
         text:
           `- uses: actions/checkout@${SHA_A} # v7.0.1\n- uses: jdx/mise-action@v5`,
       },
-    ]),
-    [],
-  );
+    ])).toEqual([]);
 });
 
-Deno.test("the same action pinned to a different sha or version is drift", () => {
+test("the same action pinned to a different sha or version is drift", () => {
   const problems = pinDrift([
     { path: "x.md", text: `actions/checkout@${SHA_A} # v7.0.1` },
     { path: "y.yml", text: `actions/checkout@${SHA_B} # v7.0.2` },
@@ -29,15 +28,9 @@ Deno.test("the same action pinned to a different sha or version is drift", () =>
         `jdx/mise-action@${SHA_A} # v5.1.1 and jdx/mise-action@${SHA_A} # v5.1.2`,
     },
   ]);
-  assertEquals(problems.length, 2);
-  assertEquals(
-    problems[0].startsWith("actions/checkout pinned differently"),
-    true,
-  );
-  assertEquals(
-    problems[1].startsWith("jdx/mise-action pinned differently"),
-    true,
-  );
+  expect(problems.length).toEqual(2);
+  expect(problems[0].startsWith("actions/checkout pinned differently")).toEqual(true);
+  expect(problems[1].startsWith("jdx/mise-action pinned differently")).toEqual(true);
 });
 
 async function collect(
@@ -47,29 +40,25 @@ async function collect(
 ): Promise<PinSource[]> {
   const out: PinSource[] = [];
   try {
-    for await (const e of Deno.readDir(dir)) {
+    for (const e of await readdir(dir, { withFileTypes: true })) {
       const p = join(dir, e.name);
-      if (e.isDirectory && recurse) out.push(...await collect(p, ext, recurse));
-      else if (e.isFile && p.endsWith(ext)) {
-        out.push({ path: p, text: await Deno.readTextFile(p) });
+      if (e.isDirectory() && recurse) out.push(...await collect(p, ext, recurse));
+      else if (e.isFile() && p.endsWith(ext)) {
+        out.push({ path: p, text: await readFile(p, "utf8") });
       }
     }
   } catch (e) {
-    if (!(e instanceof Deno.errors.NotFound)) throw e;
+    if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
   }
   return out;
 }
 
-Deno.test("action pins in skill docs and workflows agree", async () => {
-  const root = fromFileUrl(new URL("../../../", import.meta.url));
+test("action pins in skill docs and workflows agree", async () => {
+  const root = fileURLToPath(new URL("../../../", import.meta.url));
   const sources = [
     ...await collect(join(root, "skills"), ".md", true),
     ...await collect(join(root, ".github/workflows"), ".yml", false),
   ];
-  assertEquals(
-    sources.some((s) => s.path.includes(".github/workflows")),
-    true,
-    "expected at least one workflow file",
-  );
-  assertEquals(pinDrift(sources), []);
+  expect(sources.some((s) => s.path.includes(".github/workflows")), "expected at least one workflow file").toEqual(true);
+  expect(pinDrift(sources)).toEqual([]);
 });

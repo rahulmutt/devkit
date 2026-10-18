@@ -1,7 +1,8 @@
-import { dirname, join } from "@std/path";
+import { chmod, mkdir, readFile, stat, writeFile } from "node:fs/promises";
+import { dirname, join } from "node:path";
 import type { GeneratedFile } from "./types.ts";
 
-const WINDOWS = Deno.build.os === "windows";
+const WINDOWS = process.platform === "win32";
 
 export async function writeFiles(
   files: GeneratedFile[],
@@ -10,9 +11,9 @@ export async function writeFiles(
   const written: string[] = [];
   for (const f of files) {
     const full = join(root, f.path);
-    await Deno.mkdir(dirname(full), { recursive: true });
-    await Deno.writeTextFile(full, f.content);
-    if (f.executable && !WINDOWS) await Deno.chmod(full, 0o755);
+    await mkdir(dirname(full), { recursive: true });
+    await writeFile(full, f.content);
+    if (f.executable && !WINDOWS) await chmod(full, 0o755);
     written.push(f.path);
   }
   return written;
@@ -30,8 +31,8 @@ export async function checkFiles(
     let actual: string | null = null;
     let mode: number | null = null;
     try {
-      actual = await Deno.readTextFile(full);
-      mode = (await Deno.stat(full)).mode;
+      actual = await readFile(full, "utf8");
+      mode = (await stat(full)).mode;
     } catch {
       actual = null;
     }

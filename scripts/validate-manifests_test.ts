@@ -1,9 +1,9 @@
-import { assertEquals } from "@std/assert";
+import { expect, test } from "bun:test";
 import { buildValidationReport } from "./validate-manifests.ts";
 
-Deno.test("validate-manifests: real config produces a clean, exit-0 report", async () => {
+test("validate-manifests: real config produces a clean, exit-0 report", async () => {
   const report = await buildValidationReport();
-  assertEquals(report.exitCode, 0);
-  assertEquals(report.summary, "✓ all 11 manifests conform");
-  assertEquals(report.lines, []);
+  expect(report.exitCode).toEqual(0);
+  expect(report.summary).toEqual("✓ all 11 manifests conform");
+  expect(report.lines).toEqual([]);
 });

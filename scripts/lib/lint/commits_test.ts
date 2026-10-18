@@ -1,6 +1,10 @@
 // scripts/lib/lint/commits_test.ts
-import { assertEquals, assertRejects } from "@std/assert";
-import { fromFileUrl } from "@std/path";
+import { expect, test } from "bun:test";
+import { mkdtemp, readFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { exec } from "../exec.ts";
 import {
   allowedTypes,
   checkSubject,
@@ -11,7 +15,7 @@ import {
 
 const TYPES = ["feat", "fix", "docs", "chore", "test", "ci"];
 
-Deno.test("accepts conventional and revert subjects", () => {
+test("accepts conventional and revert subjects", () => {
   for (
     const s of [
       "feat: add csv export",
@@ -22,80 +26,62 @@ Deno.test("accepts conventional and revert subjects", () => {
       'Revert "feat: add csv export"',
     ]
   ) {
-    assertEquals(checkSubject(s, TYPES), null, s);
+    expect(checkSubject(s, TYPES), s).toEqual(null);
   }
 });
 
-Deno.test("rejects malformed subjects with a reason", () => {
-  assertEquals(
-    checkSubject("update stuff", TYPES),
-    "not `type(scope)!: summary`",
-  );
-  assertEquals(
-    checkSubject("Feat: add x", TYPES),
-    "not `type(scope)!: summary`",
-  );
-  assertEquals(
-    checkSubject("feat:add x", TYPES),
-    "not `type(scope)!: summary`",
-  );
-  assertEquals(checkSubject("feat: ", TYPES), "not `type(scope)!: summary`");
-  assertEquals(
-    checkSubject("fixup! feat: add x", TYPES),
-    "not `type(scope)!: summary`",
-  );
-  assertEquals(
-    checkSubject("wip(x): y", TYPES),
-    'unknown type "wip" (allowed: feat, fix, docs, chore, test, ci)',
-  );
+test("rejects malformed subjects with a reason", () => {
+  expect(checkSubject("update stuff", TYPES)).toEqual("not `type(scope)!: summary`");
+  expect(checkSubject("Feat: add x", TYPES)).toEqual("not `type(scope)!: summary`");
+  expect(checkSubject("feat:add x", TYPES)).toEqual("not `type(scope)!: summary`");
+  expect(checkSubject("feat: ", TYPES)).toEqual("not `type(scope)!: summary`");
+  expect(checkSubject("fixup! feat: add x", TYPES)).toEqual("not `type(scope)!: summary`");
+  expect(checkSubject("wip(x): y", TYPES)).toEqual('unknown type "wip" (allowed: feat, fix, docs, chore, test, ci)');
 });
 
-Deno.test("lintCommits formats one line per bad commit", () => {
+test("lintCommits formats one line per bad commit", () => {
   const problems = lintCommits([
     { sha: "0123456789abcdef", subject: "feat: fine" },
     { sha: "fedcba9876543210", subject: "update stuff" },
   ], TYPES);
-  assertEquals(problems, [
+  expect(problems).toEqual([
     "fedcba9 update stuff: not `type(scope)!: summary`",
   ]);
 });
 
-Deno.test("parseLog splits sha and subject on the first tab", () => {
-  assertEquals(parseLog("abc\tfeat: a\tb\ndef\tfix: c\n"), [
+test("parseLog splits sha and subject on the first tab", () => {
+  expect(parseLog("abc\tfeat: a\tb\ndef\tfix: c\n")).toEqual([
     { sha: "abc", subject: "feat: a\tb" },
     { sha: "def", subject: "fix: c" },
   ]);
 });
 
-Deno.test("allowedTypes reads the generated release-please config", async () => {
-  const path = fromFileUrl(
+test("allowedTypes reads the generated release-please config", async () => {
+  const path = fileURLToPath(
     new URL("../../../release-please-config.json", import.meta.url),
   );
-  const types = allowedTypes(JSON.parse(await Deno.readTextFile(path)));
+  const types = allowedTypes(JSON.parse(await readFile(path, "utf8")));
   for (const t of ["feat", "fix", "docs", "chore", "test", "ci"]) {
-    assertEquals(types.includes(t), true, t);
+    expect(types.includes(t), t).toEqual(true);
   }
 });
 
 async function git(cwd: string, ...args: string[]): Promise<string> {
-  const { code, stdout, stderr } = await new Deno.Command("git", {
-    args: [
-      "-c",
-      "user.name=t",
-      "-c",
-      "user.email=t@example.com",
-      "-c",
-      "commit.gpgsign=false",
-      ...args,
-    ],
-    cwd,
-  }).output();
-  if (code !== 0) throw new Error(new TextDecoder().decode(stderr));
-  return new TextDecoder().decode(stdout).trim();
+  const { code, stdout, stderr } = await exec("git", [
+    "-c",
+    "user.name=t",
+    "-c",
+    "user.email=t@example.com",
+    "-c",
+    "commit.gpgsign=false",
+    ...args,
+  ], cwd);
+  if (code !== 0) throw new Error(stderr);
+  return stdout.trim();
 }
 
 async function repoWithBranch(): Promise<string> {
-  const dir = await Deno.makeTempDir();
+  const dir = await mkdtemp(join(tmpdir(), "devkit-"));
   await git(dir, "init", "-q", "-b", "main");
   await git(dir, "commit", "-q", "--allow-empty", "-m", "chore: base");
   await git(dir, "switch", "-q", "-c", "side");
@@ -108,35 +94,31 @@ async function repoWithBranch(): Promise<string> {
   return dir;
 }
 
-Deno.test("commitsInRange skips merge commits", async () => {
+test("commitsInRange skips merge commits", async () => {
   const dir = await repoWithBranch();
   try {
     const subjects = (await commitsInRange("main", dir)).map((c) => c.subject)
       .sort();
-    assertEquals(subjects, ["feat: side work", "update stuff"]);
+    expect(subjects).toEqual(["feat: side work", "update stuff"]);
   } finally {
-    await Deno.remove(dir, { recursive: true });
+    await rm(dir, { recursive: true });
   }
 });
 
-Deno.test("commitsInRange returns nothing for an empty range", async () => {
+test("commitsInRange returns nothing for an empty range", async () => {
   const dir = await repoWithBranch();
   try {
-    assertEquals(await commitsInRange("topic", dir), []);
+    expect(await commitsInRange("topic", dir)).toEqual([]);
   } finally {
-    await Deno.remove(dir, { recursive: true });
+    await rm(dir, { recursive: true });
   }
 });
 
-Deno.test("commitsInRange throws on an unknown base", async () => {
+test("commitsInRange throws on an unknown base", async () => {
   const dir = await repoWithBranch();
   try {
-    await assertRejects(
-      () => commitsInRange("origin/nope", dir),
-      Error,
-      "git log origin/nope..HEAD failed",
-    );
+    await expect(commitsInRange("origin/nope", dir)).rejects.toThrow("git log origin/nope..HEAD failed");
   } finally {
-    await Deno.remove(dir, { recursive: true });
+    await rm(dir, { recursive: true });
   }
 });

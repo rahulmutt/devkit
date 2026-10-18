@@ -3,7 +3,7 @@ import type { GeneratedFile } from "./types.ts";
 // release-please consumes and schema-validates this config itself, and rejects
 // unknown root keys — so unlike the per-harness manifests it deliberately does
 // NOT carry a `_generated` marker. It stays single-sourced here; the drift
-// check (`deno task check`) guards it against hand edits.
+// check (`mise run check`) guards it against hand edits.
 const CONFIG = {
   $schema:
     "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",

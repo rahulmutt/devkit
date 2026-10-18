@@ -1,4 +1,6 @@
-import { assertEquals, assertStringIncludes, assertThrows } from "@std/assert";
+import { expect, test } from "bun:test";
+import { join } from "node:path";
+import * as prettier from "prettier";
 import {
   renderPrimer,
   renderSkillIndex,
@@ -19,7 +21,7 @@ function record(dir: string, description: string): SkillRecord {
   };
 }
 
-Deno.test("skill index lists every skill but the bootstrap, from frontmatter", () => {
+test("skill index lists every skill but the bootstrap, from frontmatter", () => {
   const index = renderSkillIndex(
     [
       record("alpha", "Use when doing alpha things."),
@@ -28,28 +30,29 @@ Deno.test("skill index lists every skill but the bootstrap, from frontmatter", (
     ],
     "using-devkit",
   );
-  assertEquals(
-    index,
-    "- **alpha** — Use when doing alpha things.\n" +
-      "- **beta** — Use when doing beta things.\n",
-  );
+  expect(index).toEqual("- **alpha** — Use when doing alpha things.\n" +
+      "- **beta** — Use when doing beta things.\n");
 });
 
-Deno.test("spliceRegion replaces only the text between the markers", () => {
+test("spliceRegion replaces only the text between the markers", () => {
   const src =
     "head\n<!-- BEGIN GENERATED: x -->\nold\n<!-- END GENERATED: x -->\ntail\n";
-  assertEquals(
-    spliceRegion(src, "x", "new\n"),
-    "head\n<!-- BEGIN GENERATED: x -->\nnew\n<!-- END GENERATED: x -->\ntail\n",
-  );
+  expect(spliceRegion(src, "x", "new\n")).toEqual("head\n<!-- BEGIN GENERATED: x -->\nnew\n<!-- END GENERATED: x -->\ntail\n");
 });
 
-Deno.test("spliceRegion fails loudly when the markers are missing", () => {
-  assertThrows(() => spliceRegion("no markers here", "x", "new\n"));
+test("spliceRegion fails loudly when the markers are missing", () => {
+  expect(() => spliceRegion("no markers here", "x", "new\n")).toThrow();
 });
 
-Deno.test("the real primer is regenerated with every skill's description", async () => {
+test("the real primer is regenerated with every skill's description", async () => {
   const [file] = await renderPrimer(SKILLS, "using-devkit");
-  assertEquals(file.path, "skills/using-devkit/SKILL.md");
-  assertStringIncludes(file.content, "- **developer-environment** — Use when");
+  expect(file.path).toEqual("skills/using-devkit/SKILL.md");
+  expect(file.content).toContain("- **developer-environment** — Use when");
+});
+
+test("renderPrimer output is a Prettier fixed point", async () => {
+  const [file] = await renderPrimer(SKILLS, "using-devkit");
+  const filepath = join(SKILLS, "using-devkit", "SKILL.md");
+  const options = { ...(await prettier.resolveConfig(filepath)), filepath };
+  expect(await prettier.format(file.content, options)).toBe(file.content);
 });

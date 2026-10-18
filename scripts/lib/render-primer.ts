@@ -1,4 +1,6 @@
-import { join } from "@std/path";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+import * as prettier from "prettier";
 import type { GeneratedFile } from "./types.ts";
 import type { SkillRecord } from "./lint/types.ts";
 import { discoverSkills } from "./lint/discover.ts";
@@ -38,32 +40,20 @@ export async function renderPrimer(
   bootstrapSkill: string,
 ): Promise<GeneratedFile[]> {
   const path = join(skillsDir, bootstrapSkill, "SKILL.md");
-  const src = await Deno.readTextFile(path);
+  const src = await readFile(path, "utf8");
   const index = renderSkillIndex(
     await discoverSkills(skillsDir),
     bootstrapSkill,
   );
   return [{
     path: `skills/${bootstrapSkill}/SKILL.md`,
-    content: await formatMarkdown(spliceRegion(src, REGION, index)),
+    content: await formatMarkdown(spliceRegion(src, REGION, index), path),
   }];
 }
 
-// Run the primer through `deno fmt` so the generated region is already wrapped
+// Run the primer through Prettier so the generated region is already wrapped
 // the way the formatter wants it — otherwise `generate` and `fmt` fight.
-async function formatMarkdown(src: string): Promise<string> {
-  const proc = new Deno.Command("deno", {
-    args: ["fmt", "--ext", "md", "-"],
-    stdin: "piped",
-    stdout: "piped",
-    stderr: "piped",
-  }).spawn();
-  const writer = proc.stdin.getWriter();
-  await writer.write(new TextEncoder().encode(src));
-  await writer.close();
-  const { success, stdout, stderr } = await proc.output();
-  if (!success) {
-    throw new Error(`deno fmt failed: ${new TextDecoder().decode(stderr)}`);
-  }
-  return new TextDecoder().decode(stdout);
+async function formatMarkdown(src: string, filepath: string): Promise<string> {
+  const config = await prettier.resolveConfig(filepath);
+  return await prettier.format(src, { ...config, filepath });
 }

@@ -1,39 +1,36 @@
 // scripts/lint-commits_test.ts
-import { assertEquals, assertMatch, assertStringIncludes } from "@std/assert";
-import { fromFileUrl } from "@std/path";
+import { expect, test } from "bun:test";
+import { fileURLToPath } from "node:url";
+import { exec } from "./lib/exec.ts";
 
-const SCRIPT = fromFileUrl(new URL("./lint-commits.ts", import.meta.url));
+const SCRIPT = fileURLToPath(new URL("./lint-commits.ts", import.meta.url));
 
 async function run(...args: string[]) {
-  const { code, stdout, stderr } = await new Deno.Command(Deno.execPath(), {
-    args: ["run", "--allow-read", "--allow-run=git", SCRIPT, ...args],
-  }).output();
-  const dec = new TextDecoder();
-  return { code, stdout: dec.decode(stdout), stderr: dec.decode(stderr) };
+  return await exec(process.execPath, [SCRIPT, ...args]);
 }
 
-Deno.test("lint-commits without a base exits 2 with usage", async () => {
+test("lint-commits without a base exits 2 with usage", async () => {
   const r = await run();
-  assertEquals(r.code, 2);
-  assertStringIncludes(r.stderr, "usage: lint-commits");
+  expect(r.code).toEqual(2);
+  expect(r.stderr).toContain("usage: lint-commits");
 });
 
-Deno.test("lint-commits with an unknown base exits 2 without a stack trace", async () => {
+test("lint-commits with an unknown base exits 2 without a stack trace", async () => {
   const r = await run("origin/nope");
-  assertEquals(r.code, 2);
-  assertMatch(r.stderr, /^lint-commits: git log origin\/nope\.\.HEAD failed/);
-  assertEquals(r.stderr.includes("    at "), false);
+  expect(r.code).toEqual(2);
+  expect(r.stderr).toMatch(/^lint-commits: git log origin\/nope\.\.HEAD failed/);
+  expect(r.stderr.includes("    at ")).toEqual(false);
 });
 
-Deno.test("lint-commits on an empty range exits 0 and says so", async () => {
+test("lint-commits on an empty range exits 0 and says so", async () => {
   const r = await run("HEAD");
-  assertEquals(r.code, 0);
-  assertStringIncludes(r.stdout, "0 commit(s) checked");
+  expect(r.code).toEqual(0);
+  expect(r.stdout).toContain("0 commit(s) checked");
 });
 
-Deno.test("lint-commits rejects a base that looks like an option", async () => {
+test("lint-commits rejects a base that looks like an option", async () => {
   const r = await run("--output=/tmp/x");
-  assertEquals(r.code, 2);
-  assertMatch(r.stderr, /^lint-commits: base ref must not start with "-"/);
-  assertEquals(r.stderr.includes("    at "), false);
+  expect(r.code).toEqual(2);
+  expect(r.stderr).toMatch(/^lint-commits: base ref must not start with "-"/);
+  expect(r.stderr.includes("    at ")).toEqual(false);
 });

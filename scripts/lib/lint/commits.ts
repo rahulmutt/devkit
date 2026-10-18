@@ -1,5 +1,6 @@
 // scripts/lib/lint/commits.ts
-// Conventional Commits subject check for `deno task lint-commits`. Allowed types
+import { exec } from "../exec.ts";
+// Conventional Commits subject check for `mise run lint-commits`. Allowed types
 // come from release-please-config.json so the list has one source.
 
 export interface Commit {
@@ -53,13 +54,13 @@ export async function commitsInRange(
   base: string,
   cwd: string,
 ): Promise<Commit[]> {
-  const { code, stdout, stderr } = await new Deno.Command("git", {
-    args: ["log", "--no-merges", "--format=%H%x09%s", `${base}..HEAD`],
+  const { code, stdout, stderr } = await exec(
+    "git",
+    ["log", "--no-merges", "--format=%H%x09%s", `${base}..HEAD`],
     cwd,
-  }).output();
+  );
   if (code !== 0) {
-    const detail = new TextDecoder().decode(stderr).trim();
-    throw new Error(`git log ${base}..HEAD failed: ${detail}`);
+    throw new Error(`git log ${base}..HEAD failed: ${stderr.trim()}`);
   }
-  return parseLog(new TextDecoder().decode(stdout));
+  return parseLog(stdout);
 }

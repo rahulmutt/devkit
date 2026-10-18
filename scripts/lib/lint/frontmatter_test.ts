@@ -1,4 +1,4 @@
-import { assertEquals } from "@std/assert";
+import { expect, test } from "bun:test";
 import { checkFrontmatter } from "./frontmatter.ts";
 import type { SkillRecord } from "./types.ts";
 
@@ -14,31 +14,31 @@ function rec(over: Partial<SkillRecord>): SkillRecord {
   };
 }
 
-Deno.test("clean record yields no findings", () => {
-  assertEquals(checkFrontmatter([rec({})]), []);
+test("clean record yields no findings", () => {
+  expect(checkFrontmatter([rec({})])).toEqual([]);
 });
 
-Deno.test("missing frontmatter is one error", () => {
+test("missing frontmatter is one error", () => {
   const f = checkFrontmatter([
     rec({ hasFrontmatter: false, name: "", description: "" }),
   ]);
-  assertEquals(f.length, 1);
-  assertEquals(f[0].level, "error");
+  expect(f.length).toEqual(1);
+  expect(f[0].level).toEqual("error");
 });
 
-Deno.test("name not matching directory is an error", () => {
+test("name not matching directory is an error", () => {
   const f = checkFrontmatter([rec({ name: "beta", dir: "alpha" })]);
-  assertEquals(f.length, 1);
-  assertEquals(f[0].level, "error");
+  expect(f.length).toEqual(1);
+  expect(f[0].level).toEqual("error");
 });
 
-Deno.test("empty description is an error", () => {
+test("empty description is an error", () => {
   const f = checkFrontmatter([rec({ description: "" })]);
-  assertEquals(f.some((x) => x.level === "error"), true);
+  expect(f.some((x) => x.level === "error")).toEqual(true);
 });
 
-Deno.test("description not starting with 'Use when' is a warn", () => {
+test("description not starting with 'Use when' is a warn", () => {
   const f = checkFrontmatter([rec({ description: "Helps with alpha." })]);
-  assertEquals(f.length, 1);
-  assertEquals(f[0].level, "warn");
+  expect(f.length).toEqual(1);
+  expect(f[0].level).toEqual("warn");
 });

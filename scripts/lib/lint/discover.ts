@@ -1,4 +1,5 @@
-import { join } from "@std/path";
+import { readdir, readFile } from "node:fs/promises";
+import { join } from "node:path";
 import type { SkillRecord } from "./types.ts";
 
 interface ParsedFrontmatter {
@@ -31,14 +32,14 @@ export async function discoverSkills(
   skillsDir: string,
 ): Promise<SkillRecord[]> {
   const records: SkillRecord[] = [];
-  for await (const entry of Deno.readDir(skillsDir)) {
-    if (!entry.isDirectory) continue;
+  for (const entry of await readdir(skillsDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
     const dir = entry.name;
     let src: string;
     try {
-      src = await Deno.readTextFile(join(skillsDir, dir, "SKILL.md"));
+      src = await readFile(join(skillsDir, dir, "SKILL.md"), "utf8");
     } catch (e) {
-      if (e instanceof Deno.errors.NotFound) continue;
+      if ((e as NodeJS.ErrnoException).code === "ENOENT") continue;
       throw e;
     }
     const fm = parseFrontmatter(src);
@@ -60,11 +61,11 @@ export async function discoverSkills(
 async function listReferenceFiles(refsDir: string): Promise<string[]> {
   const files: string[] = [];
   try {
-    for await (const entry of Deno.readDir(refsDir)) {
-      if (entry.isFile) files.push(entry.name);
+    for (const entry of await readdir(refsDir, { withFileTypes: true })) {
+      if (entry.isFile()) files.push(entry.name);
     }
   } catch (e) {
-    if (!(e instanceof Deno.errors.NotFound)) throw e;
+    if ((e as NodeJS.ErrnoException).code !== "ENOENT") throw e;
     // no references directory — fine
   }
   return files.sort();

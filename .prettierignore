@@ -1,6 +1,6 @@
 # Not formatted: generated, vendored, or intentionally hand-laid-out.
-CHANGELOG.md
-.release-please-manifest.json
+/CHANGELOG.md
+/.release-please-manifest.json
 assets
 .impeccable
 .superpowers/
@@ -16,13 +16,13 @@ node_modules/
 bun.lock
 
 # Generated JSON manifests (formatted by the generator, not Prettier).
-package.json
-gemini-extension.json
-release-please-config.json
-.claude-plugin/
-.codex-plugin/
-.cursor-plugin/
-.kimi-plugin/
+/package.json
+/gemini-extension.json
+/release-please-config.json
+/.claude-plugin/
+/.codex-plugin/
+/.cursor-plugin/
+/.kimi-plugin/
 hooks/*.json
 
 # Generated foreign-runtime extension code (also excluded from oxlint).

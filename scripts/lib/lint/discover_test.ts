@@ -41,7 +41,7 @@ test("discoverSkills finds skills, parses them, lists reference files", async ()
 
 test("discoverSkills rethrows a non-NotFound error reading SKILL.md", async () => {
   const dir = await mkdtemp(join(tmpdir(), "devkit-"));
-  // SKILL.md present but a directory — readTextFile fails with a non-NotFound
+  // SKILL.md present but a directory — readFile fails with a non-NotFound
   // error, which must propagate rather than silently drop the skill.
   await mkdir(`${dir}/alpha/SKILL.md`, { recursive: true });
   await expect(discoverSkills(dir)).rejects.toThrow();
@@ -54,7 +54,7 @@ test("discoverSkills rethrows a non-NotFound error listing references", async ()
     `${dir}/alpha/SKILL.md`,
     "---\nname: alpha\ndescription: Use when alpha.\n---\nbody\n",
   );
-  // references present but a file, not a directory — readDir fails with a
+  // references present but a file, not a directory — readdir fails with a
   // non-NotFound error, which must propagate rather than be swallowed.
   await writeFile(`${dir}/alpha/references`, "not a dir\n");
   await expect(discoverSkills(dir)).rejects.toThrow();

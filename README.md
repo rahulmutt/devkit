@@ -88,7 +88,10 @@ mise run release    # full gate: fmt-check, lint, typecheck, generated-files in 
 **GitHub Actions CI**, so a change can't merge with stale generated files or a
 failing check. Individual steps are also available: `mise run fmt`, `fmt-check`,
 `lint`, `lint-workflows`, `lint-commits`, `typecheck`, `check`,
-`validate-manifests`, `lint-skills`, `test`, `eval-triggers`, `eval-behavior`.
+`validate-manifests`, `lint-skills`, `test`, `eval-triggers`, `eval-behavior`,
+`deps`. The JS dev dependencies (Prettier, oxlint, TypeScript and so on) live in
+`scripts/package.json` with `scripts/bun.lock`; `deps` installs them before each
+task that needs them.
 
 **Change metadata** (name, version, description): edit `marketplace.config.ts`,
 then `mise run generate`.

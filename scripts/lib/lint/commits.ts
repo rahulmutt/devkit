@@ -1,7 +1,8 @@
 // scripts/lib/lint/commits.ts
-import { exec } from "../exec.ts";
 // Conventional Commits subject check for `mise run lint-commits`. Allowed types
 // come from release-please-config.json so the list has one source.
+
+import { exec } from "../exec.ts";
 
 export interface Commit {
   sha: string;
